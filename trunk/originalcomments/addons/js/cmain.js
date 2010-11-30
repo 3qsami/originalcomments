@@ -9,13 +9,14 @@
 /// <reference path="ctools.js" />
 /// <reference path="cpage.js" />
 
-//
-//var URL_Feed_FormMatch="http://www.pimshell.com/formgallery/FormMatch.aspx";
-//var URL_Feed_FormDownload="http://www.pimshell.com/formgallery/Download.aspx";
-//var URL_Feed_ClientCheck="http://www.pimshell.com/formgallery/ClientCheck.aspx";
-//var URL_Feed_FormWant="http://www.pimshell.com/formgallery/Want.aspx";
-//var URL_Feed_FormFeedback="http://www.pimshell.com/formgallery/Feedback.aspx";
-//var URL_Feed_FormCheck="http://www.pimshell.com/formgallery/FormCheck.aspx";
+/*
+var URL_Feed_FormMatch="http://www.pimshell.com/formgallery/FormMatch.aspx";
+var URL_Feed_FormDownload="http://www.pimshell.com/formgallery/Download.aspx";
+var URL_Feed_ClientCheck="http://www.pimshell.com/formgallery/ClientCheck.aspx";
+var URL_Feed_FormWant="http://www.pimshell.com/formgallery/Want.aspx";
+var URL_Feed_FormFeedback="http://www.pimshell.com/formgallery/Feedback.aspx";
+var URL_Feed_FormCheck="http://www.pimshell.com/formgallery/FormCheck.aspx";
+*/
 
 var URL_Feed_FormMatch = "http://localhost:49448/FormMatch.aspx";
 var URL_Feed_FormDownload = "http://localhost:49448/test/Download.aspx";
