@@ -1,0 +1,128 @@
+﻿{
+  "name": {
+    "message": "原始评论支持Google Reader"
+  },
+  "description": {
+    "message": "直接在Google Reader中查看原始评论。"
+  },
+  "actiontitle": {
+    "message": "原始评论支持Google Reader"
+  },
+  "requestForm":{
+	"message":"申请窗体"
+  },
+  "requestFormTitle":{
+	"message":"我想查看原始评论"
+  },
+  "trackComments":{
+	"message":"查看评论"
+  },
+  "followComments":{
+	"message":"订阅评论"
+  },
+  "trackCommentsDesp":{
+	"message":"查看评论：按统一的样式显示评论列表，可以按评论的时间进行“升序”和“降序”的切换。"
+  },
+  "followCommentsDesp":{
+	"message":"订阅评论：定时检查文章的评论列表，并自动抓取新的评论。"
+  },
+  "checkagain":{
+	"message":"重新检测"
+  },
+  "track":{
+	"message":"查看"
+  },
+  "follow":{
+	"message":"订阅"
+  },
+  "ascdesc":{
+	"message":"升序/降序"
+  },
+  "refresh":{
+	"message":"刷新"
+  },
+  "pageFirst":{
+	"message":"首页"
+  },
+  "pagePrevious":{
+	"message":"前页"
+  },
+  "pageNext":{
+	"message":"后页"
+  },
+  "pageLast":{
+	"message":"末页"
+  },
+  "hasFollowedAlert":{
+	"message":"此评论已被订阅!"
+  },
+  "home_htm_title":{
+	"message":"主页 - 原始评论"
+  },
+  "comments":{
+	"message":"评论"
+  },
+  "newComments":{
+	"message":"新评论"
+  },
+  "commentsSubscriptions":{
+	"message":"评论订阅"
+  },
+  "options":{
+	"message":"选项"
+  },
+  "noFollowAlert":{
+	"message":"您还没有订阅任何评论。"
+  },
+  "noNewCommentsAlert":{
+	"message":"没有新的评论"
+  },
+  "viewOriginal":{
+	"message":"查看原始文章"
+  },
+  "unsubscribe":{
+	"message":"取消订阅"
+  },
+  "checkNewCommentsNow":{
+	"message":"立即检测新评论"
+  },
+  "autoViewEnabled":{
+	"message":"自动显示评论列表"
+  },
+  "autoViewHeight":{
+	"message":"评论列表的高度"
+  },
+  "autoViewLeftMargin":{
+	"message":"评论列表的左边距"
+  },
+  "autoViewRightMargin":{
+	"message":"评论列表的右边距"
+  },
+  "followCheckEnabled":{
+	"message":"定期检测新评论"
+  },
+  "followCheckInterval":{
+	"message":"检测的频率 (分钟)"
+  },
+  "saveOptions":{
+	"message":"保存选项"
+  },
+  "loadDefaultOptions":{
+	"message":"加载缺省选项"
+  },
+  "prettyDate_formats":{
+	"message":"[[60, '秒', 1], [120, '1 分钟'], [3600, '分钟', 60], [7200, '1 小时'], [86400, '小时', 3600], [172800, '1 天'], [604800, '天', 86400], [1209600, '1 星期'], [2419200, '星期', 604800], [4838400, '1 月'], [29030400, '月', 2419200], [58060800, '1 年'], [2903040000, '年', 29030400], [5806080000, '1 世纪'],[58060800000, '世纪', 2903040000]]"
+  },
+  "prettyDate_ago":{
+	"message":"前"
+  },
+  "prettyDate_fromnow":{
+	"message":"距现在"
+  },
+  "unread":{
+	"message":"未读"
+  },
+  "viewcommentfeedbackprompt":{
+	"message":"如果查看评论无法正常工作, 请给我们发送反馈."
+  }
+}

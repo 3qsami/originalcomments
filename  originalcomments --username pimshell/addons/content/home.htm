@@ -1,0 +1,540 @@
+<html>
+<head>
+<title></title>
+<link type="text/css" rel="Stylesheet" href="../style/main.css" />
+<link type="text/css" rel="Stylesheet" href="../style/ui-lightness/jquery-ui.css" />
+<style type="text/css">
+	.option-slider
+	{
+		display:inline-block;width:200px;margin-left:20px;
+	}
+	
+	.level1
+	{
+		padding-left:20px;
+	}
+	.level2
+	{
+		padding-left:50px;
+	}
+</style>
+
+<script type="text/javascript" src="../lib/jquery.min.js"></script>
+
+<script type="text/javascript">
+	//jq
+	var jQuery = createJQuery(window);
+</script>
+
+<script type="text/javascript" src="../lib/jquery-ui.min.js"></script>
+
+<script type="text/javascript" src="../js/cbase.js"></script>
+<script type="text/javascript" src="../js/ctools.js"></script>
+<script type="text/javascript" src="../js/cpage.js"></script>
+<script type="text/javascript" src="../lib/prettydate.js"></script>
+
+
+<script type="text/javascript">
+	//
+	var g_oArrayFollowComments = null;
+	var g_oArraySubscriptions = null;
+
+	//
+	(function () {
+		//url
+		var oParts = ctools.splitURL(document.URL);
+
+		//cbase
+		var sBaseSrc = String2.format("../{0}/js/cbase.js", oParts["platform"]);
+		ctools.loadScriptSrc(document, sBaseSrc, function () {
+			//ok
+			jQuery(document).ready(function () {
+				//title
+				document.title = cbase.getlanguagevalue("home_htm_title");
+
+				//tabs name
+				jQuery("#tabaction-comments").text(cbase.getlanguagevalue("newComments"));
+				jQuery("#tabaction-subscriptions").text(cbase.getlanguagevalue("commentsSubscriptions"));
+				jQuery("#tabaction-options").text(cbase.getlanguagevalue("options"));
+
+				//tabs
+				var nSelectedIndex = oParts["tabname"] === "options" ? 2 : 0;
+				jQuery("#tabs").tabs({ selected: nSelectedIndex, show: ontabsshow });
+
+				//ok
+				jQuery(document.body).css('visibility', 'visible');
+			});
+		});
+	})();
+
+	
+	//
+	function ontabsshow(event,ui){
+		var index = ui.index;
+		var panel = ui.panel;
+		//panel maybe jquery object or dom element
+		panel = jQuery(panel);
+
+		if (index == 0) {
+			ontabsshow_comments(panel);
+		}
+		else if (index == 1) {
+			ontabsshow_subscriptions(panel);
+		}
+		else if (index == 2) {
+			ontabsshow_options(panel);
+		}
+	}
+
+	function ontabsshow_subscriptions(panel) {
+		//only once
+		if (panel.attr("_inited") === "true")
+			return;
+		else
+			panel.attr("_inited", "true");
+
+		//
+		cbase.sendmessage("getFollowCommentsAll", null, function (oArrayFollowComments) {
+			//
+			g_oArraySubscriptions = oArrayFollowComments;
+
+			//prettydate
+			var oPrettyDate = new pretty_date(cbase.getlanguagevalue("prettyDate_ago"), cbase.getlanguagevalue("prettyDate_fromnow"), cbase.getlanguagevalue("prettyDate_formats"));
+
+			//stat
+			//totalcount
+			var s = String2.format("<span>{0}</span>: <span style='color:red;' id='subscriptionsCount'>{1}</span>",
+											cbase.getlanguagevalue("commentsSubscriptions"),
+											oArrayFollowComments.length
+											);
+			jQuery("#subscriptionsStat").html(s);
+
+			//subscriptions
+			var sHtml = "";
+
+			//loop
+			for (var i = 0; i < oArrayFollowComments.length; i++) {
+				var oFollowInfo = oArrayFollowComments[i];
+
+				var sIconURL = _getFeedIcon(!String2.isEmpty(oFollowInfo["feedLink"]) ? oFollowInfo["feedLink"] : oFollowInfo["articleLink"]);
+				var s = String2.format("<h4 _index='{0}' id='accordion-subscriptions-{0}'><div style='max-width:600px;display:block;overflow:hidden;white-space:nowrap;'>\
+											<a href='#' onclick='return onclick_unsubscribe_subscriptions(event,{0});' title='{1}' style='margin-right:4px;'><img border='0' src='{2}' /></a>\
+											<span style='display:inline-block;width:120px;margin-right:6px;'>{3}</span>\
+											<span title='{4}' style='display:inline-block;width:16px;margin-right:6px;color:red;'>{5}</span>\
+											<img src='{6}' width='16px' height='16px' _for='feedicon' />&nbsp;\
+											<a href='{7}' target='_blank'>{8}</a>\
+											</div></h4>",
+											i,
+											cbase.getlanguagevalue("unsubscribe"),
+											cbase.getURL("addons/images/unsubscribe.png"),
+											oPrettyDate.convert(oFollowInfo["createTime"]),
+											cbase.getlanguagevalue("unread"),
+											oFollowInfo["commentsCount"] > 0 ? oFollowInfo["commentsCount"] : '',
+											sIconURL,
+											ctools.HTMLEncode( oFollowInfo["articleLink"]),
+											oFollowInfo["articleTitle"]
+											);
+
+				sHtml += s;
+			}
+
+			//force destroy old node
+			jQuery("#subscriptionsList").remove();
+
+			//accordion
+			if (sHtml != "") {
+				//create
+				var oSubscriptions = document.createElement("div");
+				oSubscriptions.id = "subscriptionsList";
+				jQuery("#tabs-subscriptions").append(oSubscriptions);
+
+				//content
+				jQuery(oSubscriptions).html(sHtml);
+			}
+
+		});
+	}
+	
+	function _fillFollowCommentsStat(){
+		//
+		cbase.sendmessage("getFollowCommentsStat", null, function (oParams) {
+			//info
+			var nFollowCount = oParams["followCount"];
+			var nTotalCount = oParams["totalCount"];
+			var oArrayFollowComments = oParams["followComments"];
+			g_oArrayFollowComments = oArrayFollowComments;
+
+			//warning
+			if (nFollowCount == 0) {
+				jQuery("#warningText").html(cbase.getlanguagevalue("noFollowAlert"));
+			}
+			else if (oArrayFollowComments.length == 0) {
+				jQuery("#warningText").html(cbase.getlanguagevalue("noNewCommentsAlert"));
+			}
+			else {
+				//totalcount
+				var s = String2.format("<span>{0}</span>: <span style='color:red;' id='totalCount'>{1}</span>",
+											cbase.getlanguagevalue("newComments"),
+											nTotalCount
+											);
+				jQuery("#warningText").html(s);
+			}
+
+			//comments
+			var sHtml = "";
+			if (nFollowCount > 0 && oArrayFollowComments.length > 0) {
+				//loop
+				for (var i = 0; i < oArrayFollowComments.length; i++) {
+					var oFollowInfo = oArrayFollowComments[i];
+
+					var sIconURL = _getFeedIcon(!String2.isEmpty(oFollowInfo["feedLink"]) ? oFollowInfo["feedLink"] : oFollowInfo["articleLink"]);
+					var s = String2.format("<h3 _index='{0}' id='accordion-comments-header-{0}'><a href=\"#\"><div style='max-width:600px;display:block;overflow:hidden;white-space:nowrap;'>\
+												<span id='count' title='{1}' style='display:inline-block;width:16px;margin-right:6px;color:red;'>{2}</span>\
+												<img src='{3}' width='16px' height='16px' _for='feedicon' />&nbsp;\
+												<span>{4}</span>\
+												</div></a></h3><div id='accordion-comments-content-{0}'></div>",
+												i,
+												cbase.getlanguagevalue("unread"),
+												CEntityset.getDataLength(oFollowInfo["data"]),
+												sIconURL,
+												oFollowInfo["articleTitle"]
+												);
+
+					sHtml += s;
+				}
+			}
+
+			//force destroy old node
+			jQuery("#accordion").remove();
+
+			//accordion
+			if (sHtml != "") {
+				//create
+				var oAccordion=document.createElement("div");
+				oAccordion.id="accordion";
+				jQuery("#tabs-comments").append(oAccordion);
+
+				//content
+				//			animated:true and changestart:null as to force header show
+				jQuery(oAccordion).html(sHtml).accordion({ collapsible: true, active: false, clearStyle: true, animated:false, change: onchange_accordion });
+				
+				//not show
+				//jQuery(oAccordion).accordion("option", "active", 0);
+			}
+		});
+	}
+
+	function ontabsshow_comments(panel) {
+		//only once
+		if (panel.attr("_inited") === "true")
+			return;
+		else
+			panel.attr("_inited", "true");
+
+		//buttons
+		jQuery("#refresh")
+							.text(cbase.getlanguagevalue("refresh"))
+							.button();
+		jQuery("#refresh").click(onclick_refresh);
+
+		jQuery("#checkNow")
+							.text(cbase.getlanguagevalue("checkNewCommentsNow"))
+							.button();
+		jQuery("#checkNow").click(onclick_checkNow);
+
+		//
+		_fillFollowCommentsStat();
+	}
+
+	function ontabsshow_options(panel) {
+		//only once
+		if (panel.attr("_inited") === "true")
+			return;
+		else
+			panel.attr("_inited", "true");
+
+		//get options
+		cbase.sendmessage("getOptions", null, function (oOptions) {
+			//trackcomments
+			jQuery("#TrackComments_HeaderTitle").text(cbase.getlanguagevalue("trackComments"));
+
+			jQuery("#option_autoViewEnabled_desp").text(cbase.getlanguagevalue("autoViewEnabled"));
+			jQuery("#option_autoViewEnabled").change(oninputchange);
+
+			jQuery("#option_autoViewHeight_desp").text(cbase.getlanguagevalue("autoViewHeight"));
+			jQuery("#option_autoViewHeight").change(oninputchange);
+			jQuery("#option_autoViewHeight_slider").slider({ min: 50, max: 600, step: 50, change: onsliderchange });
+
+			jQuery("#option_autoViewLeftMargin_desp").text(cbase.getlanguagevalue("autoViewLeftMargin"));
+			jQuery("#option_autoViewLeftMargin").change(oninputchange);
+			jQuery("#option_autoViewLeftMargin_slider").slider({ min: 10, max: 200, step: 10, change: onsliderchange });
+
+			jQuery("#option_autoViewRightMargin_desp").text(cbase.getlanguagevalue("autoViewRightMargin"));
+			jQuery("#option_autoViewRightMargin").change(oninputchange);
+			jQuery("#option_autoViewRightMargin_slider").slider({ min: 10, max: 200, step: 10, change: onsliderchange });
+
+			//followcomments
+			jQuery("#FollowComments_HeaderTitle").text(cbase.getlanguagevalue("commentsSubscriptions"));
+
+			jQuery("#option_followCheckEnabled_desp").text(cbase.getlanguagevalue("followCheckEnabled"));
+			jQuery("#option_followCheckEnabled").change(oninputchange);
+
+			jQuery("#option_followCheckInterval_desp").text(cbase.getlanguagevalue("followCheckInterval"));
+			jQuery("#option_followCheckInterval").change(oninputchange);
+			jQuery("#option_followCheckInterval_slider").slider({ min: 10, max: 1440, step: 10, change: onsliderchange });
+
+			//buttons
+			jQuery("#saveOptions")
+													.text(cbase.getlanguagevalue("saveOptions"))
+													.button();
+			jQuery("#saveOptions").click(onclick_saveOptions);
+
+			jQuery("#loadDefaultOptions")
+													.text(cbase.getlanguagevalue("loadDefaultOptions"))
+													.button();
+			jQuery("#loadDefaultOptions").click(onclick_loadDefaultOptions);
+
+			//fill options
+			_fillOptions(oOptions);
+
+			//show
+			jQuery("#tabs-options-table").css("visibility", "visible");
+		});
+
+	}
+
+	function _fillOptions(oOptions) {
+		//trackcomments
+		jQuery("#option_autoViewEnabled").attr("checked", oOptions["autoview_enabled"]);
+		
+		jQuery("#option_autoViewHeight").attr("value", oOptions["autoview_height"]);
+		jQuery("#option_autoViewHeight_slider").slider("option","value",oOptions["autoview_height"]);
+
+		jQuery("#option_autoViewLeftMargin").attr("value", oOptions["autoview_leftmargin"]);
+		jQuery("#option_autoViewLeftMargin_slider").slider("option","value",oOptions["autoview_leftmargin"]);
+
+		jQuery("#option_autoViewRightMargin").attr("value", oOptions["autoview_rightmargin"]);
+		jQuery("#option_autoViewRightMargin_slider").slider("option","value",oOptions["autoview_rightmargin"]);
+
+		//followcomments
+		jQuery("#option_followCheckEnabled").attr("checked", oOptions["follow_checkenabled"]);
+		
+		jQuery("#option_followCheckInterval").attr("value", oOptions["follow_checkinterval"]);
+		jQuery("#option_followCheckInterval_slider").slider("option","value",oOptions["follow_checkinterval"]);
+	}
+
+	function onchange_accordion(event, ui) {
+		var oEleHeader = ui.newHeader;
+		var oEleContent = ui.newContent;
+		if (oEleHeader.size() == 0)
+			return;
+
+		//force show header
+		if (oEleHeader.offset().top < jQuery(document.body).scrollTop()) {
+			oEleHeader.get(0).scrollIntoView();
+		}
+
+		//only once
+		if (oEleHeader.attr("_inited") === "true")
+			return;
+		else
+			oEleHeader.attr("_inited", "true");
+
+		//
+		var nIndex = oEleHeader.attr("_index");
+		var oFollowInfo = g_oArrayFollowComments[nIndex];
+
+		cbase.sendmessage("getFollowCommentsContent", oFollowInfo["articleLink"], function (oResult) {
+			//comments
+			var s = String2.format("<div style='float:right;'>\
+									<a href='{1}' target='_blank' title='{2}' style='margin-right:4px;'><img border='0' src='{3}' /></a>\
+									<a href='#' onclick='return onclick_unsubscribe(event,{0});' title='{4}' style='margin-right:4px;'><img border='0' src='{5}' /></a>\
+									</div><div style='both:clear;'></div>{6}",
+									nIndex,
+									ctools.HTMLEncode(oFollowInfo["articleLink"]),
+									cbase.getlanguagevalue("viewOriginal"),
+									cbase.getURL("addons/images/goto.gif"),
+									cbase.getlanguagevalue("unsubscribe"),
+									cbase.getURL("addons/images/unsubscribe.png"),
+									oResult);
+			oEleContent.html(s);
+
+			//clear old comments
+			cbase.sendmessage("clearFollowCommentsContent", oFollowInfo["articleLink"], function () {
+				//count
+				jQuery("#count", oEleHeader).css("color", "gray");
+
+				//total count
+				jQuery("#totalCount").text(parseInt(jQuery("#totalCount").text()) - parseInt(jQuery("#count", oEleHeader).text()));
+			});
+		});
+	}
+
+	//
+	function onclick_unsubscribe(event, nIndex) {
+		var oFollowInfo = g_oArrayFollowComments[nIndex];
+		if (oFollowInfo == null)
+			return;
+
+		cbase.sendmessage("unsubscribeComments", oFollowInfo["articleLink"], function () {
+			jQuery("#accordion-comments-content-" + nIndex).hide("slow");
+			jQuery("#accordion-comments-header-" + nIndex).hide("slow");
+		});
+
+		return false;
+	}
+
+	function onclick_unsubscribe_subscriptions(event, nIndex) {
+		var oFollowInfo =g_oArraySubscriptions[nIndex];
+		if (oFollowInfo == null)
+			return;
+
+		cbase.sendmessage("unsubscribeComments", oFollowInfo["articleLink"], function () {
+			//hide
+			jQuery("#accordion-subscriptions-" + nIndex).hide("slow");
+			//total count
+			jQuery("#subscriptionsCount").text(parseInt(jQuery("#subscriptionsCount").text()) - 1);
+		});
+
+		return false;
+	}
+
+	//
+	function onclick_refresh(event, ui) { 
+		_fillFollowCommentsStat();
+	}
+	//
+	function onclick_checkNow(event, ui) {
+		cbase.sendmessage("checkFollowCommentsNow", null, function () { });
+	}
+	//
+	function onclick_saveOptions(event, ui) {
+		//get options first
+		cbase.sendmessage("getOptions", null, function (oOptions) {
+			oOptions["autoview_enabled"] = jQuery("#option_autoViewEnabled").attr("checked");
+			oOptions["autoview_height"] = parseInt(jQuery("#option_autoViewHeight").attr("value"));
+			oOptions["autoview_leftmargin"] = parseInt(jQuery("#option_autoViewLeftMargin").attr("value"));
+			oOptions["autoview_rightmargin"] = parseInt(jQuery("#option_autoViewRightMargin").attr("value"));
+
+			oOptions["follow_checkenabled"] = jQuery("#option_followCheckEnabled").attr("checked");
+			oOptions["follow_checkinterval"] = parseInt(jQuery("#option_followCheckInterval").attr("value"));
+
+			//save
+			cbase.sendmessage("saveOptions", oOptions, function () {
+				_optionsModified(false);
+			});
+		});
+	}
+	//
+	function onclick_loadDefaultOptions(event, ui) {
+		//get default options
+		cbase.sendmessage("loadDefaultOptions", null, function (oOptions) {
+			_fillOptions(oOptions);
+			_optionsModified(true);
+		});
+	}
+
+	function _optionsModified(bModified) {
+		if (bModified) {
+			jQuery("#saveOptions").button("option", "label", " * " + cbase.getlanguagevalue("saveOptions"));
+		}
+		else {
+			jQuery("#saveOptions").button("option", "label", cbase.getlanguagevalue("saveOptions"));
+		}
+	}
+
+	//
+	function oninputchange(event) {
+		var oElement = ctools.getEventElement(event);
+		//slider
+		var sFor = oElement.getAttribute("slider");
+		if (!String2.isEmpty(sFor)) {
+			jQuery("#" + sFor).slider("value", oElement.value);
+		}
+		//modified
+		_optionsModified(true);
+	}
+
+	function onsliderchange(event, ui) {
+		if (event.originalEvent == null)
+			return;
+		//input
+		var oElement=ctools.getEventElement(event) ;
+		var sFor = oElement.getAttribute("for");
+		if (!String2.isEmpty(sFor)) {
+			jQuery("#" + sFor).attr("value", ui.value);
+		}
+		//modified
+		_optionsModified(true);
+	}
+
+	//
+	function _getFeedIcon(sLink) {
+		return String2.format("{0}/favicon.ico", ctools.getDomainUrl(sLink));
+	}
+
+</script>
+</head>
+<body style="visibility:hidden;">
+<div style="float:right; width:400px; " class="demo-config-menu">
+	<div class="demos-nav">
+		<ul>
+			<li><a href="http://www.google.com/reader/view/mysatisfaction">Support and FAQs</a></li>
+			<li><a href="http://www.google.com/reader/view/（支持不同platform）">Welcome your advice and rating</a></li>
+		</ul>
+	</div>
+</div>
+<div id="tabs" style="clear:both;">
+	<ul>
+		<li><a id="tabaction-comments" href="#tabs-comments"></a></li>
+		<li><a id="tabaction-subscriptions" href="#tabs-subscriptions"></a></li>
+		<li><a id="tabaction-options" href="#tabs-options"></a></li>
+	</ul>
+	<div id="tabs-comments">
+		
+		<div style="float:right;" id="commands_container"><button id="refresh"></button><button id="checkNow"></button></div>
+		<div style="float:left; font-size:20px;"><span id="warningText"></span></div>
+		<div style="clear:both"></div>
+	</div>
+	<div id="tabs-subscriptions">
+		<div style="font-size:20px;"><span id="subscriptionsStat"></span></div>
+	</div>
+	<div id="tabs-options">
+		<table id="tabs-options-table" style="visibility:hidden;">
+			<tr><td colspan="2"><span id="TrackComments_HeaderTitle" class="title"></span></td></tr>
+			<tr>
+				<td class="level1"><label id="option_autoViewEnabled_desp" for="option_autoViewEnabled"></label></td>
+				<td><input id="option_autoViewEnabled" type="checkbox" /></td>
+			</tr>
+			<tr>
+				<td class="level2"><label id="option_autoViewHeight_desp"></label></td>
+				<td><input id="option_autoViewHeight" type="text" size="5" slider="option_autoViewHeight_slider" /><span id="option_autoViewHeight_slider" for="option_autoViewHeight" class="option-slider"></span></td>
+			</tr>
+			<tr>
+				<td class="level2"><label id="option_autoViewLeftMargin_desp"></label></td>
+				<td><input id="option_autoViewLeftMargin" type="text" size="5" slider="option_autoViewLeftMargin_slider" /><span id="option_autoViewLeftMargin_slider" for="option_autoViewLeftMargin" class="option-slider"></span></td>
+			</tr>
+			<tr>
+				<td class="level2"><label id="option_autoViewRightMargin_desp"></label></td>
+				<td><input id="option_autoViewRightMargin" type="text" size="5" slider="option_autoViewRightMargin_slider" /><span id="option_autoViewRightMargin_slider" for="option_autoViewRightMargin" class="option-slider"></span></td>
+			</tr>
+
+			<tr><td colspan="2"><span id="FollowComments_HeaderTitle" class="title"></span></td></tr>
+			<tr>
+				<td class="level1"><label id="option_followCheckEnabled_desp" for="option_followCheckEnabled"></label></td>
+				<td><input id="option_followCheckEnabled" type="checkbox" /></td>
+			</tr>
+			<tr>
+				<td class="level2"><label id="option_followCheckInterval_desp"></label></td>
+				<td><input id="option_followCheckInterval" type="text" size="5" slider="option_followCheckInterval_slider" /><span id="option_followCheckInterval_slider" for="option_followCheckInterval" class="option-slider"></span></td>
+			</tr>
+			<tr>
+				<td>&nbsp;</td>
+				<td><button id="saveOptions"></button><button id="loadDefaultOptions"></button></td>
+			</tr>
+		</table>
+	</div>
+</div>
+
+</body>
+</html>

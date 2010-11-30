@@ -1,0 +1,76 @@
+
+body {
+    font-family: Lucida grande, arial, sans-serif;
+    font-size: 13px;
+    background-color:#F3F5FC;
+}
+
+a:link
+{
+	text-decoration: none;
+}
+
+a:hover,a:focus
+{
+	color:Red;	
+}
+
+/* 2010.04.23 special for comment's content */
+blockquote
+{
+	padding:4px 4px 12px 4px;border:solid 1px gray;background-color:#CC99FF;
+}
+
+/* Title */
+.title
+{
+	border-left:solid 1px transparent;
+	border-top:solid 1px transparent;
+	border-right:solid 1px transparent;
+	
+	color:#5377A9;
+	font-family:Arial, Sans-Serif;
+	font-weight:bold;
+	font-size:1.4em;
+}
+
+.heading 
+{
+	margin:4px 0 2px 0;
+	color:#5377A9;
+	font-family:Arial, Sans-Serif;
+	font-weight:bold;
+	font-size:1.4em;
+}
+
+.subheading 
+{
+	margin:4px 0 2px 0;
+	color:#0F2543;
+	font-family:Arial, Sans-Serif;
+	font-weight:bold;
+	font-size:1.2em;
+}
+
+/* Demos */
+
+.demo-config-menu ul {
+list-style: none;
+}
+
+.demo-config-menu li a:link, .demo-config-menu li a:visited {
+border-bottom: 1px dotted #B3B3B3;
+display: block;
+padding: 1px 8px 4px;
+color: #1B75BB;
+text-decoration: none;
+}
+
+.demo-config-menu li a:hover,
+.demo-config-menu li a:focus {
+    background: #f3f3f3;
+    color:#C77405;
+    -moz-border-radius: 3px; -webkit-border-radius: 3px;
+}
+
+

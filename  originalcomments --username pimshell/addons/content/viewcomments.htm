@@ -1,0 +1,46 @@
+<html>
+<head>
+<title></title>
+<link type="text/css" rel="Stylesheet" href="../style/main.css" />
+<script type="text/javascript" src="../lib/jquery.min.js"></script>
+<script type="text/javascript" src="../js/cbase.js"></script>
+<script type="text/javascript" src="../js/ctools.js"></script>
+<script type="text/javascript" src="../js/ccontent.js"></script>
+<script type="text/javascript" src="../readeronline/viewcomments.js"></script>
+
+<script type="text/javascript">
+	
+	(function () {
+		//url
+		var oParts = ctools.splitURL(document.URL);
+
+		//cbase
+		var sBaseSrc = String2.format("../{0}/js/cbase.js", oParts["platform"]);
+		ctools.loadScriptSrc(document, sBaseSrc, function () {
+			//ccontent
+			var sContentSrc = String2.format("../{0}/js/ccontent_viewcomments.js", oParts["platform"]);
+			ctools.loadScriptSrc(document, sContentSrc, function () {
+				//ok
+				jq(document).ready(function () {
+					//title
+					document.title = String2.format("{0} - {1}", cbase.getlanguagevalue("trackComments"), oParts["title"]);
+
+					//article
+					jq("#article-title-link").attr("href", oParts["url"]).text(oParts["title"]).attr("_formId", oParts["formId"]);
+
+					//ok
+					jq(document.body).css('visibility', 'visible');
+				});
+			});
+		});
+	})();
+
+</script>
+</head>
+<body style="visibility:hidden;">
+<div id="current-article">
+	<div style="font-weight:bolder;"><a id="article-title-link" href="" target="_blank"></a></div>
+	<div id="article-body"></div>	
+</div>
+</body>
+</html>

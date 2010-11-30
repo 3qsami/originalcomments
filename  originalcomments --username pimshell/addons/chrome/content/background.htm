@@ -1,0 +1,25 @@
+<html>
+<head>
+<script type="text/javascript" src="../../lib/jquery.min.js"></script>
+<script type="text/javascript" src="../../lib/gbk.js"></script>
+<script type="text/javascript" src="../../js/cbase.js"></script>
+<script type="text/javascript" src="../../js/ctools.js"></script>
+<script type="text/javascript" src="../js/cbase.js"></script>
+<script type="text/javascript" src="../../js/cpage.js"></script>
+<script type="text/javascript" src="../../js/cmain.js"></script>
+<script type="text/javascript" src="../js/cmain.js"></script>
+
+<script>
+	// Called when the user clicks on the browser action.
+	chrome.browserAction.onClicked.addListener(function (tab) {
+		var sURL = String2.format("addons/content/home.htm?platform={0}", cbase.getPlatform());
+		sURL = chrome.extension.getURL(sURL);
+		cbase.newTab(sURL, true);
+	});
+
+</script>
+
+</head>
+<body>
+</body>
+</html>
