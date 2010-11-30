@@ -3,7 +3,7 @@
 * http://code.google.com/p/originalcomments/
 *
 * Copyright (C) 2010, Kevin, licensed MPL
-*/
+*///
 
 
 /// <reference path="../js/cbase.js" />
