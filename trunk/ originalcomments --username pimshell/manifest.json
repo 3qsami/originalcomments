@@ -1,0 +1,27 @@
+﻿{
+  "name": "__MSG_name__",
+  "version": "3.0.0",
+  "description": "__MSG_description__",
+  "icons": { "16": "addons/images/button16.png",
+           "21": "addons/images/button21.png",
+		   "24": "addons/images/button24.png",
+		   "32": "addons/images/button32.png",
+		   "48": "addons/images/button48.png",
+		   "128": "addons/images/button128.png"},
+  "background_page": "addons/chrome/content/background.htm",
+  "options_page": "addons/content/home.htm?platform=chrome&tabname=options",
+  "browser_action": {
+      "default_title": "__MSG_actiontitle__",
+	  "default_icon": "addons/images/button21.png"
+  },
+  "permissions": [
+    "tabs","http://*/*","https://*/*"
+  ],
+  "default_locale": "en",
+  "content_scripts": [
+    {
+      "matches": ["*://www.google.com/reader/view/*"],
+      "js": ["addons/lib/jquery.min.js","addons/js/cbase.js","addons/js/ctools.js","addons/chrome/js/cbase.js","addons/js/ccontent.js","addons/chrome/js/ccontent.js","addons/readeronline/googlereader.js"]
+    }
+  ]
+}

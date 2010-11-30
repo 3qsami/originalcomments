@@ -1,0 +1,128 @@
+﻿{
+  "name": {
+    "message": "Original Comments for Google Reader"
+  },
+  "description": {
+    "message": "Directly view original comments in Google Reader."
+  },
+  "actiontitle": {
+    "message": "Original Comments for Google Reader"
+  },
+  "requestForm":{
+	"message":"Request Form"
+  },
+  "requestFormTitle":{
+	"message":"I want to view original comments"
+  },
+  "trackComments":{
+	"message":"View Comments"
+  },
+  "followComments":{
+	"message":"Subscribe to Comments"
+  },
+  "trackCommentsDesp":{
+	"message":"View Comments: View the comments in &quot;ascending&quot; or &quot;descending&quot; order."
+  },
+  "followCommentsDesp":{
+	"message":"Subscribe to Comments: Regularly check the comments, and automatically fetch the new ones."
+  },
+  "checkagain":{
+	"message":"Check again"
+  },
+  "track":{
+	"message":"View"
+  },
+  "follow":{
+	"message":"Subscribe"
+  },
+  "ascdesc":{
+	"message":"Ascending/Descending"
+  },
+  "refresh":{
+	"message":"Refresh"
+  },
+  "pageFirst":{
+	"message":"First page"
+  },
+  "pagePrevious":{
+	"message":"Previous page"
+  },
+  "pageNext":{
+	"message":"Next page"
+  },
+  "pageLast":{
+	"message":"Last page"
+  },
+  "hasFollowedAlert":{
+	"message":"The comments have been subscribed!"
+  },
+  "home_htm_title":{
+	"message":"Home - Original Comments"
+  },
+  "comments":{
+	"message":"Comments"
+  },
+  "newComments":{
+	"message":"New comments"
+  },
+  "commentsSubscriptions":{
+	"message":"Comments subscriptions"
+  },
+  "options":{
+	"message":"Options"
+  },
+  "noFollowAlert":{
+	"message":"You have not subscribed any comments yet."
+  },
+  "noNewCommentsAlert":{
+	"message":"No new comments"
+  },
+  "viewOriginal":{
+	"message":"View original"
+  },
+  "unsubscribe":{
+	"message":"Unsubscribe"
+  },
+  "checkNewCommentsNow":{
+	"message":"Check new comments now"
+  },
+  "autoViewEnabled":{
+	"message":"Display the comment list automatically"
+  },
+  "autoViewHeight":{
+	"message":"Height of the comment list"
+  },
+  "autoViewLeftMargin":{
+	"message":"Left margin of the comment list"
+  },
+  "autoViewRightMargin":{
+	"message":"Right margin of the comment list"
+  },
+  "followCheckEnabled":{
+	"message":"Check the new comments frequently"
+  },
+  "followCheckInterval":{
+	"message":"Check frequency (Minutes)"
+  },
+  "saveOptions":{
+	"message":"Save Options"
+  },
+  "loadDefaultOptions":{
+	"message":"Load Default Options"
+  },
+  "prettyDate_formats":{
+	"message":"[[60, 'seconds', 1], [120, '1 minute'], [3600, 'minutes', 60], [7200, '1 hour'], [86400, 'hours', 3600], [172800, '1 day'], [604800, 'days', 86400], [1209600, '1 week'], [2419200, 'weeks', 604800], [4838400, '1 month'], [29030400, 'months', 2419200], [58060800, '1 year'], [2903040000, 'years', 29030400], [5806080000, '1 century'],[58060800000, 'centuries', 2903040000]]"
+  },
+  "prettyDate_ago":{
+	"message":"ago"
+  },
+  "prettyDate_fromnow":{
+	"message":"from now"
+  },
+  "unread":{
+	"message":"Unread"
+  },
+  "viewcommentfeedbackprompt":{
+	"message":"If viewing comments cannot work properly, please send feedback to us."
+  }
+}
