@@ -1314,11 +1314,15 @@ function createMainContext(window, document, jq) {
 			//use the same values
 			oProperties["_values"] = this.m_oValues;
 
+			//
+			oProperties["_window"] = window;
+			oProperties["_document"] = document;
+
 			//object
 			if (oRuntimeInfo["trackcomments_class"] != null)
-				this.m_nInfo_CurrentParse_Object = new oRuntimeInfo["trackcomments_class"](window, document);
+				this.m_nInfo_CurrentParse_Object = new oRuntimeInfo["trackcomments_class"]();
 			else
-				this.m_nInfo_CurrentParse_Object = new oRuntimeInfoSystem["trackcomments_class"](window, document);
+				this.m_nInfo_CurrentParse_Object = new oRuntimeInfoSystem["trackcomments_class"]();
 
 			//may throw exception
 			try {
@@ -1335,20 +1339,17 @@ function createMainContext(window, document, jq) {
 		this._parseComments_checkResult = function (nPageIndex, oResult) {
 			var oThis = this;
 
-			//let caller to complete first
-			window.setTimeout(function () {
-				//
-				oThis._task_callback(nPageIndex, oResult);
+			//
+			oThis._task_callback(nPageIndex, oResult);
 
-				//clear current parse
-				if (oThis.m_nInfo_CurrentParse_Object != null) {
-					oThis.m_nInfo_CurrentParse_Object.dispose();
-					oThis.m_nInfo_CurrentParse_Object = null;
-				}
+			//clear current parse
+			if (oThis.m_nInfo_CurrentParse_Object != null) {
+				oThis.m_nInfo_CurrentParse_Object.dispose();
+				oThis.m_nInfo_CurrentParse_Object = null;
+			}
 
-				//next parse
-				oThis._parseNext();
-			}, 0);
+			//next parse
+			oThis._parseNext();
 		};
 
 		this._addWaitingTask=function(nPageIndex){
