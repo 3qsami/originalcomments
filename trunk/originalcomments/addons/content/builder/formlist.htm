@@ -276,88 +276,88 @@
 				oFormInfo["FormParam2"] = "";
 				oFormInfo["FormHTM"] = "";
 				oFormInfo["FormXML"] = "\
-<?xml version=\"1.0\" encoding=\"utf-16\"?>\
-<page>\
-	<formForComments>\
-		<trackComments className=\"\" eventClassName=\"\" pageOrderDirection=\"\" reference=\"{B1C8E6FB-C609-49BA-94E5-22F6B84CF93A}\">\
-		</trackComments>\
-		<resource>\
-			<sessions>\
-				<session id=\"trackComments\">\
-					<request method=\"get\">\
-						<url id=\"url\"></url>\
-					</request>\
-					<response>\
-						<matches>\
-							<match id=\"comments\"></match>\
-							<match id=\"totalcount\" onlyOnce=\"true\"></match>\
-							<match id=\"pagecount\" onlyOnce=\"true\"></match>\
-						</matches>\
-					</response>\
-				</session>\
-			</sessions>\
-			<matches>\
-				<match id=\"articleId\">\
-					<regexp>\
-						<![CDATA[\
-						\
-						]]>\
-					</regexp>\
-					<succeeded>\
-						<matches>\
-							<match index=\"1\" name=\"articleId\" />\
-						</matches>\
-					</succeeded>\
-					<failed>\
-						<matches>\
-							<match value=\"\" name=\"articleId\" />\
-						</matches>\
-					</failed>\
-				</match>\
-				<match id=\"comments\" name=\"comments\" loop=\"true\" itemOrderDirection=\"\">\
-					<regexp>\
-						<![CDATA[\
-								\
-						]]>\
-					</regexp>\
-					<succeeded>\
-						<matches>\
-							\
-						</matches>\
-					</succeeded>\
-				</match>\
-				<match id=\"totalcount\">\
-					<regexp>\
-						<![CDATA[\
-							\
-						]]>\
-					</regexp>\
-					<succeeded>\
-						<matches>\
-							<match index=\"1\" name=\"totalcount\" />\
-						</matches>\
-					</succeeded>\
-					<failed>\
-						<matches>\
-							<match value=\"-1\" name=\"totalcount\" />\
-						</matches>\
-					</failed>\
-				</match>\
-				<match id=\"pagecount\" value=\"1\" name=\"pagecount\"></match>\
-			</matches>\
-			<combines>\
-				<combine id=\"url\"><![CDATA[]]></combine>\
-			</combines>\
-		</resource>\
-	</formForComments>\
-</page>\
+<?xml version=\"1.0\" encoding=\"utf-16\"?>\r\n\
+<page>\r\n\
+	<formForComments>\r\n\
+		<trackComments className=\"\" eventClassName=\"\" pageOrderDirection=\"\" reference=\"{B1C8E6FB-C609-49BA-94E5-22F6B84CF93A}\">\r\n\
+		</trackComments>\r\n\
+		<resource>\r\n\
+			<sessions>\r\n\
+				<session id=\"trackComments\">\r\n\
+					<request method=\"get\">\r\n\
+						<url id=\"url\"></url>\r\n\
+					</request>\r\n\
+					<response>\r\n\
+						<matches>\r\n\
+							<match id=\"comments\"></match>\r\n\
+							<match id=\"totalcount\" onlyOnce=\"true\"></match>\r\n\
+							<match id=\"pagecount\" onlyOnce=\"true\"></match>\r\n\
+						</matches>\r\n\
+					</response>\r\n\
+				</session>\r\n\
+			</sessions>\r\n\
+			<matches>\r\n\
+				<match id=\"articleId\">\r\n\
+					<regexp>\r\n\
+						<![CDATA[\r\n\
+							\r\n\
+						]]>\r\n\
+					</regexp>\r\n\
+					<succeeded>\r\n\
+						<matches>\r\n\
+							<match index=\"1\" name=\"articleId\" />\r\n\
+						</matches>\r\n\
+					</succeeded>\r\n\
+					<failed>\r\n\
+						<matches>\r\n\
+							<match value=\"\" name=\"articleId\" />\r\n\
+						</matches>\r\n\
+					</failed>\r\n\
+				</match>\r\n\
+				<match id=\"comments\" name=\"comments\" loop=\"true\" itemOrderDirection=\"\">\r\n\
+					<regexp>\r\n\
+						<![CDATA[\r\n\
+								\r\n\
+						]]>\r\n\
+					</regexp>\r\n\
+					<succeeded>\r\n\
+						<matches>\r\n\
+							\r\n\
+						</matches>\r\n\
+					</succeeded>\r\n\
+				</match>\r\n\
+				<match id=\"totalcount\">\r\n\
+					<regexp>\r\n\
+						<![CDATA[\r\n\
+							\r\n\
+						]]>\r\n\
+					</regexp>\r\n\
+					<succeeded>\r\n\
+						<matches>\r\n\
+							<match index=\"1\" name=\"totalcount\" />\r\n\
+						</matches>\r\n\
+					</succeeded>\r\n\
+					<failed>\r\n\
+						<matches>\r\n\
+							<match value=\"-1\" name=\"totalcount\" />\r\n\
+						</matches>\r\n\
+					</failed>\r\n\
+				</match>\r\n\
+				<match id=\"pagecount\" value=\"1\" name=\"pagecount\"></match>\r\n\
+			</matches>\r\n\
+			<combines>\r\n\
+				<combine id=\"url\"><![CDATA[]]></combine>\r\n\
+			</combines>\r\n\
+		</resource>\r\n\
+	</formForComments>\r\n\
+</page>\r\n\
 				";
-				oFormInfo["FormJS"] = "///////////////////////////////////////////////////////////////\
-////	Track Comments Events -- begin\
-\
-\
-////	Track Comments Events -- end	\
-///////////////////////////////////////////////////////////////\
+				oFormInfo["FormJS"] = "///////////////////////////////////////////////////////////////\r\n\
+////	Track Comments Events -- begin\r\n\
+\r\n\
+\r\n\
+////	Track Comments Events -- end\r\n	\
+///////////////////////////////////////////////////////////////\r\n\
 				";
 
 				//save

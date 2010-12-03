@@ -234,6 +234,9 @@ function createMainContext(window, document, jq) {
 			else if (actionname == "getFollowCommentsAll") {
 				this.m_oFollowManager.getFollowCommentsAll(onresponse);
 			}
+			else if (actionname == "debug_setform") {
+				this.m_oFormManager.debug_setform(params, onresponse);
+			}
 		},
 
 		_checkClient: function (sClientId, callback) {
@@ -1014,6 +1017,58 @@ function createMainContext(window, document, jq) {
 					return;
 				});
 			});
+		};
+
+		this.debug_setform = function (oFormInfoDebug, callback) {
+			var oThis = this;
+
+			var sFormId = oFormInfoDebug["formId"];
+			if (sFormId == "{B1C8E6FB-C609-49BA-94E5-22F6B84CF93A}") {
+				var oFormInfo = new Object();
+
+				oFormInfo["formId"] = sFormId;
+				oFormInfo["formTitle"] = oFormInfoDebug["ItemTitle"];
+				oFormInfo["formVersion"] = oFormInfoDebug["Version"];
+				oFormInfo["formParam2"] = oFormInfoDebug["FormParam2"];
+				oFormInfo["formHTM"] = oFormInfoDebug["FormHTM"];
+				oFormInfo["formXML"] = oFormInfoDebug["FormXML"];
+				oFormInfo["formJS"] = oFormInfoDebug["FormJS"];
+
+				oThis.m_oMapForms[sFormId] = oFormInfo;
+
+				//ok
+				callback(true);
+			}
+			else {
+				var sSystemFormId = oFormInfoDebug["systemFormId"];
+				var sSystemFormVersion = oFormInfoDebug["systemFormVersion"];
+
+				//1. check system form first
+				oThis.formExistsAndValid(sSystemFormId, sSystemFormVersion, function (bSucceeded) {
+					if (!bSucceeded) {
+						callback(false);
+					}
+					else {
+						var oFormInfo = new Object();
+
+						oFormInfo["formId"] = sFormId;
+						oFormInfo["formTitle"] = oFormInfoDebug["ItemTitle"];
+						oFormInfo["formVersion"] = oFormInfoDebug["Version"];
+						oFormInfo["formParam2"] = oFormInfoDebug["FormParam2"];
+						oFormInfo["formHTM"] = oFormInfoDebug["FormHTM"];
+						oFormInfo["formXML"] = oFormInfoDebug["FormXML"];
+						oFormInfo["formJS"] = oFormInfoDebug["FormJS"];
+
+						oFormInfo["systemFormId"] = oFormInfoDebug["systemFormId"];
+						oFormInfo["systemFormVersion"] = oFormInfoDebug["systemFormVersion"];
+
+						oThis.m_oMapForms[sFormId] = oFormInfo;
+
+						//ok
+						callback(true);
+					}
+				});
+			}
 		};
 
 		this._extractFormInfo = function (sResponseText) {
