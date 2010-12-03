@@ -6,9 +6,11 @@ CBase.prototype.getPlatform = function () {
 }
 
 // Helper function to output debug statements
-CBase.prototype.debug = function (msg) {
-	if (this.m_sDebug && console) {
-		console.log(msg);
+CBase.prototype.debug = function (msg, forcedebug) {
+	if (forcedebug === true || this.m_bDebug) {
+		if (console) {
+			console.log(msg);
+		} 
 	}
 };
 
