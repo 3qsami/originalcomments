@@ -78,7 +78,14 @@ function feed_readerOnline_events_viewcomments(window,document,jq) {
 		jq("#cmd_trackComments_img", oCommentsContainer).css("display", "none");
 		jq("#cmd_trackComments", oCommentsContainer).css("display", "none");
 	}
-	
+
+	this.ongetoption = function (e) {
+		var sName = e.name;
+		var oValue = e.value;
+
+		e.returnValue = true;
+		e.cancelBubble = true;
+	}
 }
 
 ////	Reader Online Events -- end	

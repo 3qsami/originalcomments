@@ -18,11 +18,14 @@
 </script>
 
 <script type="text/javascript" src="../../lib/jquery-ui.min.js"></script>
+<script type="text/javascript" src="../../lib/jquery.textarea.js"></script>
 
 <script type="text/javascript" src="../../js/cbase.js"></script>
 <script type="text/javascript" src="../../js/ctools.js"></script>
 <script type="text/javascript" src="../../js/cpage.js"></script>
 
+<script type="text/javascript" src="../../js/ccontent.js"></script>
+<script type="text/javascript" src="../../readeronline/viewcomments.js"></script>
 
 <script type="text/javascript">
 
@@ -34,26 +37,31 @@
 		//cbase
 		var sBaseSrc = String2.format("../../{0}/js/cbase.js", oParts["platform"]);
 		ctools.loadScriptSrc(document, sBaseSrc, function () {
-			//page context
-			createPageContext(window, document, jQuery);
-
-			//ok
-			jQuery(document).ready(function () {
-
-				//
-				jQuery("#tabs").tabs({ selected: 0 });
-
-				//
-				jQuery("#cmd_save").button();
-				jQuery("#cmd_publish").button();
-				jQuery("#cmd_debug").button();
-
-				//
-				g_sFormId = oParts["FormId"];
-				_fillFormInfo();
+			//ccontent
+			var sContentSrc = String2.format("../../{0}/js/ccontent_viewcomments.js", oParts["platform"]);
+			ctools.loadScriptSrc(document, sContentSrc, function () {
+				//page context
+				createPageContext(window, document, jQuery);
 
 				//ok
-				jQuery(document.body).css('visibility', 'visible');
+				jQuery(document).ready(function () {
+
+					//
+					jQuery("#tabs").tabs({ selected: 0 });
+
+					//button
+					jQuery("#cmd_save").button();
+					jQuery("#cmd_publish").button();
+					jQuery("#cmd_debug").button();
+					jQuery("#cmd_runtest").button();
+
+					//
+					g_sFormId = oParts["FormId"];
+					_fillFormInfo();
+
+					//ok
+					jQuery(document.body).css('visibility', 'visible');
+				});
 			});
 		});
 
@@ -87,10 +95,21 @@
 		jQuery("#FormXML").attr("value", oFormInfo["FormXML"]);
 		jQuery("#FormJS").attr("value", oFormInfo["FormJS"]);
 
+		//test reg
+		jQuery("#testreg_regexp").attr("value", oFormInfo["testreg_regexp"]);
+		jQuery("#testreg_result").attr("value", oFormInfo["testreg_result"]);
+		jQuery("#testreg_text").attr("value", oFormInfo["testreg_text"]);
+
+		//debug
+		jQuery("#debug_articlelink").attr("value", oFormInfo["debug_articlelink"]);
+
 		//change
 		jQuery("input,textarea").change(function () {
 			_formInfoModified(true);
 		});
+
+		//tab key
+		jQuery("textarea").tabby();
 	}
 
 	function _formInfoModified(bModified) {
@@ -105,13 +124,7 @@
 		document.title = oFormInfo["ItemTitle"] + " - Form Edit";
 	}
 
-	function onclick_save() {
-		if (String2.isEmpty(g_sFormId))
-			return;
-
-		var oForms = _getOptionsForms();
-		var oFormInfo = oForms[g_sFormId];
-
+	function _combineFormInfo(oFormInfo){
 		//
 		oFormInfo["ItemTitle"] = jQuery("#ItemTitle").attr("value");
 		oFormInfo["Publisher"] = jQuery("#Publisher").attr("value");
@@ -123,6 +136,25 @@
 		oFormInfo["FormJS"] = jQuery("#FormJS").attr("value");
 		oFormInfo["ModifiedTime"] = new Date();
 
+		//
+		oFormInfo["testreg_regexp"] = jQuery("#testreg_regexp").attr("value");
+		oFormInfo["testreg_result"] = jQuery("#testreg_result").attr("value");
+		oFormInfo["testreg_text"] = jQuery("#testreg_text").attr("value");
+
+		//
+		oFormInfo["debug_articlelink"] = jQuery("#debug_articlelink").attr("value");
+	}
+
+	function onclick_save() {
+		if (String2.isEmpty(g_sFormId))
+			return;
+
+		var oForms = _getOptionsForms();
+		var oFormInfo = oForms[g_sFormId];
+
+		//
+		_combineFormInfo(oFormInfo);
+
 		//save
 		_setOptionsForms(oForms);
 
@@ -130,6 +162,118 @@
 
 		//title
 		_upateDocumentTitle(oFormInfo);
+	}
+
+	function onclick_runtest() {
+		var sTest_Text = jQuery("#testreg_text").attr("value");
+		var sTest_RegExp = jQuery("#testreg_regexp").attr("value");
+
+		//
+		jQuery("#testreg_result").attr("value","");
+
+		//
+		var nPos = 0;
+		while (nPos != -1) {
+			nPos = __runtest(sTest_Text, sTest_RegExp, nPos);
+		}
+	}
+
+	function __runtest(sTest_Text, sTest_RegExp,nPosOld) {
+		//line
+		var sLine = "";
+		var sReg = "";
+
+		var nPos = sTest_RegExp.indexOf('\n', nPosOld);
+		if (nPos == -1) {
+			var nLen = sTest_RegExp.length;
+			if (nPosOld >= nLen) {
+				return -1;
+			}
+			else {
+				//line
+				sLine = sTest_RegExp.substr(nPosOld);
+				sReg = sTest_RegExp;
+			}
+		}
+		else {
+			//line
+			sLine = sTest_RegExp.substring(nPosOld, nPos);
+			sReg = sTest_RegExp.substring(0, nPos);
+
+			nPos = nPos + 1;
+		}
+
+		//regexp
+		var sre = __removernt(sReg);
+		var ore = new RegExp(sre, "ig");
+
+		//exec
+		var oArray = ore.exec(sTest_Text);
+		if (oArray == null) {
+			//error
+			var s = String2.format("------- Test Error: {0} -------\r\n", sLine);
+			jQuery("#testreg_result").attr("value", 
+					jQuery("#testreg_result").attr("value") + s);
+		}
+		else {
+			var s = "";
+			for (var i = 1; i < oArray.length; i++) {
+				s += String2.format("{0}: {1}\r\n", i, oArray[i]);
+			}
+			jQuery("#testreg_result").attr("value",s);
+		}
+
+		return nPos;
+	}
+
+	// remove \r\n\t
+	function __removernt(sText) {
+		//trim rnt
+		return sText.replace(/[\r\n\t]/g, "");
+	}
+
+	//
+	function onclick_debug() {
+		//tab index
+		jQuery("#tabs").tabs("option", "selected", 4);
+
+		//link
+		var sLink = jQuery("#debug_articlelink").attr("value");
+		if (String2.isEmpty(sLink)) {
+			//check if system form
+			if (g_sFormId == "{B1C8E6FB-C609-49BA-94E5-22F6B84CF93A}") {
+				//set form first
+				var oFormInfo = new Object();
+				oFormInfo["formId"] = g_sFormId;
+				_combineFormInfo(oFormInfo);
+				cbase.sendmessage("debug_setform", oFormInfo, function (bSucceeded) {
+					if (bSucceeded) {
+						window.alert("System Form takes effect now.");
+					}
+				});
+			}
+		}
+		else {
+			//set form first
+			var oFormInfo = new Object();
+			oFormInfo["formId"] = g_sFormId;
+			oFormInfo["systemFormId"] = "{B1C8E6FB-C609-49BA-94E5-22F6B84CF93A}";
+			oFormInfo["systemFormVersion"] = "";
+			_combineFormInfo(oFormInfo);
+			cbase.sendmessage("debug_setform", oFormInfo, function (bSucceeded) {
+				if (bSucceeded) {
+					//reset article index
+					var nIndex = ccontent.getCurrentArticleIndex();
+					if (nIndex != 0) {
+						ccontent.refreshArticleComments(nIndex);
+					}
+					else {
+						//articleinfo
+						jQuery("#article-title-link").attr("href", sLink).text("Goto Article").attr("_formId", g_sFormId);
+					} 
+				}
+			});
+		}
 	}
 
 	function _getOptionsForms() {
@@ -147,7 +291,7 @@
 </head>
 <body style="visibility:hidden;">
 <div style="float:right;">
-	<button id="cmd_debug" onclick="return onclick_debug();">Debug Form</button><input type="text" id="input_articlelink" size="80" />(Article Link)
+	<button id="cmd_debug" onclick="return onclick_debug();">Debug Form</button><input type="text" id="debug_articlelink" size="80" />(Article Link)
 </div>
 <div style="float:left;">
 	<button id="cmd_save" onclick="return onclick_save();">Save Form</button>
@@ -203,8 +347,33 @@
 		<textarea id="FormJS" style="width:100%;height:500px"></textarea>
 	</div>
 	<div id="tabs-testreg">
+		<div>
+			<button id="cmd_runtest" onclick="return onclick_runtest();">Run Test</button>
+		</div>
+		<table style="width:100%">
+			<tr>
+				<td>
+					<div>Regular Expression</div>
+					<div><textarea id="testreg_regexp" style="width:100%;height:200px"></textarea></div>
+				</td>
+				<td>
+					<div>Test Result</div>
+					<div><textarea id="testreg_result" style="width:100%;height:200px"></textarea></div>
+				</td>
+			</tr>
+			<tr>
+				<td colspan="2">
+					<div>Text</div>
+					<div><textarea id="testreg_text" style="width:100%;height:300px"></textarea></div>
+				</td>
+			</tr>
+		</table>
 	</div>
 	<div id="tabs-debugresult">
+		<div id="current-article">
+			<div style="font-weight:bolder;"><a id="article-title-link" href="" target="_blank"></a></div>
+			<div id="article-body"></div>
+		</div>
 	</div>
 	
 </div>

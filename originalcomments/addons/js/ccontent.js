@@ -96,6 +96,20 @@ function createContentContext(window, document, jq) {
 
 			oThis.m_oOptions = null;
 			oThis.m_oContentHost = null;
+		},
+
+		refreshArticleComments: function (nIndex) {
+			if (this.m_oFeedToolsSystem != null) {
+				this.m_oFeedToolsSystem.refreshArticleComments(nIndex);
+			}
+		},
+		getCurrentArticleIndex: function () {
+			if (this.m_oFeedToolsSystem != null) {
+				return this.m_oFeedToolsSystem.getCurrentArticleIndex();
+			}
+			else {
+				return 0;
+			}
 		}
 
 	};
@@ -135,6 +149,8 @@ function feed_tools_system(window, document, jq) {
 	this._tryconfig = __tryconfig;
 	this._getcommentscontainer = __getcommentscontainer;
 	this._setcomments = __setcomments;
+	this.refreshArticleComments = __refreshArticleComments;
+	this.getCurrentArticleIndex = __getCurrentArticleIndex;
 
 	//2010.08.03
 	this._autotrack_getcommentsparams_trackurl = __autotrack_getcommentsparams_trackurl;
@@ -543,7 +559,16 @@ function feed_tools_system(window, document, jq) {
 	}
 
 	function __autotrack_enabled() {
-		return this._oContent.m_oOptions["autoview_enabled"];
+		//raise event of ongetoption
+		var oEvent = this._createevent();
+		oEvent.name = "autoview_enabled";
+		oEvent.value = this._oContent.m_oOptions["autoview_enabled"];
+
+		this._fireevent("ongetoption", oEvent);
+		if (oEvent.cancelBubble)
+			return oEvent.returnValue;
+		else
+			return oEvent.value;
 	}
 
 	function __autotrack_height() {
@@ -948,11 +973,12 @@ function feed_tools_system(window, document, jq) {
 		});
 	}
 
-	function __pimshell_click_refresh(event) {
-		var oThis = this;
+	function __getCurrentArticleIndex() {
+		return this._nCurrentArticleIndex;
+	}
 
-		var oElement = ctools.getEventElement(event);
-		var nIndex = oElement.getAttribute("_index");
+	function __refreshArticleComments(nIndex) {
+		var oThis = this;
 
 		//
 		var oEntity = this._oMapForArticles[nIndex];
@@ -962,7 +988,15 @@ function feed_tools_system(window, document, jq) {
 		cbase.sendmessage("clearArticleComments", nIndex, function () {
 			oThis._autotrack_parsepage(oEntity, 1, true);
 		});
+	}
 
+	function __pimshell_click_refresh(event) {
+		var oThis = this;
+
+		var oElement = ctools.getEventElement(event);
+		var nIndex = oElement.getAttribute("_index");
+
+		oThis.refreshArticleComments(nIndex);
 	}
 
 	function __pimshell_click_showPage(event) {
@@ -1136,6 +1170,13 @@ function feed_readerOnline_events_system(window, document, jq) {
 //					commentscontainer
 //					entity
 
+//5.
+//	name:			ongetoption
+//	attributes:		
+//					name
+//					value
+//	returnValue:	return option value
+//	cancelBubble:	if succeeded then return true
 
 ////	All Events -- end	
 ///////////////////////////////////////////////////////////////
