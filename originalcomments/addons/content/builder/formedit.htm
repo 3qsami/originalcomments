@@ -1,0 +1,213 @@
+<html>
+<head>
+<title>Form Edit</title>
+<link type="text/css" rel="Stylesheet" href="../../style/main.css" />
+<link type="text/css" rel="Stylesheet" href="../../style/ui-lightness/jquery-ui.css" />
+<style type="text/css">
+.fieldname
+{
+	font-weight:bold;	
+}
+</style>
+
+<script type="text/javascript" src="../../lib/jquery.min.js"></script>
+
+<script type="text/javascript">
+	//jq
+	var jQuery = createJQuery(window);
+</script>
+
+<script type="text/javascript" src="../../lib/jquery-ui.min.js"></script>
+
+<script type="text/javascript" src="../../js/cbase.js"></script>
+<script type="text/javascript" src="../../js/ctools.js"></script>
+<script type="text/javascript" src="../../js/cpage.js"></script>
+
+
+<script type="text/javascript">
+
+	//
+	(function () {
+		//url
+		var oParts = ctools.splitURL(document.URL);
+
+		//cbase
+		var sBaseSrc = String2.format("../../{0}/js/cbase.js", oParts["platform"]);
+		ctools.loadScriptSrc(document, sBaseSrc, function () {
+			//page context
+			createPageContext(window, document, jQuery);
+
+			//ok
+			jQuery(document).ready(function () {
+
+				//
+				jQuery("#tabs").tabs({ selected: 0 });
+
+				//
+				jQuery("#cmd_save").button();
+				jQuery("#cmd_publish").button();
+				jQuery("#cmd_debug").button();
+
+				//
+				g_sFormId = oParts["FormId"];
+				_fillFormInfo();
+
+				//ok
+				jQuery(document.body).css('visibility', 'visible');
+			});
+		});
+
+	})();
+
+</script>
+<script type="text/javascript">
+	var g_sFormId = "";
+
+	function _fillFormInfo() {
+		if (String2.isEmpty(g_sFormId))
+			return;
+
+		var oForms = _getOptionsForms();
+		var oFormInfo = oForms[g_sFormId];
+
+		//title
+		_upateDocumentTitle(oFormInfo);
+
+		//properties
+		jQuery("#Version").text(oFormInfo["Version"]);
+		jQuery("#ReleaseTime").text(new Date(oFormInfo["ReleaseTime"]).toDateString());
+		jQuery("#ItemTitle").attr("value", oFormInfo["ItemTitle"]);
+		jQuery("#Publisher").attr("value", oFormInfo["Publisher"]);
+		jQuery("#Email").attr("value", oFormInfo["Email"]);
+		jQuery("#Homepage").attr("value", oFormInfo["Homepage"]);
+		jQuery("#FormParam1").attr("value", oFormInfo["FormParam1"]);
+		jQuery("#Description").attr("value", oFormInfo["Description"]);
+
+		//xml js
+		jQuery("#FormXML").attr("value", oFormInfo["FormXML"]);
+		jQuery("#FormJS").attr("value", oFormInfo["FormJS"]);
+
+		//change
+		jQuery("input,textarea").change(function () {
+			_formInfoModified(true);
+		});
+	}
+
+	function _formInfoModified(bModified) {
+		if (bModified) {
+			jQuery("#cmd_save").button("option", "label", "* " + "Save Form");
+		}
+		else {
+			jQuery("#cmd_save").button("option", "label", "Save Form");
+		}
+	}
+	function _upateDocumentTitle(oFormInfo) {
+		document.title = oFormInfo["ItemTitle"] + " - Form Edit";
+	}
+
+	function onclick_save() {
+		if (String2.isEmpty(g_sFormId))
+			return;
+
+		var oForms = _getOptionsForms();
+		var oFormInfo = oForms[g_sFormId];
+
+		//
+		oFormInfo["ItemTitle"] = jQuery("#ItemTitle").attr("value");
+		oFormInfo["Publisher"] = jQuery("#Publisher").attr("value");
+		oFormInfo["Email"] = jQuery("#Email").attr("value");
+		oFormInfo["Homepage"] = jQuery("#Homepage").attr("value");
+		oFormInfo["FormParam1"] = jQuery("#FormParam1").attr("value");
+		oFormInfo["Description"] = jQuery("#Description").attr("value");
+		oFormInfo["FormXML"] = jQuery("#FormXML").attr("value");
+		oFormInfo["FormJS"] = jQuery("#FormJS").attr("value");
+		oFormInfo["ModifiedTime"] = new Date();
+
+		//save
+		_setOptionsForms(oForms);
+
+		_formInfoModified(false);
+
+		//title
+		_upateDocumentTitle(oFormInfo);
+	}
+
+	function _getOptionsForms() {
+		var oForms = cbase.getoption("builder.forms", null);
+		if (oForms == null) {
+			oForms = new Object();
+		}
+		return oForms;
+	}
+	function _setOptionsForms(oForms) {
+		cbase.setoption("builder.forms", oForms);
+	}
+
+</script>
+</head>
+<body style="visibility:hidden;">
+<div style="float:right;">
+	<button id="cmd_debug" onclick="return onclick_debug();">Debug Form</button><input type="text" id="input_articlelink" size="80" />(Article Link)
+</div>
+<div style="float:left;">
+	<button id="cmd_save" onclick="return onclick_save();">Save Form</button>
+	<button id="cmd_publish" onclick="return onclick_publish();">Publish Form</button>
+</div>
+<div id="tabs" style="clear:both;">
+	<ul>
+		<li><a id="tabaction-properties" href="#tabs-properties">Properties</a></li>
+		<li><a id="tabaction-xml" href="#tabs-xml">XML</a></li>
+		<li><a id="tabaction-js" href="#tabs-js">JS</a></li>
+		<li><a id="tabaction-testreg" href="#tabs-testreg">Test Regexp</a></li>
+		<li><a id="tabaction-debugresult" href="#tabs-debugresult">Debug Result</a></li>
+	</ul>
+	
+	<div id="tabs-properties">
+		<table>
+			<tr>
+                <td nowrap class="fieldname">Version</td>
+                <td><span id="Version"></span></td>
+				<td nowrap class="fieldname">Release Time</td>
+                <td><span id="ReleaseTime"></span></td>
+            </tr>
+			<tr>
+                <td nowrap class="fieldname">Title</td>
+                <td colspan="3"><input type="text" id="ItemTitle" style="width:500px;" /></td>
+            </tr>
+			<tr>
+                <td nowrap class="fieldname">Publisher</td>
+                <td><input type="text" id="Publisher" size="20" /></td>
+				<td nowrap class="fieldname">Email</td>
+                <td><input type="text" id="Email" size="20" /></td>
+            </tr>
+            
+            <tr>
+                <td nowrap class="fieldname">Homepage</td>
+                <td colspan="3"><input type="text" id="Homepage" style="width:500px;" /></td>
+            </tr>
+            <tr>
+                <td nowrap class="fieldname">Match Pattern</td>
+                <td colspan="3"><input type="text" id="FormParam1" style="width:500px;" /></td>
+            </tr>
+  
+            <tr>
+                <td nowrap class="fieldname">Description</td>
+                <td colspan="3"><textarea id="Description" rows=3 style="width:500px;"></textarea></td>
+            </tr>
+        </table>
+	</div>
+	<div id="tabs-xml">
+		<textarea id="FormXML" style="width:100%;height:500px"></textarea>
+	</div>
+	<div id="tabs-js">
+		<textarea id="FormJS" style="width:100%;height:500px"></textarea>
+	</div>
+	<div id="tabs-testreg">
+	</div>
+	<div id="tabs-debugresult">
+	</div>
+	
+</div>
+
+</body>
+</html>

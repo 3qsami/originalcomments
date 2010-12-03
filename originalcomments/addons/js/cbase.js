@@ -7,7 +7,7 @@
 
 // Helper function to output debug statements
 function CBase() {
-	this.m_sDebug = true;
+	this.m_bDebug = true;
 	this.m_sNotImpl = "Not Impl";
 };
 
@@ -27,7 +27,7 @@ CBase.prototype.notimpl = function (what) {
 }
 
 // Helper function to output debug statements
-CBase.prototype.debug = function (msg) {
+CBase.prototype.debug = function (msg,forcedebug) {
 	this.notimpl("CBase.prototype.debug");
 };
 

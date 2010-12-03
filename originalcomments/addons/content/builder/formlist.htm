@@ -1,0 +1,421 @@
+<html>
+<head>
+	<title>Form List</title>
+	<link type="text/css" rel="Stylesheet" href="../../style/main.css" />
+	<link type="text/css" rel="Stylesheet" href="../../style/ui-lightness/jquery-ui.css" />
+	<script type="text/javascript" src="../../lib/jquery.min.js"></script>
+	<script type="text/javascript">
+		//jq
+		var jQuery = createJQuery(window);
+</script>
+	<script type="text/javascript" src="../../lib/jquery-ui.min.js"></script>
+	<script type="text/javascript" src="../../js/cbase.js"></script>
+	<script type="text/javascript" src="../../js/ctools.js"></script>
+	<script type="text/javascript" src="../../js/cpage.js"></script>
+	<script type="text/javascript">
+
+		//
+		(function () {
+			//url
+			var oParts = ctools.splitURL(document.URL);
+
+			//cbase
+			var sBaseSrc = String2.format("../../{0}/js/cbase.js", oParts["platform"]);
+			ctools.loadScriptSrc(document, sBaseSrc, function () {
+				//page context
+				createPageContext(window, document, jQuery);
+
+				//ok
+				jQuery(document).ready(function () {
+
+					//
+					jQuery("#cmd_new").button();
+					jQuery("#cmd_import").button();
+
+					//
+					_fillformlist();
+
+					//ok
+					jQuery(document.body).css('visibility', 'visible');
+				});
+			});
+
+		})();
+
+
+		function _getFieldValueForForm(oNodeFields, sFieldName) {
+			var s = String2.format("field[@name=\"{0}\"]", sFieldName);
+			return ctools.getNodeText(ctools.selectSingleNode(oNodeFields, s));
+		}
+
+		function _getOptionsForms() {
+			var oForms = cbase.getoption("builder.forms", null);
+			if (oForms == null) {
+				oForms = new Object();
+			}
+			return oForms;
+		}
+		function _setOptionsForms(oForms) {
+			cbase.setoption("builder.forms", oForms);
+		}
+
+		function _importFromPXML(sResponseText) {
+			var oForms = _getOptionsForms();
+			var bChanged = false;
+
+			//
+			var oRoot = ctools.nodeFromXML(sResponseText);
+			if (oRoot != null) {
+				var oNodeItems = ctools.selectSingleNode(oRoot, "plugins/plugin[@guid=\"{00000000-0000-0000-0002-000000000008}\"]/entities/entity[@index=\"0\"]/items");
+				if (oNodeItems != null) {
+					//loop
+					var oNodeItem = oNodeItems.firstChild;
+					while (oNodeItem != null) {
+						if (oNodeItem.nodeName == "item") {
+							var oNodeFields = ctools.selectSingleNode(oNodeItem, "fields");
+							if (oNodeFields != null) {
+								//formId
+								var sFormId = oNodeItem.getAttribute("itemId");
+								var sFormVersion = _getFieldValueForForm(oNodeFields, "Version");
+
+								//check form exsis and old
+								var oFormInfo = oForms[sFormId];
+								if (oFormInfo == null || oFormInfo["Version"].toString() < sFormVersion) {
+									if (oFormInfo == null) {
+										oFormInfo = new Object();
+										oFormInfo["CreateTime"] = new Date();
+
+										oForms[sFormId] = oFormInfo;
+									}
+
+									oFormInfo["formId"] = sFormId;
+
+									oFormInfo["ItemTitle"] = _getFieldValueForForm(oNodeFields, "ItemTitle");
+									oFormInfo["ModifiedTime"] = new Date();
+									oFormInfo["Version"] = sFormVersion;
+									oFormInfo["ReleaseTime"] = _getFieldValueForForm(oNodeFields, "ReleaseTime");
+									oFormInfo["Publisher"] = _getFieldValueForForm(oNodeFields, "Publisher");
+									oFormInfo["Email"] = _getFieldValueForForm(oNodeFields, "Email");
+									oFormInfo["Homepage"] = _getFieldValueForForm(oNodeFields, "Homepage");
+									oFormInfo["Description"] = _getFieldValueForForm(oNodeFields, "Description");
+									oFormInfo["FormType"] = _getFieldValueForForm(oNodeFields, "FormType");
+									oFormInfo["FormParam1"] = _getFieldValueForForm(oNodeFields, "FormParam1");
+									oFormInfo["FormParam2"] = _getFieldValueForForm(oNodeFields, "FormParam2");
+									oFormInfo["FormHTM"] = _getFieldValueForForm(oNodeFields, "FormHTM");
+									oFormInfo["FormXML"] = _getFieldValueForForm(oNodeFields, "FormXML");
+									oFormInfo["FormJS"] = _getFieldValueForForm(oNodeFields, "FormJS");
+
+									//
+									bChanged = true;
+								}
+							}
+						}
+
+						//next
+						oNodeItem = oNodeItem.nextSibling;
+					}
+				}
+			}
+
+			if (bChanged) {
+				_setOptionsForms(oForms);
+				_fillformlist(oForms);
+			}
+
+			//
+			window.alert("Import completed!");
+		}
+
+		function _fillformlist(oForms) {
+			if(oForms==null)
+				oForms = _getOptionsForms();
+
+			//order by ModifiedTime desc
+			var oArray = new Array();
+			for (var sFormId in oForms) {
+				oArray.push(sFormId);
+			}
+			//desc
+			oArray.sort(function (x, y) {
+				var a = new Date(oForms[x]["ModifiedTime"]);
+				var b = new Date(oForms[y]["ModifiedTime"]);
+				return a == b ? 0 : (a > b ? -1 : 1);
+			});
+
+			//subscriptions
+			var sHtml = "";
+
+			//loop
+			for (var i = 0; i < oArray.length; i++) {
+				var sFormId = oArray[i];
+				var oFollowInfo = oForms[sFormId];
+
+				var s = String2.format("<h4 _formId='{0}' id='accordion-subscriptions-{0}'><div style='max-width:600px;display:block;overflow:hidden;white-space:nowrap;'>\
+											<a href='#' onclick='return onclick_edit(event,\"{0}\");' title='{1}' style='margin-right:4px;'><img border='0' src='{2}' /></a>\
+											<a href='#' onclick='return onclick_clone(event,\"{0}\");' title='{3}' style='margin-right:4px;'><img border='0' src='{4}' /></a>\
+											<a href='#' onclick='return onclick_delete(event,\"{0}\");' title='{5}' style='margin-right:4px;'><img border='0' src='{6}' /></a>\
+											<span>{7}</span>\
+											</div></h4>",
+											sFormId,
+											'Edit',
+											cbase.getURL("addons/images/edit.gif"),
+											'Clone',
+											cbase.getURL("addons/images/copy.ico"),
+											'Delete',
+											cbase.getURL("addons/images/itemdelete.ico"),
+											oFollowInfo["ItemTitle"]
+											);
+
+				sHtml += s;
+			}
+
+			//force destroy old node
+			jQuery("#formlist").remove();
+
+			//formlist
+			if (sHtml != "") {
+				//create
+				var oDivFormList = document.createElement("div");
+				oDivFormList.id = "formlist";
+				jQuery("#container_formlist").append(oDivFormList);
+
+				//content
+				jQuery(oDivFormList).html(sHtml);
+			}
+
+			//
+			jQuery("#formlistStat").text(oArray.length);
+		}
+	</script>
+	<script type="text/javascript">
+
+	function onclick_edit(event, sFormId) {
+		var sURL = String2.format("{0}?platform=chrome&FormId={1}",
+										cbase.getURL("addons/content/builder/formedit.htm"), sFormId);
+		cbase.newTab(sURL, true);
+	}
+	function onclick_clone(event, sFormIdSource) {
+		//create guid
+		_createguid(function (sFormId) {
+			if (!String2.isEmpty(sFormId)) {
+				var oForms = _getOptionsForms();
+				var oFormInfoSource = oForms[sFormIdSource];
+
+				//new
+				oFormInfo = new Object();
+				oFormInfo["CreateTime"] = new Date();
+
+				oForms[sFormId] = oFormInfo;
+
+				//info
+				oFormInfo["formId"] = sFormId;
+
+				oFormInfo["ItemTitle"] = "Clone " + oFormInfoSource["ItemTitle"];
+				oFormInfo["ModifiedTime"] = new Date();
+				oFormInfo["Version"] = "1.0.0.0";
+				oFormInfo["ReleaseTime"] = new Date();
+				oFormInfo["Publisher"] = oFormInfoSource["Publisher"];
+				oFormInfo["Email"] = oFormInfoSource["Email"];
+				oFormInfo["Homepage"] = oFormInfoSource["Homepage"];
+				oFormInfo["Description"] = oFormInfoSource["Description"];
+				oFormInfo["FormType"] = oFormInfoSource["FormType"];
+				oFormInfo["FormParam1"] = "";
+				oFormInfo["FormParam2"] = oFormInfoSource["FormParam2"];
+				oFormInfo["FormHTM"] = oFormInfoSource["FormHTM"];
+				oFormInfo["FormXML"] = oFormInfoSource["FormXML"];
+				oFormInfo["FormJS"] = oFormInfoSource["FormJS"];
+
+				//save
+				_setOptionsForms(oForms);
+
+				//refresh
+				_fillformlist(oForms);
+
+				//open
+				onclick_edit(null, sFormId);
+			}
+		});
+	}
+	function onclick_delete(event, sFormId) {
+		if (window.confirm("Are you sure you want to delete this form?")) {
+			//
+			var oForms = _getOptionsForms();
+			delete oForms[sFormId];
+			_setOptionsForms(oForms);
+
+			//refresh
+			_fillformlist(oForms);
+		}
+	}
+	function onclick_new() {
+		//create guid
+		_createguid(function (sFormId) {
+			if (!String2.isEmpty(sFormId)) {
+				//
+				var oForms = _getOptionsForms();
+
+				//new
+				oFormInfo = new Object();
+				oFormInfo["CreateTime"] = new Date();
+
+				oForms[sFormId] = oFormInfo;
+
+				//info
+				oFormInfo["formId"] = sFormId;
+
+				oFormInfo["ItemTitle"] = "New Form";
+				oFormInfo["ModifiedTime"] = new Date();
+				oFormInfo["Version"] = "1.0.0.0";
+				oFormInfo["ReleaseTime"] = new Date();
+				oFormInfo["Publisher"] = "";
+				oFormInfo["Email"] = "";
+				oFormInfo["Homepage"] = "";
+				oFormInfo["Description"] = "";
+				oFormInfo["FormType"] = "{C127CD9B-8059-4B0C-BD7B-077EA300073C}";
+				oFormInfo["FormParam1"] = "";
+				oFormInfo["FormParam2"] = "";
+				oFormInfo["FormHTM"] = "";
+				oFormInfo["FormXML"] = "\
+<?xml version=\"1.0\" encoding=\"utf-16\"?>\
+<page>\
+	<formForComments>\
+		<trackComments className=\"\" eventClassName=\"\" pageOrderDirection=\"\" reference=\"{B1C8E6FB-C609-49BA-94E5-22F6B84CF93A}\">\
+		</trackComments>\
+		<resource>\
+			<sessions>\
+				<session id=\"trackComments\">\
+					<request method=\"get\">\
+						<url id=\"url\"></url>\
+					</request>\
+					<response>\
+						<matches>\
+							<match id=\"comments\"></match>\
+							<match id=\"totalcount\" onlyOnce=\"true\"></match>\
+							<match id=\"pagecount\" onlyOnce=\"true\"></match>\
+						</matches>\
+					</response>\
+				</session>\
+			</sessions>\
+			<matches>\
+				<match id=\"articleId\">\
+					<regexp>\
+						<![CDATA[\
+						\
+						]]>\
+					</regexp>\
+					<succeeded>\
+						<matches>\
+							<match index=\"1\" name=\"articleId\" />\
+						</matches>\
+					</succeeded>\
+					<failed>\
+						<matches>\
+							<match value=\"\" name=\"articleId\" />\
+						</matches>\
+					</failed>\
+				</match>\
+				<match id=\"comments\" name=\"comments\" loop=\"true\" itemOrderDirection=\"\">\
+					<regexp>\
+						<![CDATA[\
+								\
+						]]>\
+					</regexp>\
+					<succeeded>\
+						<matches>\
+							\
+						</matches>\
+					</succeeded>\
+				</match>\
+				<match id=\"totalcount\">\
+					<regexp>\
+						<![CDATA[\
+							\
+						]]>\
+					</regexp>\
+					<succeeded>\
+						<matches>\
+							<match index=\"1\" name=\"totalcount\" />\
+						</matches>\
+					</succeeded>\
+					<failed>\
+						<matches>\
+							<match value=\"-1\" name=\"totalcount\" />\
+						</matches>\
+					</failed>\
+				</match>\
+				<match id=\"pagecount\" value=\"1\" name=\"pagecount\"></match>\
+			</matches>\
+			<combines>\
+				<combine id=\"url\"><![CDATA[]]></combine>\
+			</combines>\
+		</resource>\
+	</formForComments>\
+</page>\
+				";
+				oFormInfo["FormJS"] = "///////////////////////////////////////////////////////////////\
+////	Track Comments Events -- begin\
+\
+\
+////	Track Comments Events -- end	\
+///////////////////////////////////////////////////////////////\
+				";
+
+				//save
+				_setOptionsForms(oForms);
+
+				//refresh
+				_fillformlist(oForms);
+
+				//open
+				onclick_edit(null, sFormId);
+			}
+		});
+		
+		return false;
+	}
+	function onclick_import() {
+		var sFormId = window.prompt("Please specify the Form Id", "");
+		if (sFormId == "")
+			return false;
+
+		var sURL;
+		if (sFormId.indexOf(".pxml") > -1)
+			sURL = sFormId;
+		else
+			sURL = String2.format("http://www.pimshell.com/formgallery/Download.aspx?FormId={0}", sFormId);
+
+		var oParams = new Object();
+		oParams["noCache"] = true;
+		XMLHttpManager.openRequest2(sURL, oParams, function (oRequest) {
+			//
+			if (oRequest.status == 200) {
+				_importFromPXML(oRequest.responseText);
+			}
+		});
+
+		return false;
+	}
+
+	function _createguid(callback) {
+		XMLHttpManager.openRequest2("http://www.pimshell.com/formgallery/WebCalls.aspx?action=createguid", null, function (oRequest) {
+			if (oRequest.status != 200) {
+				callback(null);
+			}
+			else {
+				callback(oRequest.responseText);
+			}
+		});
+	}
+
+</script>
+</head>
+<body style="visibility: hidden;">
+	<div style="float: right; width: 400px;">
+		<button id="cmd_new" onclick="return onclick_new();">New Form</button>
+		<button id="cmd_import" onclick="return onclick_import();">Import</button>
+	</div>
+	<div style="clear: both; margin-left: 100px;" id="container_formlist">
+		<div style="font-size:20px;">Form Count:<span id="formlistStat"></span></div>
+	</div>
+</body>
+</html>
