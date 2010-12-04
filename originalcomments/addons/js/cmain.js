@@ -1135,7 +1135,8 @@ function createMainContext(window, document, jq) {
 		this.m_sArticleLink='';
 		this.m_sFormId='';
 		this.m_sPageOrderDirection='';
-		this.m_sCacheMode='';
+		this.m_sCacheMode = '';
+		this.m_bDebug_Enabled = false;
 
 
 		this.m_oValues=new Object();
@@ -1162,7 +1163,8 @@ function createMainContext(window, document, jq) {
 		this.init=function(oParams){
 			this.m_sArticleTitle=oParams["articleTitle"];
 			this.m_sArticleLink=oParams["articleLink"];
-			this.m_sFormId=oParams["formId"];
+			this.m_sFormId = oParams["formId"];
+			this.m_bDebug_Enabled = oParams["debug_enabled"];
 
 			var oRuntimeInfo = this.m_oMain.m_oFormManager.getRuntimeFormInfo(this.m_sFormId);
 			if(oRuntimeInfo!=null){
@@ -1344,6 +1346,7 @@ function createMainContext(window, document, jq) {
 			oProperties["itemTitle"] = this.m_sArticleTitle;
 			oProperties["itemLink"] = this.m_sArticleLink;
 			oProperties["formId"] = this.m_sFormId;
+			oProperties["_debug_enabled"] = this.m_bDebug_Enabled;
 
 			var oRuntimeInfo = this.m_oMain.m_oFormManager.getRuntimeFormInfo(this.m_sFormId);
 

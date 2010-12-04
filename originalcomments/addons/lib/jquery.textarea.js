@@ -25,57 +25,57 @@
  
 // create closure
 
-(function($) {
+(function(jQuery) {
  
 	// plugin definition
 
-	$.fn.tabby = function(options) {
+	jQuery.fn.tabby = function(options) {
 		//debug(this);
 		// build main options before element iteration
-		var opts = $.extend({}, $.fn.tabby.defaults, options);
-		var pressed = $.fn.tabby.pressed; 
+		var opts = jQuery.extend({}, jQuery.fn.tabby.defaults, options);
+		var pressed = jQuery.fn.tabby.pressed; 
 		
 		// iterate and reformat each matched element
 		return this.each(function() {
-			$this = $(this);
+			jQuerythis = jQuery(this);
 			
 			// build element specific options
-			var options = $.meta ? $.extend({}, opts, $this.data()) : opts;
+			var options = jQuery.meta ? jQuery.extend({}, opts, jQuerythis.data()) : opts;
 			
-			$this.bind('keydown',function (e) {
-				var kc = $.fn.tabby.catch_kc(e);
+			jQuerythis.bind('keydown',function (e) {
+				var kc = jQuery.fn.tabby.catch_kc(e);
 				if (16 == kc) pressed.shft = true;
 				/*
 				because both CTRL+TAB and ALT+TAB default to an event (changing tab/window) that 
 				will prevent js from capturing the keyup event, we'll set a timer on releasing them.
 				*/
-				if (17 == kc) {pressed.ctrl = true;	setTimeout("$.fn.tabby.pressed.ctrl = false;",1000);}
-				if (18 == kc) {pressed.alt = true; 	setTimeout("$.fn.tabby.pressed.alt = false;",1000);}
+				if (17 == kc) {pressed.ctrl = true;	setTimeout("jQuery.fn.tabby.pressed.ctrl = false;",1000);}
+				if (18 == kc) {pressed.alt = true; 	setTimeout("jQuery.fn.tabby.pressed.alt = false;",1000);}
 					
 				if (9 == kc && !pressed.ctrl && !pressed.alt) {
 					e.preventDefault; // does not work in O9.63 ??
-					pressed.last = kc;	setTimeout("$.fn.tabby.pressed.last = null;",0);
-					process_keypress ($(e.target).get(0), pressed.shft, options);
+					pressed.last = kc;	setTimeout("jQuery.fn.tabby.pressed.last = null;",0);
+					process_keypress (jQuery(e.target).get(0), pressed.shft, options);
 					return false;
 				}
 				
 			}).bind('keyup',function (e) {
-				if (16 == $.fn.tabby.catch_kc(e)) pressed.shft = false;
+				if (16 == jQuery.fn.tabby.catch_kc(e)) pressed.shft = false;
 			}).bind('blur',function (e) { // workaround for Opera -- http://www.webdeveloper.com/forum/showthread.php?p=806588
-				if (9 == pressed.last) $(e.target).one('focus',function (e) {pressed.last = null;}).get(0).focus();
+				if (9 == pressed.last) jQuery(e.target).one('focus',function (e) {pressed.last = null;}).get(0).focus();
 			});
 		
 		});
 	};
 	
 	// define and expose any extra methods
-	$.fn.tabby.catch_kc = function(e) { return e.keyCode ? e.keyCode : e.charCode ? e.charCode : e.which; };
-	$.fn.tabby.pressed = {shft : false, ctrl : false, alt : false, last: null};
+	jQuery.fn.tabby.catch_kc = function(e) { return e.keyCode ? e.keyCode : e.charCode ? e.charCode : e.which; };
+	jQuery.fn.tabby.pressed = {shft : false, ctrl : false, alt : false, last: null};
 	
 	// private function for debugging
-	function debug($obj) {
+	function debug(jQueryobj) {
 		if (window.console && window.console.log)
-		window.console.log('textarea count: ' + $obj.size());
+		window.console.log('textarea count: ' + jQueryobj.size());
 	};
 
 	function process_keypress (o,shft,options) {
@@ -92,7 +92,7 @@
 	}
 	
 	// plugin defaults
-	$.fn.tabby.defaults = {tabString : String.fromCharCode(9)};
+	jQuery.fn.tabby.defaults = {tabString : String.fromCharCode(9)};
 	
 	function gecko_tab (o, shft, options) {
 		var ss = o.selectionStart;
@@ -216,8 +216,8 @@
 				end_range.setEndPoint("StartToEnd", before_range);
 				var end_text = end_range.text; // we can accurately calculate distance to the end because we're not worried about MSIE trimming a \r\n
 								
-				var check_html = $(o).html();
-				$("#r3").text(before_len + " + " + selection_len + " + " + after_text.length + " = " + check_html.length);				
+				var check_html = jQuery(o).html();
+				jQuery("#r3").text(before_len + " + " + selection_len + " + " + after_text.length + " = " + check_html.length);				
 				if((before_len + end_text.length) < check_html.length) {
 					before_arr.push("");
 					before_len += 2; // for the \r\n that was trimmed	
