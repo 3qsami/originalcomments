@@ -83,8 +83,14 @@ function feed_readerOnline_events_viewcomments(window,document,jq) {
 		var sName = e.name;
 		var oValue = e.value;
 
-		e.returnValue = true;
-		e.cancelBubble = true;
+		if (sName == "autoview_enabled") {
+			e.returnValue = true;
+			e.cancelBubble = true;
+		}
+		else if (sName == "debug_enabled") {
+			e.returnValue = true;
+			e.cancelBubble = true;
+		}
 	}
 }
 

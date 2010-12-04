@@ -19,7 +19,6 @@
 
 <script type="text/javascript" src="../../lib/jquery-ui.min.js"></script>
 <script type="text/javascript" src="../../lib/jquery.textarea.js"></script>
-<script type="text/javascript" src="../../lib/jquery.hotkeys.js"></script>
 
 <script type="text/javascript" src="../../js/cbase.js"></script>
 <script type="text/javascript" src="../../js/ctools.js"></script>
@@ -57,7 +56,8 @@
 					jQuery("#cmd_runtest").button();
 
 					//hotkeys
-					jQuery.hotkeys.add('ctrl+s',onhotkeys_save);
+					//		not use jQuery.hotkeys.add, otherwise tabby cannot work
+					jQuery(document).bind("keydown", onhotkeys_save);
 
 					//
 					g_sFormId = oParts["FormId"];
@@ -151,8 +151,12 @@
 		oFormContent["debug_articlelink"] = jQuery("#debug_articlelink").attr("value");
 	}
 
-	function onhotkeys_save() {
-		onclick_save();
+	function onhotkeys_save(event) {
+		var code = event.which ? event.which : event.keyCode;
+		if (String.fromCharCode(code).toLowerCase() == 's' && event.ctrlKey) {
+			onclick_save();
+			return false;
+		}
 	}
 	function onclick_save() {
 		if (String2.isEmpty(g_sFormId))
@@ -175,14 +179,12 @@
 		_upateDocumentTitle(oFormInfo);
 	}
 
-	function onclick_publish() {
-		if (String2.isEmpty(g_sFormId))
-			return;
-
+	function _publishForm(callback) {
 		//check if signed
 		XMLHttpManager.openRequest2("http://www.pimshell.com/formgallery/WebCalls.aspx?action=checkloginstatus", null, function (oRequest) {
 			if (oRequest.status != 200) {
 				window.alert("Cannot check your login status.");
+				callback(false);
 			}
 			else {
 				var sStatus = oRequest.responseText;
@@ -190,6 +192,8 @@
 					if (window.confirm("You must login in first. Do you login in now?")) {
 						cbase.newTab("http://www.pimshell.com/formgallery/signin.aspx", true);
 					}
+
+					callback(false);
 				}
 				else {
 
@@ -233,13 +237,27 @@
 					XMLHttpManager.openRequest2("http://www.pimshell.com/formgallery/Post.aspx", oParams, function (oRequest) {
 						if (oRequest.status != 200) {
 							window.alert("Failed to publish form.");
+							callback(false);
 						}
 						else {
 							window.alert("Thanks for your submission! Submission involves a review process so your item may not immediately appear on the site.");
+							callback(true);
 						}
 					});
 				}
 			}
+		});
+	}
+
+	function onclick_publish() {
+		if (String2.isEmpty(g_sFormId))
+			return;
+
+		jQuery("#img_loading").show();
+		jQuery("#cmd_publish").button("option","disabled",true);
+		_publishForm(function () { 
+			jQuery("#img_loading").hide();
+			jQuery("#cmd_publish").button("option", "disabled", false);
 		});
 	}
 
@@ -407,6 +425,7 @@
 <div style="float:left;">
 	<button id="cmd_save" onclick="return onclick_save();">Save Form</button>
 	<button id="cmd_publish" onclick="return onclick_publish();">Publish Form</button>
+	<img id="img_loading" src="../../images/loading.gif" style="display:none" />
 </div>
 <div id="tabs" style="clear:both;">
 	<ul>

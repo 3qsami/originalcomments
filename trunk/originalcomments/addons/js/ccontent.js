@@ -168,6 +168,8 @@ function feed_tools_system(window, document, jq) {
 
 	this._currentArticleIndexChanged = __currentArticleIndexChanged;
 
+	this._debug_enabled = __debug_enabled;
+
 	//
 	
 	this._createevent = __createevent;
@@ -558,6 +560,19 @@ function feed_tools_system(window, document, jq) {
 		}
 	}
 
+	function __debug_enabled() {
+		//raise event of ongetoption
+		var oEvent = this._createevent();
+		oEvent.name = "debug_enabled";
+		oEvent.value = false;
+
+		this._fireevent("ongetoption", oEvent);
+		if (oEvent.cancelBubble)
+			return oEvent.returnValue;
+		else
+			return oEvent.value;
+	}
+
 	function __autotrack_enabled() {
 		//raise event of ongetoption
 		var oEvent = this._createevent();
@@ -654,6 +669,8 @@ function feed_tools_system(window, document, jq) {
 		oParams["articleTitle"] = oEntity["articleTitle"];
 		oParams["formId"] = oEntity["formId"];
 		oParams["articleIndex"] = oEntity["index"];
+
+		oParams["debug_enabled"] = oThis._debug_enabled();
 			
 		//
 		cbase.sendmessage("showPage", oParams, function (oResult) {

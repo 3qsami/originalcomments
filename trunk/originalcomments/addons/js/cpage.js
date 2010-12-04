@@ -12,6 +12,9 @@ function createPageContext(window, document,jq) {
 	var page = {
 		combineUrl: function (relativeUrl, baseUrl) {
 			return ctools.combineUrl(relativeUrl, baseUrl);
+		},
+		debug: function (msg, forcedebug) {
+			cbase.debug(msg, forcedebug);
 		}
 	};
 
