@@ -21,6 +21,11 @@ blockquote
 	padding:4px 4px 12px 4px;border:solid 1px gray;background-color:#CC99FF;
 }
 
+textarea
+{
+	font-family: Verdana, Geneva,Lucida grande, arial, sans-serif;
+}
+
 /* Title */
 .title
 {

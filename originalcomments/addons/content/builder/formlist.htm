@@ -32,8 +32,11 @@
 					jQuery("#cmd_new").button();
 					jQuery("#cmd_import").button();
 
-					//
+					//fill
 					_fillformlist();
+
+					//check action
+					_checkURLAction(oParts);
 
 					//ok
 					jQuery(document.body).css('visibility', 'visible');
@@ -41,6 +44,30 @@
 			});
 
 		})();
+
+		//check url action
+		function _checkURLAction(oParts) {
+			var action = oParts["action"];
+			var sFormId = oParts["formId"];
+			var sArticleLink = oParts["url"];
+
+			if (action == "importform") {
+				if (!String2.isEmpty(sFormId)) {
+					//import
+					__importForm(sFormId, function (result) {
+						if (result) {
+							//update debug_articlelink
+							var oFormContent = _getFormContent(sFormId);
+							oFormContent["debug_articlelink"] = sArticleLink;
+							_setFormContent(oFormContent);
+
+							//edit
+							onclick_edit(null, sFormId);
+						}
+					});
+				}
+			}
+		}
 
 		function _getFieldValueForForm(oNodeFields, sFieldName) {
 			var s = String2.format("field[@name=\"{0}\"]", sFieldName);
@@ -124,6 +151,13 @@
 									//
 									bChanged = true;
 								}
+								else {
+									//so as to lead to top
+									oFormInfo["ModifiedTime"] = new Date();
+
+									//
+									bChanged = true;
+								}
 							}
 						}
 
@@ -137,9 +171,6 @@
 				_setOptionsForms(oForms);
 				_fillformlist(oForms);
 			}
-
-			//
-			window.alert("Import completed!");
 		}
 
 		function _fillformlist(oForms) {
@@ -406,6 +437,18 @@
 		if (sFormId == "")
 			return false;
 
+		__importForm(sFormId, function (result) {
+			if (result) {
+				window.alert("Import completed!");
+			}
+			else {
+				window.alert("Import failed!");
+			}
+		});
+
+		return false;
+	}
+	function __importForm(sFormId,callback) {
 		var sURL;
 		if (sFormId.indexOf(".pxml") > -1)
 			sURL = sFormId;
@@ -418,10 +461,12 @@
 			//
 			if (oRequest.status == 200) {
 				_importFromPXML(oRequest.responseText);
+				callback(true);
+			}
+			else {
+				callback(false);
 			}
 		});
-
-		return false;
 	}
 
 	function _createguid(callback) {

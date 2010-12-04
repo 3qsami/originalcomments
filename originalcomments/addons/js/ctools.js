@@ -297,7 +297,7 @@ var ctools = {
 	HTMLEncode: function (str) {
 		if (str == "")
 			return "";
-		
+
 		//avoid encode twice
 		//var s = str.replace(/&/g, "&amp;");
 		var s = str.replace(/</g, "&lt;");
@@ -305,8 +305,14 @@ var ctools = {
 		s = s.replace(/ /g, "&nbsp;");
 		s = s.replace(/\'/g, "&#39;");
 		s = s.replace(/\"/g, "&quot;");
-		
+
 		return s;
+	},
+	getvardate: function (n) {
+		var oDatetime = new Date(n);
+		return String2.format("{0}-{1}-{2} {3}:{4}:{5}",
+								oDatetime.getFullYear(), oDatetime.getMonth() + 1, oDatetime.getDate(),
+								oDatetime.getHours(), oDatetime.getMinutes(), oDatetime.getSeconds());
 	}
 };
 

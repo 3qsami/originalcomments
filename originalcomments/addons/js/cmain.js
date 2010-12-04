@@ -566,40 +566,32 @@ function createMainContext(window, document, jq) {
 			//
 			var sArticleLink = oFollowInfo["articleLink"];
 
-			//
-			this.m_oMain.m_oFeedLinkFormManager._commentsCheckFormId2("", "", "", oFollowInfo["formId"], function (bSucceeded, sFormId, nFormMode) {
-				if (!bSucceeded || sFormId == "") {
-					callback(null);
-					return;
+			//prepare old commentids
+			var oMapCommentId = new Object();
+			var oArrayCommentId = oFollowInfo["commentIds"];
+			if (oArrayCommentId != null) {
+				for (var i = 0; i < oArrayCommentId.length; i++) {
+					oMapCommentId[oArrayCommentId[i]] = true;
+				}
+			}
+
+			//temp entityset
+			var oEntitysetComments = new CEntityset();
+
+			//parse page
+			oThis._checkOne2_parsepage(1, oEntitysetComments, oMapCommentId, oFollowInfo, function (oResult) {
+				if (oResult) {
+					//传入sArticleLink便于重新判断followinfo是否存在
+					oThis._checkOne2_resultsave(oEntitysetComments, sArticleLink);
 				}
 
-				//prepare old commentids
-				var oMapCommentId = new Object();
-				var oArrayCommentId = oFollowInfo["commentIds"];
-				if (oArrayCommentId != null) {
-					for (var i = 0; i < oArrayCommentId.length; i++) {
-						oMapCommentId[oArrayCommentId[i]] = true;
-					}
-				}
+				//weather oResult=true/false always remove articlecomments
+				oThis.m_oContentManager.clearArticleComments(sArticleLink, function () { });
 
-				//temp entityset
-				var oEntitysetComments = new CEntityset();
-
-				//parse page
-				oThis._checkOne2_parsepage(1, oEntitysetComments, oMapCommentId, oFollowInfo, function (oResult) {
-					if (oResult) {
-						//传入sArticleLink便于重新判断followinfo是否存在
-						oThis._checkOne2_resultsave(oEntitysetComments, sArticleLink);
-					}
-
-					//weather oResult=true/false always remove articlecomments
-					oThis.m_oContentManager.clearArticleComments(sArticleLink, function () { });
-
-					//ok
-					callback(null);
-				});
-
+				//ok
+				callback(null);
 			});
+
 		};
 
 		this._checkOne2_resultsave = function (oEntitysetComments, sArticleLink, callback) {
@@ -1922,18 +1914,40 @@ function createMainContext(window, document, jq) {
 		this.m_oMapArticleCommentsTools=new Object();
 
 		//method
-		this.showPageOuter=function(oParams,callback){
-			var nArticleIndex=oParams["articleIndex"];
-			var oTools=this.m_oMapArticleCommentsTools[nArticleIndex];
-			if(oTools==null){
-				oTools=new CArticleCommentsTools(this.m_oMain);
+		this.showPageOuter = function (oParams, callback) {
+			var oThis = this;
+
+			//force check if form is ready
+			var sFormId = oParams["formId"];
+			var oRuntimeInfo = this.m_oMain.m_oFormManager.getRuntimeFormInfo(sFormId);
+			if (oRuntimeInfo != null) {
+				oThis.__showPageOuter(oParams, callback);
+			}
+			else {
+				//prepare form
+				oThis.m_oMain.m_oFeedLinkFormManager._commentsCheckFormId2("", "", "", sFormId, function (bSucceeded, sFormId, nFormMode) {
+					if (!bSucceeded || sFormId == "") {
+						callback(null);
+					}
+					else {
+						oThis.__showPageOuter(oParams, callback);
+					}
+				});
+			}
+		};
+
+		this.__showPageOuter = function (oParams, callback) {
+			var nArticleIndex = oParams["articleIndex"];
+			var oTools = this.m_oMapArticleCommentsTools[nArticleIndex];
+			if (oTools == null) {
+				oTools = new CArticleCommentsTools(this.m_oMain);
 				//1.
 				this.m_oMapArticleCommentsTools[nArticleIndex] = oTools;
 				//2. 
 				oTools.init(oParams);
 			}
 
-			oTools.showPageOuter(oParams,callback);
+			oTools.showPageOuter(oParams, callback);
 		};
 
 		this.clearArticleComments = function (nArticleIndex, onresponse) {
