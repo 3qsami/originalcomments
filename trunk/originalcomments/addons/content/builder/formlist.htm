@@ -42,7 +42,6 @@
 
 		})();
 
-
 		function _getFieldValueForForm(oNodeFields, sFieldName) {
 			var s = String2.format("field[@name=\"{0}\"]", sFieldName);
 			return ctools.getNodeText(ctools.selectSingleNode(oNodeFields, s));
@@ -57,6 +56,19 @@
 		}
 		function _setOptionsForms(oForms) {
 			cbase.setoption("builder.forms", oForms);
+		}
+		function _getFormContent(sFormId) {
+			var oFormContent = cbase.getoption("builder.form.content:" + sFormId, null);
+			if (oFormContent == null) {
+				oFormContent = new Object();
+			}
+			return oFormContent;
+		}
+		function _setFormContent(oFormContent) {
+			cbase.setoption("builder.form.content:" + oFormContent["formId"], oFormContent);
+		}
+		function _removeFormContent(sFormId) {
+			cbase.removeoption("builder.form.content:" + sFormId);
 		}
 
 		function _importFromPXML(sResponseText) {
@@ -101,9 +113,13 @@
 									oFormInfo["FormType"] = _getFieldValueForForm(oNodeFields, "FormType");
 									oFormInfo["FormParam1"] = _getFieldValueForForm(oNodeFields, "FormParam1");
 									oFormInfo["FormParam2"] = _getFieldValueForForm(oNodeFields, "FormParam2");
-									oFormInfo["FormHTM"] = _getFieldValueForForm(oNodeFields, "FormHTM");
-									oFormInfo["FormXML"] = _getFieldValueForForm(oNodeFields, "FormXML");
-									oFormInfo["FormJS"] = _getFieldValueForForm(oNodeFields, "FormJS");
+
+									var oFormContent = _getFormContent(sFormId);
+									oFormContent["formId"] = sFormId;
+									oFormContent["FormHTM"] = _getFieldValueForForm(oNodeFields, "FormHTM");
+									oFormContent["FormXML"] = _getFieldValueForForm(oNodeFields, "FormXML");
+									oFormContent["FormJS"] = _getFieldValueForForm(oNodeFields, "FormJS");
+									_setFormContent(oFormContent);
 
 									//
 									bChanged = true;
@@ -200,6 +216,7 @@
 			if (!String2.isEmpty(sFormId)) {
 				var oForms = _getOptionsForms();
 				var oFormInfoSource = oForms[sFormIdSource];
+				var oFormContentSource = _getFormContent(sFormIdSource);
 
 				//new
 				oFormInfo = new Object();
@@ -221,9 +238,13 @@
 				oFormInfo["FormType"] = oFormInfoSource["FormType"];
 				oFormInfo["FormParam1"] = "";
 				oFormInfo["FormParam2"] = oFormInfoSource["FormParam2"];
-				oFormInfo["FormHTM"] = oFormInfoSource["FormHTM"];
-				oFormInfo["FormXML"] = oFormInfoSource["FormXML"];
-				oFormInfo["FormJS"] = oFormInfoSource["FormJS"];
+
+				var oFormContent = _getFormContent(sFormId);
+				oFormContent["formId"] = sFormId;
+				oFormContent["FormHTM"] = oFormContentSource["FormHTM"];
+				oFormContent["FormXML"] = oFormContentSource["FormXML"];
+				oFormContent["FormJS"] = oFormContentSource["FormJS"];
+				_setFormContent(oFormContent);
 
 				//save
 				_setOptionsForms(oForms);
@@ -238,10 +259,13 @@
 	}
 	function onclick_delete(event, sFormId) {
 		if (window.confirm("Are you sure you want to delete this form?")) {
-			//
+			//forminfo
 			var oForms = _getOptionsForms();
 			delete oForms[sFormId];
 			_setOptionsForms(oForms);
+
+			//formcontent
+			_removeFormContent(sFormId);
 
 			//refresh
 			_fillformlist(oForms);
@@ -274,8 +298,11 @@
 				oFormInfo["FormType"] = "{C127CD9B-8059-4B0C-BD7B-077EA300073C}";
 				oFormInfo["FormParam1"] = "";
 				oFormInfo["FormParam2"] = "";
-				oFormInfo["FormHTM"] = "";
-				oFormInfo["FormXML"] = "\
+
+				var oFormContent = _getFormContent(sFormId);
+				oFormContent["formId"] = sFormId;
+				oFormContent["FormHTM"] = "";
+				oFormContent["FormXML"] = "\
 <?xml version=\"1.0\" encoding=\"utf-16\"?>\r\n\
 <page>\r\n\
 	<formForComments>\r\n\
@@ -352,13 +379,14 @@
 	</formForComments>\r\n\
 </page>\r\n\
 				";
-				oFormInfo["FormJS"] = "///////////////////////////////////////////////////////////////\r\n\
+				oFormContent["FormJS"] = "///////////////////////////////////////////////////////////////\r\n\
 ////	Track Comments Events -- begin\r\n\
 \r\n\
 \r\n\
 ////	Track Comments Events -- end\r\n	\
 ///////////////////////////////////////////////////////////////\r\n\
 				";
+				_setFormContent(oFormContent);
 
 				//save
 				_setOptionsForms(oForms);

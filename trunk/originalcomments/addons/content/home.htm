@@ -27,6 +27,7 @@
 </script>
 
 <script type="text/javascript" src="../lib/jquery-ui.min.js"></script>
+<script type="text/javascript" src="../lib/jquery.hotkeys.js"></script>
 
 <script type="text/javascript" src="../js/cbase.js"></script>
 <script type="text/javascript" src="../js/ctools.js"></script>
@@ -60,6 +61,9 @@
 				//tabs
 				var nSelectedIndex = oParts["tabname"] === "options" ? 2 : 0;
 				jQuery("#tabs").tabs({ selected: nSelectedIndex, show: ontabsshow });
+
+				//hotkeys
+				jQuery.hotkeys.add('ctrl+s', onhotkeys_save);
 
 				//ok
 				jQuery(document.body).css('visibility', 'visible');
@@ -406,6 +410,9 @@
 	//
 	function onclick_checkNow(event, ui) {
 		cbase.sendmessage("checkFollowCommentsNow", null, function () { });
+	}
+	function onhotkeys_save() {
+		onclick_saveOptions(null,null);
 	}
 	//
 	function onclick_saveOptions(event, ui) {
