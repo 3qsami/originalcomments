@@ -175,6 +175,96 @@
 		_upateDocumentTitle(oFormInfo);
 	}
 
+	function onclick_publish() {
+		if (String2.isEmpty(g_sFormId))
+			return;
+
+		//check if signed
+		XMLHttpManager.openRequest2("http://www.pimshell.com/formgallery/WebCalls.aspx?action=checkloginstatus", null, function (oRequest) {
+			if (oRequest.status != 200) {
+				window.alert("Cannot check your login status.");
+			}
+			else {
+				var sStatus = oRequest.responseText;
+				if (sStatus !== "true") {
+					if (window.confirm("You must login in first. Do you login in now?")) {
+						cbase.newTab("http://www.pimshell.com/formgallery/signin.aspx", true);
+					}
+				}
+				else {
+
+					//save first
+					onclick_save();
+
+					//info
+					var oForms = _getOptionsForms();
+					var oFormInfo = oForms[g_sFormId];
+					var oFormContent = _getFormContent(g_sFormId);
+
+					//adjust
+					_adjustVersionAndReleaseTime(oFormInfo);
+					_setOptionsForms(oForms);
+
+					//combine body
+					var oBody = new Object();
+					oBody["Action"] = "Submit";
+					oBody["formId"] = oFormInfo["formId"];
+					oBody["ItemTitle"] = oFormInfo["ItemTitle"];
+					oBody["CreateTime"] = ctools.getvardate(oFormInfo["CreateTime"]);
+					oBody["ModifiedTime"] = ctools.getvardate(oFormInfo["ModifiedTime"]);
+					oBody["Version"] = oFormInfo["Version"];
+					oBody["ReleaseTime"] = ctools.getvardate(oFormInfo["ReleaseTime"]);
+					oBody["Publisher"] = oFormInfo["Publisher"];
+					oBody["Email"] = oFormInfo["Email"];
+					oBody["Homepage"] = oFormInfo["Homepage"];
+					oBody["Description"] = oFormInfo["Description"];
+					oBody["FormType"] = oFormInfo["FormType"];
+					oBody["FormParam1"] = oFormInfo["FormParam1"];
+					oBody["FormParam2"] = oFormInfo["FormParam2"];
+
+					oBody["FormHTM"] = oFormContent["FormHTM"];
+					oBody["FormXML"] = oFormContent["FormXML"];
+					oBody["FormJS"] = oFormContent["FormJS"];
+
+					//post
+					var oParams = new Object();
+					oParams["httpVerb"] = "post";
+					oParams["body"] = oBody;
+					XMLHttpManager.openRequest2("http://www.pimshell.com/formgallery/Post.aspx", oParams, function (oRequest) {
+						if (oRequest.status != 200) {
+							window.alert("Failed to publish form.");
+						}
+						else {
+							window.alert("Thanks for your submission! Submission involves a review process so your item may not immediately appear on the site.");
+						}
+					});
+				}
+			}
+		});
+	}
+
+	function _adjustVersionAndReleaseTime(oFormInfo) {
+		//adjust version
+		var sVerion = oFormInfo["Version"];
+		var nVersion = parseInt(sVerion.replace(/\./g, '')) + 1;
+		nVersion = nVersion.toString();
+		sVerion = "";
+		for (var i = 0; i < nVersion.length; i++) {
+			sVerion += nVersion.charAt(i);
+			if (i < nVersion.length - 1)
+				sVerion += '.';
+		}
+
+		oFormInfo["Version"] = sVerion;
+
+		//adjust releasetime
+		oFormInfo["ReleaseTime"] = new Date();
+
+		//
+		jQuery("#Version").text(oFormInfo["Version"]);
+		jQuery("#ReleaseTime").text(new Date(oFormInfo["ReleaseTime"]).toDateString());
+	}
+
 	function onclick_runtest() {
 		var sTest_Text = jQuery("#testreg_text").attr("value");
 		var sTest_RegExp = jQuery("#testreg_regexp").attr("value");
