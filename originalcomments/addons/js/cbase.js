@@ -93,12 +93,18 @@ CBase.prototype.setoption = function (sName, sValue) {
 	o.value = sValue;
 	this.setoption_impl(sName,this.json_stringify(o));
 }
+CBase.prototype.removeoption = function (sName) {
+	this.removeoption_impl(sName);
+}
 
 CBase.prototype.getoption_impl = function (sName) {
 	this.notimpl("CBase.prototype.getOption");
 }
 CBase.prototype.setoption_impl = function (sName, sValue) {
 	this.notimpl("CBase.prototype.setOption");
+}
+CBase.prototype.removeoption_impl = function (sName) {
+	this.notimpl("CBase.prototype.removeOption");
 }
 
 //	json

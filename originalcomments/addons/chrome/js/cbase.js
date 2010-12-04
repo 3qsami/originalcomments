@@ -54,6 +54,9 @@ CBase.prototype.getoption_impl = function (sName) {
 CBase.prototype.setoption_impl = function (sName, sValue) {
 	localStorage.setItem(sName, sValue);
 }
+CBase.prototype.removeoption_impl = function (sName) {
+	localStorage.removeItem(sName);
+}
 
 //	json
 CBase.prototype.json_stringify = function (myObject) {

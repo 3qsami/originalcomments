@@ -19,6 +19,7 @@
 
 <script type="text/javascript" src="../../lib/jquery-ui.min.js"></script>
 <script type="text/javascript" src="../../lib/jquery.textarea.js"></script>
+<script type="text/javascript" src="../../lib/jquery.hotkeys.js"></script>
 
 <script type="text/javascript" src="../../js/cbase.js"></script>
 <script type="text/javascript" src="../../js/ctools.js"></script>
@@ -55,6 +56,9 @@
 					jQuery("#cmd_debug").button();
 					jQuery("#cmd_runtest").button();
 
+					//hotkeys
+					jQuery.hotkeys.add('ctrl+s',onhotkeys_save);
+
 					//
 					g_sFormId = oParts["FormId"];
 					_fillFormInfo();
@@ -77,6 +81,7 @@
 
 		var oForms = _getOptionsForms();
 		var oFormInfo = oForms[g_sFormId];
+		var oFormContent = _getFormContent(g_sFormId);
 
 		//title
 		_upateDocumentTitle(oFormInfo);
@@ -92,16 +97,16 @@
 		jQuery("#Description").attr("value", oFormInfo["Description"]);
 
 		//xml js
-		jQuery("#FormXML").attr("value", oFormInfo["FormXML"]);
-		jQuery("#FormJS").attr("value", oFormInfo["FormJS"]);
+		jQuery("#FormXML").attr("value", oFormContent["FormXML"]);
+		jQuery("#FormJS").attr("value", oFormContent["FormJS"]);
 
 		//test reg
-		jQuery("#testreg_regexp").attr("value", oFormInfo["testreg_regexp"]);
-		jQuery("#testreg_result").attr("value", oFormInfo["testreg_result"]);
-		jQuery("#testreg_text").attr("value", oFormInfo["testreg_text"]);
+		jQuery("#testreg_regexp").attr("value", oFormContent["testreg_regexp"]);
+		jQuery("#testreg_result").attr("value", oFormContent["testreg_result"]);
+		jQuery("#testreg_text").attr("value", oFormContent["testreg_text"]);
 
 		//debug
-		jQuery("#debug_articlelink").attr("value", oFormInfo["debug_articlelink"]);
+		jQuery("#debug_articlelink").attr("value", oFormContent["debug_articlelink"]);
 
 		//change
 		jQuery("input,textarea").change(function () {
@@ -124,7 +129,7 @@
 		document.title = oFormInfo["ItemTitle"] + " - Form Edit";
 	}
 
-	function _combineFormInfo(oFormInfo){
+	function _combineFormInfo(oFormInfo,oFormContent){
 		//
 		oFormInfo["ItemTitle"] = jQuery("#ItemTitle").attr("value");
 		oFormInfo["Publisher"] = jQuery("#Publisher").attr("value");
@@ -132,30 +137,36 @@
 		oFormInfo["Homepage"] = jQuery("#Homepage").attr("value");
 		oFormInfo["FormParam1"] = jQuery("#FormParam1").attr("value");
 		oFormInfo["Description"] = jQuery("#Description").attr("value");
-		oFormInfo["FormXML"] = jQuery("#FormXML").attr("value");
-		oFormInfo["FormJS"] = jQuery("#FormJS").attr("value");
 		oFormInfo["ModifiedTime"] = new Date();
 
-		//
-		oFormInfo["testreg_regexp"] = jQuery("#testreg_regexp").attr("value");
-		oFormInfo["testreg_result"] = jQuery("#testreg_result").attr("value");
-		oFormInfo["testreg_text"] = jQuery("#testreg_text").attr("value");
+		oFormContent["FormXML"] = jQuery("#FormXML").attr("value");
+		oFormContent["FormJS"] = jQuery("#FormJS").attr("value");
 
 		//
-		oFormInfo["debug_articlelink"] = jQuery("#debug_articlelink").attr("value");
+		oFormContent["testreg_regexp"] = jQuery("#testreg_regexp").attr("value");
+		oFormContent["testreg_result"] = jQuery("#testreg_result").attr("value");
+		oFormContent["testreg_text"] = jQuery("#testreg_text").attr("value");
+
+		//
+		oFormContent["debug_articlelink"] = jQuery("#debug_articlelink").attr("value");
 	}
 
+	function onhotkeys_save() {
+		onclick_save();
+	}
 	function onclick_save() {
 		if (String2.isEmpty(g_sFormId))
 			return;
 
 		var oForms = _getOptionsForms();
 		var oFormInfo = oForms[g_sFormId];
+		var oFormContent = _getFormContent(g_sFormId);
 
 		//
-		_combineFormInfo(oFormInfo);
+		_combineFormInfo(oFormInfo, oFormContent);
 
 		//save
+		_setFormContent(oFormContent);
 		_setOptionsForms(oForms);
 
 		_formInfoModified(false);
@@ -245,7 +256,7 @@
 				//set form first
 				var oFormInfo = new Object();
 				oFormInfo["formId"] = g_sFormId;
-				_combineFormInfo(oFormInfo);
+				_combineFormInfo(oFormInfo, oFormInfo);
 				cbase.sendmessage("debug_setform", oFormInfo, function (bSucceeded) {
 					if (bSucceeded) {
 						window.alert("System Form takes effect now.");
@@ -259,7 +270,7 @@
 			oFormInfo["formId"] = g_sFormId;
 			oFormInfo["systemFormId"] = "{B1C8E6FB-C609-49BA-94E5-22F6B84CF93A}";
 			oFormInfo["systemFormVersion"] = "";
-			_combineFormInfo(oFormInfo);
+			_combineFormInfo(oFormInfo, oFormInfo);
 			cbase.sendmessage("debug_setform", oFormInfo, function (bSucceeded) {
 				if (bSucceeded) {
 					//reset article index
@@ -285,6 +296,16 @@
 	}
 	function _setOptionsForms(oForms) {
 		cbase.setoption("builder.forms", oForms);
+	}
+	function _getFormContent(sFormId) {
+		var oFormContent = cbase.getoption("builder.form.content:" + sFormId, null);
+		if (oFormContent == null) {
+			oFormContent = new Object();
+		}
+		return oFormContent;
+	}
+	function _setFormContent(oFormContent) {
+		cbase.setoption("builder.form.content:" + oFormContent["formId"], oFormContent);
 	}
 
 </script>
