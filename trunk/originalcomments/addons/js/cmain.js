@@ -1479,6 +1479,18 @@ function createMainContext(window, document, jq) {
 		};
 
 		this._task_callback_raisefailed = function () {
+			
+			var nPageIndex=this.m_nInfo_CurrentShow_PageIndex;
+			var oParams=this.m_nInfo_CurrentShow_Params;
+			var oCallback = this.m_nInfo_CurrentShow_Callback;
+
+			this.m_nInfo_CurrentShow_PageIndex = 0;
+			this.m_nInfo_CurrentShow_Params = null;
+			this.m_nInfo_CurrentShow_Callback = null;
+
+			this._task_callback_raisefailed2(oCallback);
+		};
+		this._task_callback_raisefailed2 = function (oCallback) {
 			//formcheck
 			this._sendFormCheck(true);
 
@@ -1486,13 +1498,7 @@ function createMainContext(window, document, jq) {
 			this._setDefaultPageInfo();
 
 			//
-			if (this.m_nInfo_CurrentShow_PageIndex != 0) {
-				var oCallback = this.m_nInfo_CurrentShow_Callback;
-
-				this.m_nInfo_CurrentShow_PageIndex = 0;
-				this.m_nInfo_CurrentShow_Params = null;
-				this.m_nInfo_CurrentShow_Callback = null;
-
+			if (oCallback != null) {
 				//callback
 				var oResult = new Object();
 				//status
@@ -1934,7 +1940,7 @@ function createMainContext(window, document, jq) {
 				//prepare form
 				oThis.m_oMain.m_oFeedLinkFormManager._commentsCheckFormId2("", "", "", sFormId, function (bSucceeded, sFormId, nFormMode) {
 					if (!bSucceeded || sFormId == "") {
-						callback(null);
+						callback({ status: "failed" });
 					}
 					else {
 						oThis.__showPageOuter(oParams, callback);
