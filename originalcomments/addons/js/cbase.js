@@ -89,9 +89,15 @@ CBase.prototype.getoption = function (sName, sDefaultValue) {
 	return ctools.adjustvalue(null, sDefaultValue);
 }
 CBase.prototype.setoption = function (sName, sValue) {
-	var o = {};
-	o.value = sValue;
-	this.setoption_impl(sName,this.json_stringify(o));
+	try {
+		var o = {};
+		o.value = sValue;
+		this.setoption_impl(sName, this.json_stringify(o));
+	}
+	catch (e) {
+		this.alert(e.message);
+		throw e;
+	}
 }
 CBase.prototype.removeoption = function (sName) {
 	this.removeoption_impl(sName);
