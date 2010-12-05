@@ -1395,7 +1395,10 @@ function createMainContext(window, document, jq) {
 
 			//clear current parse
 			if (oThis.m_nInfo_CurrentParse_Object != null) {
-				oThis.m_nInfo_CurrentParse_Object.dispose();
+				try {
+					oThis.m_nInfo_CurrentParse_Object.dispose();
+				}
+				catch (e) { }
 				oThis.m_nInfo_CurrentParse_Object = null;
 			}
 

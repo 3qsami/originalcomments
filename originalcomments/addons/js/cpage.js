@@ -333,7 +333,9 @@ function CXMLHttp(){
 		//special for cache ,must before headers,外部可以多一个机会进行修改。
 		var bNoCache = Sys.getAttribute(oParams, "noCache", true);
 		if (String2.compareNoCase(sVerb, "get") == 0 && bNoCache) {
-			this.m_oRequest.setRequestHeader("If-Modified-Since", "0");
+			//2010.12.05 cannot use If-Modified-Since, otherwise cannot cache correctly.
+			//this.m_oRequest.setRequestHeader("If-Modified-Since", "0");
+			this.m_oRequest.setRequestHeader("Cache-Control", "no-cache");
 		}
 
 		//special for post ,must before headers,外部可以多一个机会进行修改。
