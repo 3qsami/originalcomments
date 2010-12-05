@@ -14,6 +14,10 @@
 	<script type="text/javascript" src="../../js/cpage.js"></script>
 	<script type="text/javascript">
 
+		// url
+		var URL_Feed_WebCalls_createguid = "http://www.pimshell.com/formgallery/WebCalls.aspx?action=createguid";
+		var URL_Feed_FormDownload = "http://www.pimshell.com/formgallery/Download.aspx";
+
 		//
 		(function () {
 			//url
@@ -453,7 +457,7 @@
 		if (sFormId.indexOf(".pxml") > -1)
 			sURL = sFormId;
 		else
-			sURL = String2.format("http://www.pimshell.com/formgallery/Download.aspx?FormId={0}", sFormId);
+			sURL = String2.format("{0}?FormId={1}",URL_Feed_FormDownload, sFormId);
 
 		var oParams = new Object();
 		oParams["noCache"] = true;
@@ -470,7 +474,7 @@
 	}
 
 	function _createguid(callback) {
-		XMLHttpManager.openRequest2("http://www.pimshell.com/formgallery/WebCalls.aspx?action=createguid", null, function (oRequest) {
+		XMLHttpManager.openRequest2(URL_Feed_WebCalls_createguid, null, function (oRequest) {
 			if (oRequest.status != 200) {
 				callback(null);
 			}

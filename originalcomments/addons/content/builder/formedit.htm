@@ -29,6 +29,18 @@
 
 <script type="text/javascript">
 
+	// url
+	
+	var URL_Feed_WebCalls_checkloginstatus = "http://www.pimshell.com/formgallery/WebCalls.aspx?action=checkloginstatus";
+	var URL_Feed_Signin = "http://www.pimshell.com/formgallery/signin.aspx";
+	var URL_Feed_FormPost = "http://www.pimshell.com/formgallery/Post.aspx";
+	
+	/*
+	var URL_Feed_WebCalls_checkloginstatus = "http://localhost:49448/WebCalls.aspx?action=checkloginstatus";
+	var URL_Feed_Signin = "http://localhost:49448/signin.aspx";
+	var URL_Feed_FormPost = "http://localhost:49448/Post.aspx";
+	*/
+
 	//
 	(function () {
 		//url
@@ -181,7 +193,7 @@
 
 	function _publishForm(callback) {
 		//check if signed
-		XMLHttpManager.openRequest2("http://www.pimshell.com/formgallery/WebCalls.aspx?action=checkloginstatus", null, function (oRequest) {
+		XMLHttpManager.openRequest2(URL_Feed_WebCalls_checkloginstatus, null, function (oRequest) {
 			if (oRequest.status != 200) {
 				window.alert("Cannot check your login status.");
 				callback(false);
@@ -190,7 +202,7 @@
 				var sStatus = oRequest.responseText;
 				if (sStatus !== "true") {
 					if (window.confirm("You must login in first. Do you login in now?")) {
-						cbase.newTab("http://www.pimshell.com/formgallery/signin.aspx", true);
+						cbase.newTab(URL_Feed_Signin, true);
 					}
 
 					callback(false);
@@ -234,14 +246,14 @@
 					var oParams = new Object();
 					oParams["httpVerb"] = "post";
 					oParams["body"] = oBody;
-					XMLHttpManager.openRequest2("http://www.pimshell.com/formgallery/Post.aspx", oParams, function (oRequest) {
-						if (oRequest.status != 200) {
-							window.alert("Failed to publish form.");
-							callback(false);
-						}
-						else {
+					XMLHttpManager.openRequest2(URL_Feed_FormPost, oParams, function (oRequest) {
+						if (oRequest.status == 200 && oRequest.responseText=="true") {
 							window.alert("Thanks for your submission! Submission involves a review process so your item may not immediately appear on the site.");
 							callback(true);
+						}
+						else {
+							window.alert("Failed to publish form.");
+							callback(false);
 						}
 					});
 				}

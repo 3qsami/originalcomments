@@ -9,21 +9,22 @@
 /// <reference path="ctools.js" />
 /// <reference path="cpage.js" />
 
-/*
+
 var URL_Feed_FormMatch="http://www.pimshell.com/formgallery/FormMatch.aspx";
 var URL_Feed_FormDownload="http://www.pimshell.com/formgallery/Download.aspx";
 var URL_Feed_ClientCheck="http://www.pimshell.com/formgallery/ClientCheck.aspx";
 var URL_Feed_FormWant="http://www.pimshell.com/formgallery/Want.aspx";
 var URL_Feed_FormFeedback="http://www.pimshell.com/formgallery/Feedback.aspx";
 var URL_Feed_FormCheck="http://www.pimshell.com/formgallery/FormCheck.aspx";
-*/
 
+/*
 var URL_Feed_FormMatch = "http://localhost:49448/FormMatch.aspx";
 var URL_Feed_FormDownload = "http://localhost:49448/test/Download.aspx";
 var URL_Feed_ClientCheck = "http://localhost:49448/ClientCheck.aspx";
 var URL_Feed_FormWant = "http://localhost:49448/Want.aspx";
 var URL_Feed_FormFeedback = "http://localhost:49448/Feedback.aspx";
 var URL_Feed_FormCheck = "http://localhost:49448/FormCheck.aspx";
+*/
 
 //
 
@@ -977,7 +978,7 @@ function createMainContext(window, document, jq) {
 			// try get form
 			var sURL = String2.format("{0}?FormId={1}", URL_Feed_FormDownload, sFormId);
 			var oParams = new Object();
-			oParams["noCache"] = true; //bNoCache;
+			oParams["noCache"] = bNoCache;
 
 			XMLHttpManager.openRequest2(sURL, oParams, function (oRequest) {
 				//
