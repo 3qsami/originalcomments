@@ -365,6 +365,10 @@
 
 	//
 	function onclick_debug() {
+
+		//save first
+		onclick_save();
+
 		//tab index
 		jQuery("#tabs").tabs("option", "selected", 4);
 
@@ -393,15 +397,11 @@
 			_combineFormInfo(oFormInfo, oFormInfo);
 			cbase.sendmessage("debug_setform", oFormInfo, function (bSucceeded) {
 				if (bSucceeded) {
-					//reset article index
-					var nIndex = ccontent.getCurrentArticleIndex();
-					if (nIndex != 0) {
-						ccontent.refreshArticleComments(nIndex);
-					}
-					else {
-						//articleinfo
-						jQuery("#article-title-link").attr("href", sLink).text("Goto Article").attr("_formId", g_sFormId);
-					} 
+					//always reset articleinfo
+					jQuery("#article-title-link").attr("href", sLink).text("Goto Article").attr("_formId", g_sFormId);
+
+					//reset article
+					ccontent.refreshCurrentArticleComments();
 				}
 			});
 		}

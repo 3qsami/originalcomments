@@ -98,9 +98,9 @@ function createContentContext(window, document, jq) {
 			oThis.m_oContentHost = null;
 		},
 
-		refreshArticleComments: function (nIndex) {
+		refreshCurrentArticleComments: function () {
 			if (this.m_oFeedToolsSystem != null) {
-				this.m_oFeedToolsSystem.refreshArticleComments(nIndex);
+				this.m_oFeedToolsSystem.refreshCurrentArticleCommentsOuter();
 			}
 		},
 		getCurrentArticleIndex: function () {
@@ -150,7 +150,9 @@ function feed_tools_system(window, document, jq) {
 	this._getcommentscontainer = __getcommentscontainer;
 	this._setcomments = __setcomments;
 	this.refreshArticleComments = __refreshArticleComments;
+	this.refreshCurrentArticleCommentsOuter = __refreshCurrentArticleCommentsOuter;
 	this.getCurrentArticleIndex = __getCurrentArticleIndex;
+	this._fire_ongetcurrentarticle = __fire_ongetcurrentarticle;
 
 	//2010.08.03
 	this._autotrack_getcommentsparams_trackurl = __autotrack_getcommentsparams_trackurl;
@@ -322,19 +324,25 @@ function feed_tools_system(window, document, jq) {
 		}
 	}
 
+	function __fire_ongetcurrentarticle() {
+		//raise event of ongetcurrentarticle
+		var oEvent = this._createevent();
+		oEvent.articleElement = null;
+		oEvent.articleLink = "";
+		oEvent.articleTitle = "";
+		oEvent.feedElement = null;
+		oEvent.feedLink = "";
+		oEvent.feedTitle = "";
+		oEvent.formId = "";
+		this._fireevent("ongetcurrentarticle", oEvent);
+		return oEvent;
+	}
+
 	function __interval_callback() {
 		try {
 			//get the current aritcle
 			//raise event of ongetcurrentarticle
-			var oEvent = this._createevent();
-			oEvent.articleElement = null;
-			oEvent.articleLink = "";
-			oEvent.articleTitle = "";
-			oEvent.feedElement = null;
-			oEvent.feedLink = "";
-			oEvent.feedTitle = "";
-			oEvent.formId = "";
-			this._fireevent("ongetcurrentarticle", oEvent);
+			var oEvent = this._fire_ongetcurrentarticle();
 			if (oEvent.returnValue === true) {
 				//adjust	not use toLowerCase
 				//oEvent.articleLink = oEvent.articleLink.toLowerCase();
@@ -710,6 +718,9 @@ function feed_tools_system(window, document, jq) {
 			jq("#pageCount", oPageInfo).text(nPageCount);
 			jq("#totalCount", oPageInfo).text(nTotalCount);
 
+			//article link maybe changed
+			jq("#pimshell_advancedcomments_autotrack_toolbar #gotoarticle", oDiv2).attr("href", oEntity["articleLink"]);
+
 			//pager
 			var oPager = jq("#pimshell_advancedcomments_autotrack_pager", oDiv2);
 			jq("#pageFirst", oPager).attr('src',
@@ -744,7 +755,7 @@ function feed_tools_system(window, document, jq) {
 									<img id='showOrder' _index='{0}' src='{2}' unselectable='on' onselectstart='return false;' style='-moz-user-select:none;margin-right:4px;color:blue;cursor:pointer;' title='{3}' />\
 									<img id='refresh' _index='{0}' src='{4}' unselectable='on' onselectstart='return false;' style='-moz-user-select:none;margin-right:4px;color:blue;cursor:pointer;' title='{5}' />\
 									<span id='pageInfo' style='vertical-align:top;display:none;margin-right:4px;'><span id='pageIndex' style='vertical-align:top;color:#5377A9;'></span>/<span id='pageCount' style='vertical-align:top;'></span>(<span id='totalCount' style='vertical-align:top;color:#5377A9;'></span>)</span>\
-									<a href='{6}' target='_blank'><img border='0' src='{7}' /></a>\
+									<a id='gotoarticle' href='{6}' target='_blank'><img border='0' src='{7}' /></a>\
 									",
 									nIndex,
 									cbase.getURL("addons/images/loading.gif"),
@@ -992,6 +1003,36 @@ function feed_tools_system(window, document, jq) {
 
 	function __getCurrentArticleIndex() {
 		return this._nCurrentArticleIndex;
+	}
+
+	function __refreshCurrentArticleCommentsOuter() {
+		//current index
+		var nIndex = this.getCurrentArticleIndex();
+		if (nIndex == 0)
+			return;
+
+		//
+		var oEntity = this._oMapForArticles[nIndex];
+		if (oEntity == null)
+			return;
+
+		//refresh the current aritcle's info
+		//raise event of ongetcurrentarticle
+		var oEvent = this._fire_ongetcurrentarticle();
+		if (oEvent.returnValue === true) {
+			oEntity["articleElement"] = oEvent["articleElement"];
+			oEntity["articleLink"] = oEvent["articleLink"];
+			oEntity["articleTitle"] = oEvent["articleTitle"];
+
+			oEntity["feedElement"] = oEvent["feedElement"];
+			oEntity["feedLink"] = oEvent["feedLink"];
+			oEntity["feedTitle"] = oEvent["feedTitle"];
+
+			oEntity["formId"] = oEvent["formId"];
+		}
+
+		//
+		this.refreshArticleComments(nIndex);
 	}
 
 	function __refreshArticleComments(nIndex) {
