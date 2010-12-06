@@ -35,11 +35,11 @@
 	var URL_Feed_Signin = "http://www.pimshell.com/formgallery/signin.aspx";
 	var URL_Feed_FormPost = "http://www.pimshell.com/formgallery/Post.aspx";
 	
-	/*
-	var URL_Feed_WebCalls_checkloginstatus = "http://localhost:49448/WebCalls.aspx?action=checkloginstatus";
-	var URL_Feed_Signin = "http://localhost:49448/signin.aspx";
-	var URL_Feed_FormPost = "http://localhost:49448/Post.aspx";
-	*/
+	
+//	var URL_Feed_WebCalls_checkloginstatus = "http://localhost:49448/WebCalls.aspx?action=checkloginstatus";
+//	var URL_Feed_Signin = "http://localhost:49448/signin.aspx";
+//	var URL_Feed_FormPost = "http://localhost:49448/Post.aspx";
+//	
 
 	//
 	(function () {
@@ -483,10 +483,10 @@
         </table>
 	</div>
 	<div id="tabs-xml">
-		<textarea id="FormXML" style="width:100%;height:500px"></textarea>
+		<textarea id="FormXML" style="width:100%;height:500px;font-weight:bold;word-wrap:normal;" wrap="Off"></textarea>
 	</div>
 	<div id="tabs-js">
-		<textarea id="FormJS" style="width:100%;height:500px"></textarea>
+		<textarea id="FormJS" style="width:100%;height:500px;font-weight:bold;word-wrap:normal;" wrap="Off"></textarea>
 	</div>
 	<div id="tabs-testreg">
 		<div>
@@ -494,19 +494,19 @@
 		</div>
 		<table style="width:100%">
 			<tr>
-				<td>
+				<td style="width:70%;">
 					<div>Regular Expression</div>
-					<div><textarea id="testreg_regexp" style="width:100%;height:200px"></textarea></div>
+					<div><textarea id="testreg_regexp" style="width:100%;height:200px;font-weight:bold;word-wrap:normal;" wrap="Off"></textarea></div>
 				</td>
 				<td>
 					<div>Test Result</div>
-					<div><textarea id="testreg_result" style="width:100%;height:200px"></textarea></div>
+					<div><textarea id="testreg_result" style="width:100%;height:200px;word-wrap:normal;" wrap="Off"></textarea></div>
 				</td>
 			</tr>
 			<tr>
 				<td colspan="2">
 					<div>Text</div>
-					<div><textarea id="testreg_text" style="width:100%;height:300px"></textarea></div>
+					<div><textarea id="testreg_text" style="width:100%;height:300px;word-wrap:normal;" wrap="Off"></textarea></div>
 				</td>
 			</tr>
 		</table>

@@ -1998,7 +1998,7 @@ var CArticleCommentsTools2 = {
 			oDate = new Date();
 		}
 		else if (oDate.getFullYear == null) {
-			var sDate = oDate.toString();
+			var sDate = oDate.toString().replace(/[年月]/g,'-').replace(/日/g,'');
 			var nDate = Date.parse(sDate);
 			if (isNaN(nDate)) {
 				oDate = new Date();
