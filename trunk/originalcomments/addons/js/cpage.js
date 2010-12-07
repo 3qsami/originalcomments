@@ -343,6 +343,12 @@ function CXMLHttp(){
 			this.m_oRequest.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 		}
 
+		//overrideMimeType
+		var sOverrideMimeType = Sys.getAttribute(oParams, "overrideMimeType", "");
+		if (this.m_oRequest.overrideMimeType && !String2.isEmpty(sOverrideMimeType)) {
+			this.m_oRequest.overrideMimeType(sOverrideMimeType);
+		}
+
 		//loop set Headers
 		if (oHeaders) {
 			for (var sName in oHeaders) {
