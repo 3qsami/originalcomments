@@ -1998,7 +1998,7 @@ var CArticleCommentsTools2 = {
 			oDate = new Date();
 		}
 		else if (oDate.getFullYear == null) {
-			var sDate = oDate.toString().replace(/[年月]/g,'-').replace(/日/g,'');
+			var sDate = oDate.toString().replace(/[年月]/g, '-').replace(/日/g, '');
 			var nDate = Date.parse(sDate);
 			if (isNaN(nDate)) {
 				oDate = new Date();
@@ -2009,17 +2009,18 @@ var CArticleCommentsTools2 = {
 		}
 
 		//combine
-		var sDate = String2.format("{0}-{1}-{2}", oDate.getFullYear(), oDate.getMonth() + 1, oDate.getDate());
+		//oDate may be contain time
+		if (!String2.isEmpty(sTime)) {
+			var sDate = String2.format("{0}-{1}-{2}", oDate.getFullYear(), oDate.getMonth() + 1, oDate.getDate());
 
-		if (sTime != "") {
 			sDate += " " + sTime;
+
+			var nDate = Date.parse(sDate);
+
+			nDate += nTimeDiff * 60 * 60 * 1000;
+
+			oDate = new Date(nDate);
 		}
-
-		var nDate = Date.parse(sDate);
-
-		nDate += nTimeDiff * 60 * 60 * 1000;
-
-		oDate = new Date(nDate);
 
 		//ok
 		return oDate;
