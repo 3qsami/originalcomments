@@ -1637,8 +1637,8 @@ function createMainContext(window, document, jq) {
 						nPageCount = nPageIndex;
 
 						//要取第一页作为pagesize
-						nPageSize = m_nForward_tmp_firstpagesize;
-						nTotalCount = m_nForward_tmp_totalcount;
+						nPageSize = this.m_nForward_tmp_firstpagesize;
+						nTotalCount = this.m_nForward_tmp_totalcount;
 					}
 				}
 			}
