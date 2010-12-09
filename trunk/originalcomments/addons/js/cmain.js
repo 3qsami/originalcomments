@@ -243,6 +243,20 @@ function createMainContext(window, document, jq) {
 		_checkClient: function (sClientId, callback) {
 			var oThis = this;
 
+			this._checkClient2(sClientId, function (oResult) {
+				//remove all empty record, so as to match form again.
+				if (oResult != null) {
+					oThis.m_oFeedLinkFormManager._removeAllEmptyRecords();
+				}
+
+				//callback
+				callback(oResult);
+			});
+		},
+
+		_checkClient2: function (sClientId, callback) {
+			var oThis = this;
+
 			if (String2.isEmpty(sClientId)) {
 				//ok
 				callback({ ready: true });
@@ -754,6 +768,15 @@ function createMainContext(window, document, jq) {
 		this.m_oMapForFeedsChecking = new Object();
 
 		//method
+		this._removeAllEmptyRecords = function () {
+			for (var sFeedLink in this.m_oMapForFeeds) {
+				var oFeed = this.m_oMapForFeeds[sFeedLink];
+				if (oFeed != null && String2.isEmpty(oFeed["formId"])) {
+					delete this.m_oMapForFeeds[sFeedLink];
+				}
+			}
+		};
+
 		this._commentsCheck = function (params, onresponse) {
 			var oThis = this;
 
