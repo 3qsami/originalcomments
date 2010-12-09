@@ -1,18 +1,18 @@
 ﻿{
   "name": {
-    "message": "原始评论支持Google Reader"
+    "message": "原文评论支持Google Reader"
   },
   "description": {
-    "message": "直接在Google Reader中查看原始评论。"
+    "message": "直接在Google Reader中查看原文评论。"
   },
   "actiontitle": {
-    "message": "原始评论支持Google Reader"
+    "message": "原文评论支持Google Reader"
   },
   "requestForm":{
 	"message":"申请窗体"
   },
   "requestFormTitle":{
-	"message":"我想查看原始评论"
+	"message":"我想查看原文评论"
   },
   "trackComments":{
 	"message":"查看评论"
@@ -57,7 +57,7 @@
 	"message":"此评论已被订阅!"
   },
   "home_htm_title":{
-	"message":"主页 - 原始评论"
+	"message":"主页 - 原文评论"
   },
   "comments":{
 	"message":"评论"
