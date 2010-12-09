@@ -87,6 +87,10 @@ function feed_readerOnline_events_viewcomments(window,document,jq) {
 			e.returnValue = true;
 			e.cancelBubble = true;
 		}
+		else if (sName == "autoview_height") {
+			e.returnValue = 360; //e.value + 200;
+			e.cancelBubble = true;
+		}
 		else if (sName == "debug_enabled") {
 			e.returnValue = true;
 			e.cancelBubble = true;

@@ -595,7 +595,16 @@ function feed_tools_system(window, document, jq) {
 	}
 
 	function __autotrack_height() {
-		return this._oContent.m_oOptions["autoview_height"];
+		//raise event of ongetoption
+		var oEvent = this._createevent();
+		oEvent.name = "autoview_height";
+		oEvent.value = this._oContent.m_oOptions["autoview_height"];
+
+		this._fireevent("ongetoption", oEvent);
+		if (oEvent.cancelBubble)
+			return oEvent.returnValue;
+		else
+			return oEvent.value;
 	}
 	function __autotrack_leftmargin() {
 		return this._oContent.m_oOptions["autoview_leftmargin"];
