@@ -61,9 +61,12 @@
 					__importForm(sFormId, function (result) {
 						if (result) {
 							//update debug_articlelink
+							//2010.12.12 not change link if not empty
 							var oFormContent = _getFormContent(sFormId);
-							oFormContent["debug_articlelink"] = sArticleLink;
-							_setFormContent(oFormContent);
+							if (String2.isEmpty(oFormContent["debug_articlelink"])) {
+								oFormContent["debug_articlelink"] = sArticleLink;
+								_setFormContent(oFormContent);
+							}
 
 							//edit
 							onclick_edit(null, sFormId);
