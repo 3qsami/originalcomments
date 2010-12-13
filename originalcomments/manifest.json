@@ -1,6 +1,6 @@
 ﻿{
   "name": "__MSG_name__",
-  "version": "1.0.30",
+  "version": "1.0.31",
   "description": "__MSG_description__",
   "icons": { "16": "addons/images/button16.png",
            "21": "addons/images/button21.png",
@@ -21,6 +21,7 @@
   "content_scripts": [
     {
       "matches": ["*://www.google.com/reader/view/*"],
+	  "css": ["addons/style/content.css"],
       "js": ["addons/lib/jquery.min.js","addons/js/cbase.js","addons/js/ctools.js","addons/chrome/js/cbase.js","addons/js/ccontent.js","addons/chrome/js/ccontent.js","addons/readeronline/googlereader.js"]
     }
   ]
