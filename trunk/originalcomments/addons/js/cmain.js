@@ -1474,6 +1474,10 @@ function createMainContext(window, document, jq) {
 			else {
 				//comments
 				var oEntitysetComments = oResult["comments"];
+				//force not empty
+				if (oEntitysetComments == null) {
+					oEntitysetComments = Sys.createEntityset();
+				}
 
 				//save
 				this.m_oMapEntitysetComments[nPageIndex] = oEntitysetComments;
@@ -1494,7 +1498,7 @@ function createMainContext(window, document, jq) {
 					//ready
 					this._task_callback_checkShow();
 				}
-				else if(bEnd){
+				else if (bEnd) {
 					//failed
 					this._task_callback_raisefailed();
 				}
