@@ -16,8 +16,9 @@ var ccontenthost = {
 //create content
 var jq = createJQuery(window);
 var ccontent = createContentContext(window, document, jq);
-jq(document).ready(function () {
+//2010.12.19 need not check ready event
+//jq(document).ready(function () {
 	ccontent.start(ccontenthost);
-});
+//});
 
 
