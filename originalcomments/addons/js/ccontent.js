@@ -147,17 +147,24 @@ function feed_tools_system(window, document, jq) {
 	this._createtimer = __createtimer;
 	this._createAdvancedComments = __createAdvancedComments;
 	this._tryconfig = __tryconfig;
+	this._tryconfigAndShow = __tryconfigAndShow;
+	this._getcommentsbuttonscontainer = __getcommentsbuttonscontainer;
 	this._getcommentscontainer = __getcommentscontainer;
+	this._getcommentscontainervisible = __getcommentscontainervisible;
 	this._setcomments = __setcomments;
+	this._setcomments2 = __setcomments2;
 	this.refreshArticleComments = __refreshArticleComments;
 	this.refreshCurrentArticleCommentsOuter = __refreshCurrentArticleCommentsOuter;
 	this.getCurrentArticleIndex = __getCurrentArticleIndex;
 	this._fire_ongetcurrentarticle = __fire_ongetcurrentarticle;
+	this._prepareArticleEntity = __prepareArticleEntity;
 
 	//2010.08.03
 	this._autotrack_getcommentsparams_trackurl = __autotrack_getcommentsparams_trackurl;
 	this._autotrack_gettrackcontainer = __autotrack_gettrackcontainer;
 	this._autotrack_gettrackcontainervisible = __autotrack_gettrackcontainervisible;
+	this._autotrack_prefetchenabled = __autotrack_prefetchenabled;
+	this._autotrack_prefetchenabledinterval = __autotrack_prefetchenabledinterval;
 	this._autotrack_enabled = __autotrack_enabled;
 	this._autotrack_height = __autotrack_height;
 	this._autotrack_leftmargin = __autotrack_leftmargin;
@@ -188,6 +195,7 @@ function feed_tools_system(window, document, jq) {
 	this._delegate_click_showOrder = null;
 	this._delegate_click_refresh = null;
 	this._delegate_click_showPage = null;
+	this._delegate_click_showComments = null;
 
 	//dispose
 	function __dispose() {
@@ -292,6 +300,7 @@ function feed_tools_system(window, document, jq) {
 			this._delegate_click_showOrder = ctools.createDelegate(this, __pimshell_click_showOrder);
 			this._delegate_click_refresh = ctools.createDelegate(this, __pimshell_click_refresh);
 			this._delegate_click_showPage = ctools.createDelegate(this, __pimshell_click_showPage);
+			this._delegate_click_showComments = ctools.createDelegate(this, __pimshell_click_showComments);
 		}
 		else {
 			this._delegate_click_feedback = null;
@@ -302,6 +311,7 @@ function feed_tools_system(window, document, jq) {
 			this._delegate_click_showOrder = null;
 			this._delegate_click_refresh = null;
 			this._delegate_click_showPage = null;
+			this._delegate_click_showComments = null;
 		}
 	}
 
@@ -358,16 +368,20 @@ function feed_tools_system(window, document, jq) {
 					//2010.11.14 set index to article element
 					var nIndex = ctools.getAttribute(oArticleElement, "_index_oc", 0);
 					if (nIndex == 0) {
+						//assign index
 						nIndex=++this._nArticleCounter;
 						oArticleElement.setAttribute('_index_oc', nIndex);
 					}
 
+					//prepare entity
+					var oEntity=this._prepareArticleEntity(oEvent, nIndex);
+
 					//
-					var oDiv = this._getcommentscontainer(oArticleElement, false);
+					var oDiv = this._getcommentsbuttonscontainer(oEntity, false);
 					if (nIndex != this._nCurrentArticleIndex || oDiv == null) {
 						var nIndexOld = this._nCurrentArticleIndex;
 						this._nCurrentArticleIndex = nIndex;
-						this._currentArticleIndexChanged(nIndexOld, this._nCurrentArticleIndex, oEvent);
+						this._currentArticleIndexChanged(nIndexOld, this._nCurrentArticleIndex, oEntity);
 					}
 				}
 			}
@@ -375,6 +389,112 @@ function feed_tools_system(window, document, jq) {
 		catch (e) {
 			//donnot raise any error.
 		}
+	}
+
+	//
+	function __prepareArticleEntity(oParams, nIndexNew) {
+		//check if exsits
+		var oEntity = this._oMapForArticles[nIndexNew];
+		if (oEntity == null) {
+			//article
+			var oArticleElement = oParams["articleElement"];
+			var sArticleLink = oParams["articleLink"];
+			var sArticleTitle = oParams["articleTitle"];
+			var sFormId = oParams["formId"];
+
+			//feed
+			var oFeedElement = oParams["feedElement"];
+			var sFeedLink = oParams["feedLink"];
+			var sFeedTitle = oParams["feedTitle"];
+
+			//
+			oEntity = new Object();
+			oEntity["index"] = nIndexNew;
+			oEntity["articleElement"] = oArticleElement;
+			oEntity["articleLink"] = sArticleLink;
+			oEntity["articleTitle"] = sArticleTitle;
+
+			oEntity["feedElement"] = oFeedElement;
+			oEntity["feedLink"] = sFeedLink;
+			oEntity["feedTitle"] = sFeedTitle;
+
+			oEntity["formId"] = sFormId;
+
+			oEntity["showOrder"] = this._autotrack_showorder();
+
+			oEntity["checkOnce"] = false;
+
+			//
+			this._oMapForArticles[nIndexNew] = oEntity;
+		}
+
+		return oEntity;
+	}
+
+	function __getcommentsbuttonscontainer(oEntity, bCreateIfEmpty) {
+		var oThis = this;
+
+		//
+		var nIndex=oEntity["index"];
+		var oArticleElement=oEntity["articleElement"];
+
+		//check div
+		var oDiv = null;
+
+		//raise event of ongetcommentscontainer
+		var oEvent = this._createevent();
+		oEvent.articleElement = oArticleElement;
+
+		this._fireevent("ongetcommentsbuttonscontainer", oEvent);
+		if (oEvent.cancelBubble)
+			oDiv = oEvent.returnValue;
+		else
+			oDiv = ctools.getFirstJQElement(jq("#pimshell_commentsbuttonscontainer", oArticleElement));
+
+		//
+		if (oDiv == null) {
+			if (bCreateIfEmpty) {
+				//append div to the end
+				oDiv = document.createElement("span");
+
+				oDiv.id = 'pimshell_commentsbuttonscontainer';
+				oDiv.setAttribute('_ready', false);
+				oDiv.setAttribute('_index',nIndex);
+				oDiv.className = 'link unselectable pimshell_buttonscontainer';
+
+				//click
+				jq(oDiv).click(this._delegate_click_showComments);
+
+				//image
+				oDiv.style.backgroundImage = String2.format("url({0})", cbase.getURL("addons/images/button16.png"));
+				
+				//text and loading image
+				var sHtml_Buttons = String2.format("\
+									<span id='showCommentsText'>{0}</span><img id='loading' src='{1}' style='display:none;height:12px;width:12px;' />\
+									",
+									cbase.getlanguagevalue("showComments"),
+									cbase.getURL("addons/images/loading.gif")
+									);
+
+				oDiv.innerHTML = sHtml_Buttons;
+
+				//raise event of onappendcommentscontainer
+				var oEvent = this._createevent();
+				oEvent.articleElement = oArticleElement;
+				oEvent.commentscontainer = oDiv;
+
+				this._fireevent("onappendcommentsbuttonscontainer", oEvent);
+				if (!oEvent.cancelBubble) {
+					oArticleElement.appendChild(oDiv);
+				}
+
+				//2010.11.20 clear old articles
+				var nIndex = ctools.getAttribute(oArticleElement, "_index_oc", 0);
+				this._autotrack_clearoldarticles(nIndex);
+			}
+		}
+
+		return oDiv;
 	}
 
 	function __getcommentscontainer(oArticleElement, bCreateIfEmpty) {
@@ -398,7 +518,7 @@ function feed_tools_system(window, document, jq) {
 				oDiv = document.createElement("div");
 
 				oDiv.id = 'pimshell_advancedcomments';
-				oDiv.setAttribute('_ready', false);
+				//oDiv.setAttribute('_ready', false);
 				oDiv.style.cssText='font-size:12px;margin-left:30px;margin-top:10px;margin-bottom:20px;margin-right:5px;border:solid 1px gray;padding-left:12px;padding-top:5px;padding-bottom:5px;padding-right:5px;';
 
 				//raise event of onappendcommentscontainer
@@ -411,65 +531,95 @@ function feed_tools_system(window, document, jq) {
 					oArticleElement.appendChild(oDiv);
 				}
 
-				//2010.11.20 clear old articles
-				var nIndex = ctools.getAttribute(oArticleElement, "_index_oc", 0);
-				this._autotrack_clearoldarticles(nIndex);
+				////2010.11.20 clear old articles
+				//var nIndex = ctools.getAttribute(oArticleElement, "_index_oc", 0);
+				//this._autotrack_clearoldarticles(nIndex);
 			}
 		}
 
 		return oDiv;
 	}
 
-	function __currentArticleIndexChanged(nIndexOld, nIndexNew, oEvent) {
-		//
-		this._tryconfig(oEvent, false);
-	}
-
-	function __tryconfig(oParams, bForceTry) {
+	function __currentArticleIndexChanged(nIndexOld, nIndexNew, oEntity) {
 		var oThis = this;
 
+		//append commentbuttons
+		this._getcommentsbuttonscontainer(oEntity, true);
+
+		//2010.12.21
+		if (oEntity["checkOnce"] == false) {
+			if (this._autotrack_prefetchenabled()) {
+				var nInterval = this._autotrack_prefetchenabledinterval() * 1000;
+				window.setTimeout(function () {
+					if (oThis.getCurrentArticleIndex() == nIndexNew) {
+						oThis._tryconfigAndShow(oEntity, true, false);
+					}
+				}, nInterval);
+			}
+		}
+	}
+
+	function __tryconfigAndShow(oEntity, bForceTry,bShowComments) {
+		var oThis=this;
+
+		this._tryconfig(oEntity, bForceTry, function (bReady) {
+			//totalcount
+			if (oEntity["formId"] != "" && oEntity["totalcount"] == null) {
+				//parse page one
+				oThis._autotrack_parsepage(oEntity, 1, false);
+			}
+
+			//show
+			if (bReady && bShowComments) {
+				oThis._setcomments2(oEntity);
+			}
+		});
+	}
+
+	function __tryconfig(oEntity, bForceTry, oCallback) {
+		var oThis = this;
+
+		//only check once
+		oEntity["checkOnce"] = true;
+
 		//article
-		var oArticleElement = oParams["articleElement"];
-		var sArticleLink = oParams["articleLink"];
-		var sArticleTitle = oParams["articleTitle"];
-		var sFormId = oParams["formId"];
+		var oArticleElement = oEntity["articleElement"];
+		var sArticleLink = oEntity["articleLink"];
+		var sArticleTitle = oEntity["articleTitle"];
+		var sFormId = oEntity["formId"];
 
 		//feed
-		var oFeedElement = oParams["feedElement"];
-		var sFeedLink = oParams["feedLink"];
-		var sFeedTitle = oParams["feedTitle"];
+		var oFeedElement = oEntity["feedElement"];
+		var sFeedLink = oEntity["feedLink"];
+		var sFeedTitle = oEntity["feedTitle"];
 
 		//check if exists
-		var oDiv = this._getcommentscontainer(oArticleElement, true);
+		var oDiv = this._getcommentsbuttonscontainer(oEntity, true);
 		if (oDiv == null)
+		{
+			oCallback(false);
 			return;
+		}
 
 		//check ready
 		var bReady = ctools.getAttribute(oDiv, "_ready", false);
-		if (bReady && !bForceTry)
+		//if (bReady && !bForceTry)
+		//	return;
+		if (bReady)
+		{
+			oCallback(true);
 			return;
-
-		//check if exsits
-		var nIndex = ctools.getAttribute(oArticleElement, "_index_oc", 0);
-		var oEntity = this._oMapForArticles[nIndex];
-		if (oEntity == null) {
-			oEntity = new Object();
-			oEntity["index"] = nIndex;
-			oEntity["articleElement"] = oArticleElement;
-			oEntity["articleLink"] = sArticleLink;
-			oEntity["articleTitle"] = sArticleTitle;
-
-			oEntity["feedElement"] = oFeedElement;
-			oEntity["feedLink"] = sFeedLink;
-			oEntity["feedTitle"] = sFeedTitle;
-
-			oEntity["formId"] = sFormId;
-
-			this._oMapForArticles[nIndex] = oEntity;
+		}
+		else if (!bForceTry)
+		{
+			oCallback(false);
+			return;
 		}
 
+		//
 		if (!String2.isEmpty(oEntity["formId"])) {
-			oThis._setcomments(oEntity, true);
+			oThis._setcomments(oEntity);
+			oCallback(true);
 		}
 		else {
 			//check feed
@@ -484,88 +634,108 @@ function feed_tools_system(window, document, jq) {
 			cbase.sendmessage("commentsCheck", oTmp, function (oParams) {
 				oEntity["formId"] = oParams["formId"];
 				oEntity["formStep"] = oParams["formStep"];
-				oThis._setcomments(oEntity, oParams["succeeded"]);
+				oEntity["checkStatus"] = oParams["succeeded"];
+				oThis._setcomments(oEntity);
+				oCallback(true);
 			});
 		}
 	}
 
-	
+	//
+	function __setcomments2(oEntity) {
+		//info
+		var oArticleElement = oEntity["articleElement"];
+		var nIndex = oEntity["index"];
+
+		var sFormId = oEntity["formId"];
+		var bCheckStatus=oEntity["checkStatus"];
+
+		//force exists
+		var oDiv = this._getcommentscontainer(oArticleElement, true);
+
+		//
+		var sHtml_Comment = "";
+		if(bCheckStatus===false)
+		{
+			sHtml_Comment = String2.format("<div>\
+										<span id='cmd_checkAgain' _index='{0}' unselectable='on' onselectstart='return false;' style='-moz-user-select:none;margin-right:4px;color:blue;cursor:pointer;'>{1}</span>\
+										</div>",
+										nIndex,
+										cbase.getlanguagevalue("checkagainTitle")
+										);
+		}
+		else if(sFormId==""){
+			sHtml_Comment = String2.format("<div>\
+										<span id='cmd_requestForm' _index='{0}' unselectable='on' onselectstart='return false;' style='-moz-user-select:none;margin-right:4px;color:blue;cursor:pointer;'>{1}</span>\
+										</div>",
+										nIndex,
+										cbase.getlanguagevalue("requestFormTitle")
+										);
+		}
+		else{
+			sHtml_Comment="";
+		}
+
+		//
+		if(sHtml_Comment==""){
+			//show comments
+			this._forceshowcommentscontainer(oEntity);
+		}
+		else
+		{
+			//set html
+			oDiv.innerHTML = sHtml_Comment;
+
+			//events
+			jq("#cmd_requestForm", oDiv).click(this._delegate_click_requestForm);
+			jq("#cmd_checkAgain", oDiv).click(this._delegate_click_checkAgain);
+		}
+	}
+
 	//
 	function __setcomments(oEntity, bSucceeded) {
 		//info
 		var oArticleElement = oEntity["articleElement"];
-		var sFormId = oEntity["formId"];
 		var nIndex = oEntity["index"];
 
+		var sFormId = oEntity["formId"];
+		var bCheckStatus=oEntity["checkStatus"];
+		
 		//check if exists
-		var oDiv = this._getcommentscontainer(oArticleElement, false);
+		var oDiv = this._getcommentsbuttonscontainer(oEntity, false);
 		if (oDiv == null) {
 			//may be cleared.
 			return;
 		}
 
 		//
-		var sHtml_Comment = "";
-		if (bSucceeded) {
-			if (sFormId == "") {
-				sHtml_Comment = String2.format("<div>\
-										<img src='{3}' style='margin-right:4px;' /><span id='cmd_requestForm' _index='{0}' unselectable='on' onselectstart='return false;' style='-moz-user-select:none;margin-right:4px;color:blue;cursor:pointer;' title='{1}'>{2}</span>\
-										</div>",
-										nIndex,
-										cbase.getlanguagevalue("requestFormTitle"),
-										cbase.getlanguagevalue("requestFormTitle"),
-										cbase.getURL("addons/images/originalcomments_n.ico")
-										);
-			}
-			else {
-				sHtml_Comment = String2.format("<div>\
-									<img src='{5}' id='cmd_trackComments_img' style='margin-right:4px;' /><span id='cmd_trackComments' _index='{0}' unselectable='on' onselectstart='return false;' style='-moz-user-select:none;margin-right:4px;color:blue;cursor:pointer;' title='{1}'>{2}</span>\
-									<img src='{5}' id='cmd_followComments_img' style='margin-right:4px;' /><span id='cmd_followComments' _index='{0}' unselectable='on' onselectstart='return false;' style='-moz-user-select:none;margin-right:4px;color:blue;cursor:pointer;' title='{3}'>{4}</span>\
-									</div>",
-									nIndex,
-									cbase.getlanguagevalue("trackCommentsDesp").replace(/\"/g, "&quot;"),
-									cbase.getlanguagevalue("track"),
-									cbase.getlanguagevalue("followCommentsDesp").replace(/\"/g, "&quot;"),
-									cbase.getlanguagevalue("follow"),
-									cbase.getURL("addons/images/originalcomments_y.ico")
-									);
-			}
+		var sTextStatus="";
+		if(bCheckStatus===false || sFormId == "")
+		{
+			sTextStatus="(?)";
 		}
-		else {
-			sHtml_Comment = String2.format("<div>\
-										<img src='{3}' style='margin-right:4px;' /><span id='cmd_checkAgain' _index='{0}' unselectable='on' onselectstart='return false;' style='-moz-user-select:none;margin-right:4px;color:blue;cursor:pointer;' title='{1}'>{2}</span>\
-										</div>",
-										nIndex,
-										cbase.getlanguagevalue("checkagain"),
-										cbase.getlanguagevalue("checkagain"),
-										cbase.getURL("addons/images/originalcomments.ico")
-										);
+		else{
+			var nTotalCount=oEntity["totalcount"];
+			if(nTotalCount!=null){
+				sTextStatus = String2.format("(<span style='color:red;'>{0}</span>)", nTotalCount);
+			}
 		}
 
-		//set html
-		oDiv.innerHTML = sHtml_Comment;
+		//
+		var sText;
+		if(this._getcommentscontainervisible(oEntity)){
+			sText=cbase.getlanguagevalue("showComments");
+		}
+		else{
+			sText=cbase.getlanguagevalue("hideComments");
+		}
+
+		//set text
+		sText+=sTextStatus;
+		jq("#showCommentsText",oDiv).html(sText);
+
+		//ready
 		oDiv.setAttribute("_ready", true);
-
-		//events
-		jq("#cmd_requestForm", oDiv).click(this._delegate_click_requestForm);
-		jq("#cmd_trackComments", oDiv).click(this._delegate_click_trackComments);
-		jq("#cmd_followComments", oDiv).click(this._delegate_click_followComments);
-		jq("#cmd_checkAgain", oDiv).click(this._delegate_click_checkAgain);
-
-		//raise event of oncommentscontainerready
-		var oEvent = this._createevent();
-		oEvent.articleElement = oArticleElement;
-		oEvent.commentscontainer = oDiv;
-		oEvent.entity = oEntity;
-
-		this._fireevent("oncommentscontainerready", oEvent);
-
-		//2010.08.03
-		if (this._autotrack_enabled()) {
-			if (bSucceeded && sFormId != "") {
-				var oDiv2 = this._autotrack_gettrackcontainer(oEntity, true);
-			}
-		}
 	}
 
 	function __debug_enabled() {
@@ -579,6 +749,23 @@ function feed_tools_system(window, document, jq) {
 			return oEvent.returnValue;
 		else
 			return oEvent.value;
+	}
+
+	function __autotrack_prefetchenabled() {
+		//raise event of ongetoption
+		var oEvent = this._createevent();
+		oEvent.name = "autoview_prefetchenabled";
+		oEvent.value = this._oContent.m_oOptions["autoview_prefetchenabled"];
+
+		this._fireevent("ongetoption", oEvent);
+		if (oEvent.cancelBubble)
+			return oEvent.returnValue;
+		else
+			return oEvent.value;
+	}
+
+	function __autotrack_prefetchenabledinterval() {
+		return this._oContent.m_oOptions["autoview_prefetchinterval"];
 	}
 
 	function __autotrack_enabled() {
@@ -623,6 +810,14 @@ function feed_tools_system(window, document, jq) {
 		return "";
 	}
 
+	function __getcommentscontainervisible(oEntity){
+		var oDiv = this._getcommentsbuttonscontainer(oEntity, false);
+		if (oDiv == null)
+			return false;
+		else
+			return oDiv.style.display != "none";
+	}
+
 	function __autotrack_gettrackcontainervisible(oEntity) {
 		var oDiv2 = this._autotrack_gettrackcontainer(oEntity, false);
 		if (oDiv2 == null)
@@ -651,10 +846,6 @@ function feed_tools_system(window, document, jq) {
 
 				oDiv.appendChild(oDiv2);
 
-				//prepare showorder ,even if recreate commentscontainer again.
-				//	before _autotrack_createcontentparts
-				oEntity["showOrder"]=this._autotrack_showorder();
-
 				//content parts
 				this._autotrack_createcontentparts(oDiv2, oEntity);
 
@@ -671,12 +862,12 @@ function feed_tools_system(window, document, jq) {
 		var oThis = this;
 
 		//
-		var oDiv2 = oThis._autotrack_gettrackcontainer(oEntity, false);
-		if (oDiv2 == null)
+		var oSpan1=oThis._getcommentsbuttonscontainer(oEntity,false);
+		if(oSpan1==null)
 			return;
 
 		//loading
-		jq("#pimshell_advancedcomments_autotrack_toolbar #loading", oDiv2).show();
+		jq("#loading", oSpan1).show();
 
 		//params
 		var oParams = new Object();
@@ -695,13 +886,8 @@ function feed_tools_system(window, document, jq) {
 			if (oResult == null)
 				return;
 
-			//try get again
-			var oDiv2 = oThis._autotrack_gettrackcontainer(oEntity, false);
-			if (oDiv2 == null)
-				return;
-
 			//loading
-			jq("#pimshell_advancedcomments_autotrack_toolbar #loading", oDiv2).hide();
+			jq("#loading", oSpan1).hide();
 
 			//if failed donnot change anything
 			if (oResult["status"] != "succeeded")
@@ -711,6 +897,15 @@ function feed_tools_system(window, document, jq) {
 			var nTotalCount = oResult["totalcount"];
 			var nPageCount = oResult["pagecount"];
 			var nPageSize = oResult["pagesize"];
+
+			//record totalcount for show
+			oEntity["totalcount"]=nTotalCount;
+			oThis._setcomments(oEntity);
+
+			//oDiv2 maybe null
+			var oDiv2 = oThis._autotrack_gettrackcontainer(oEntity, false);
+			if (oDiv2 == null)
+				return;
 
 			//content
 			jq("#pimshell_advancedcomments_autotrack_content", oDiv2).html(oResult["content"]).attr('scrollTop', 0);
@@ -836,6 +1031,19 @@ function feed_tools_system(window, document, jq) {
 	}
 
 	//
+	function __pimshell_click_showComments(event) {
+		var oElement = ctools.getEventElement(event);
+		var nIndex = oElement.getAttribute("_index");
+
+		//
+		var oEntity = this._oMapForArticles[nIndex];
+		if (oEntity == null)
+			return;
+
+		
+	}
+
+	//
 	function __pimshell_click_feedback(event) {
 		var oElement = ctools.getEventElement(event);
 		var nIndex = oElement.getAttribute("_index");
@@ -901,7 +1109,7 @@ function feed_tools_system(window, document, jq) {
 		oDiv.setAttribute("_ready", false);
 
 		//try config again
-		this._tryconfig(oEntity, true);
+		this._tryconfigAndShow(oEntity, true,true);
 	}
 
 	function __forceshowcommentscontainer(oEntity) {

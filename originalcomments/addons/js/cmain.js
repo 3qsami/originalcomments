@@ -102,6 +102,11 @@ function createMainContext(window, document, jq) {
 			if (oOptions["follow_checkinterval"] == null)
 				oOptions["follow_checkinterval"] = 60; //minutes
 
+			if (oOptions["autoview_prefetchenabled"] == null)
+				oOptions["autoview_prefetchenabled"] = true;
+			if (oOptions["autoview_prefetchinterval"] == null)
+				oOptions["autoview_prefetchinterval"] = 2;	//seconds
+
 			//ok
 			return oOptions;
 		},

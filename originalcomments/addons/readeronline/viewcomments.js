@@ -45,10 +45,40 @@ function feed_readerOnline_events_viewcomments(window,document,jq) {
 		}
 	};
 
-	this.onappendcommentscontainer = function (e) {
+	//
+	this.onappendcommentsbuttonscontainer = function (e) {
 		var oArticleElement = e.articleElement;
 		var oCommentsContainer = e.commentscontainer;
 
+		var oArticleBody = ctools.getFirstJQElement(jq("#article-body", oArticleElement));
+		if (oArticleBody == null)
+			oArticleElement.appendChild(oCommentsContainer);
+		else
+			oArticleBody.appendChild(oCommentsContainer);
+
+		e.cancelBubble = true;
+	};
+
+	this.ongetcommentsbuttonscontainer = function (e) {
+		var oArticleElement = e.articleElement;
+
+		var oCommentsContainer = null;
+
+		var oArticleBody = ctools.getFirstJQElement(jq("#article-body", oArticleElement));
+		if (oArticleBody == null)
+			oCommentsContainer = ctools.getFirstJQElement(jq("#pimshell_commentsbuttonscontainer", oArticleElement));
+		else
+			oCommentsContainer = ctools.getFirstJQElement(jq("#pimshell_commentsbuttonscontainer", oArticleBody));
+
+		e.returnValue = oCommentsContainer;
+		e.cancelBubble = true;
+	};
+
+	//
+	this.onappendcommentscontainer = function (e) {
+		var oArticleElement = e.articleElement;
+		var oCommentsContainer = e.commentscontainer;
+		
 		var oArticleBody = ctools.getFirstJQElement(jq("#article-body", oArticleElement));
 		if (oArticleBody == null)
 			oArticleElement.appendChild(oCommentsContainer);
@@ -83,7 +113,11 @@ function feed_readerOnline_events_viewcomments(window,document,jq) {
 		var sName = e.name;
 		var oValue = e.value;
 
-		if (sName == "autoview_enabled") {
+		if (sName == "autoview_prefetchenabled") {
+			e.returnValue = false;
+			e.cancelBubble = true;
+		}
+		else if (sName == "autoview_enabled") {
 			e.returnValue = true;
 			e.cancelBubble = true;
 		}

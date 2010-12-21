@@ -29,6 +29,9 @@
   "checkagain":{
 	"message":"Check again"
   },
+  "checkagainTitle":{
+	"message":"Access failed, try again please."
+  },
   "track":{
 	"message":"View"
   },
@@ -40,6 +43,9 @@
   },
   "refresh":{
 	"message":"Refresh"
+  },
+  "refreshList":{
+	"message":"Refresh List"
   },
   "pageFirst":{
 	"message":"First page"
@@ -86,6 +92,9 @@
   "checkNewCommentsNow":{
 	"message":"Check new comments now"
   },
+  "autoViewSize":{
+	"message":"Comment list's size"
+  },
   "autoViewEnabled":{
 	"message":"Display the comment list automatically"
   },
@@ -97,6 +106,12 @@
   },
   "autoViewRightMargin":{
 	"message":"Right margin of the comment list"
+  },
+  "autoViewPrefetchEnabled":{
+	"message":"Pre-fetch comments"
+  },
+  "autoViewPrefetchInterval":{
+	"message":"Pre-fetch delay (Seconds)"
   },
   "followCheckEnabled":{
 	"message":"Check the new comments frequently"
@@ -124,5 +139,11 @@
   },
   "viewcommentfeedbackprompt":{
 	"message":"If viewing comments cannot work properly, please send feedback to us."
+  },
+  "showComments":{
+	"message":"Show Comments"
+  },
+  "hideComments":{
+	"message":"Hide Comments"
   }
 }

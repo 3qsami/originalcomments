@@ -29,6 +29,9 @@
   "checkagain":{
 	"message":"重新检测"
   },
+  "checkagainTitle":{
+	"message":"访问失败，请重试。"
+  },
   "track":{
 	"message":"查看"
   },
@@ -40,6 +43,9 @@
   },
   "refresh":{
 	"message":"刷新"
+  },
+  "refreshList":{
+	"message":"刷新列表"
   },
   "pageFirst":{
 	"message":"首页"
@@ -86,6 +92,9 @@
   "checkNewCommentsNow":{
 	"message":"立即检测新评论"
   },
+  "autoViewSize":{
+	"message":"评论列表的尺寸"
+  },
   "autoViewEnabled":{
 	"message":"自动显示评论列表"
   },
@@ -97,6 +106,12 @@
   },
   "autoViewRightMargin":{
 	"message":"评论列表的右边距"
+  },
+  "autoViewPrefetchEnabled":{
+	"message":"预加载评论"
+  },
+  "autoViewPrefetchInterval":{
+	"message":"预加载延时 (秒)"
   },
   "followCheckEnabled":{
 	"message":"定期检测新评论"
@@ -124,5 +139,12 @@
   },
   "viewcommentfeedbackprompt":{
 	"message":"如果查看评论无法正常工作, 请给我们发送反馈."
+  },
+  "showComments":{
+	"message":"显示评论"
+  },
+  "hideComments":{
+	"message":"隐藏评论"
   }
+
 }

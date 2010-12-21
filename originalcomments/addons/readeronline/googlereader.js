@@ -28,6 +28,8 @@ function feed_readerOnline_events_googlereader(window,document,jq) {
 	this.ongetcurrentarticle = __ongetcurrentarticle;
 	this.onappendcommentscontainer = __onappendcommentscontainer;
 	this.ongetcommentscontainer = __ongetcommentscontainer;
+	this.onappendcommentsbuttonscontainer = __onappendcommentsbuttonscontainer;
+	this.ongetcommentsbuttonscontainer = __ongetcommentsbuttonscontainer;
 
 	this._getcurrententry = __getcurrententry;
 	this._getcurrentfeed = __getcurrentfeed;
@@ -100,6 +102,35 @@ function feed_readerOnline_events_googlereader(window,document,jq) {
 			}
 		}
 	}
+
+	//
+	function __onappendcommentsbuttonscontainer(e) {
+		var oArticleElement = e.articleElement;
+		var oCommentsContainer = e.commentscontainer;
+		
+		var oArticleBody = ctools.getFirstJQElement(jq("div.entry-actions", oArticleElement));
+		if (oArticleBody == null)
+			oArticleElement.appendChild(oCommentsContainer);
+		else
+			oArticleBody.appendChild(oCommentsContainer);
+
+		e.cancelBubble = true;
+	};
+
+	function __ongetcommentsbuttonscontainer(e) {
+		var oArticleElement = e.articleElement;
+
+		var oCommentsContainer = null;
+
+		var oArticleBody = ctools.getFirstJQElement(jq("div.entry-actions", oArticleElement));
+		if (oArticleBody == null)
+			oCommentsContainer = ctools.getFirstJQElement(jq("#pimshell_commentsbuttonscontainer", oArticleElement));
+		else
+			oCommentsContainer = ctools.getFirstJQElement(jq("#pimshell_commentsbuttonscontainer", oArticleBody));
+
+		e.returnValue = oCommentsContainer;
+		e.cancelBubble = true;
+	};
 
 	//
 	function __onappendcommentscontainer(e) {

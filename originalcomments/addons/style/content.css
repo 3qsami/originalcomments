@@ -4,3 +4,8 @@ blockquote
 {
 	padding:4px 4px 12px 4px;border:solid 1px gray;background-color:#CC99FF;
 }
+
+.pimshell_buttonscontainer
+{
+	background:transparent url(none) no-repeat;padding:1px 8px 1px 18px;white-space:nowrap;	
+}
