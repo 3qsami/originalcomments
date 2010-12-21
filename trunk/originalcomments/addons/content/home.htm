@@ -237,7 +237,7 @@
 
 		//buttons
 		jQuery("#refresh")
-							.text(cbase.getlanguagevalue("refresh"))
+							.text(cbase.getlanguagevalue("refreshList"))
 							.button();
 		jQuery("#refresh").click(onclick_refresh);
 
@@ -262,8 +262,9 @@
 			//trackcomments
 			jQuery("#TrackComments_HeaderTitle").text(cbase.getlanguagevalue("trackComments"));
 
-			jQuery("#option_autoViewEnabled_desp").text(cbase.getlanguagevalue("autoViewEnabled"));
-			jQuery("#option_autoViewEnabled").change(oninputchange);
+			//jQuery("#option_autoViewEnabled_desp").text(cbase.getlanguagevalue("autoViewEnabled"));
+			//jQuery("#option_autoViewEnabled").change(oninputchange);
+			jQuery("#option_autoViewSize_desp").text(cbase.getlanguagevalue("autoViewSize"));
 
 			jQuery("#option_autoViewHeight_desp").text(cbase.getlanguagevalue("autoViewHeight"));
 			jQuery("#option_autoViewHeight").change(oninputchange);
@@ -276,6 +277,14 @@
 			jQuery("#option_autoViewRightMargin_desp").text(cbase.getlanguagevalue("autoViewRightMargin"));
 			jQuery("#option_autoViewRightMargin").change(oninputchange);
 			jQuery("#option_autoViewRightMargin_slider").slider({ min: 10, max: 200, step: 10, change: onsliderchange });
+
+			//prefetch
+			jQuery("#option_autoViewPrefetchEnabled_desp").text(cbase.getlanguagevalue("autoViewPrefetchEnabled"));
+			jQuery("#option_autoViewPrefetchEnabled").change(oninputchange);
+
+			jQuery("#option_autoViewPrefetchInterval_desp").text(cbase.getlanguagevalue("autoViewPrefetchInterval"));
+			jQuery("#option_autoViewPrefetchInterval").change(oninputchange);
+			jQuery("#option_autoViewPrefetchInterval_slider").slider({ min: 0, max: 10, step: 1, change: onsliderchange });
 
 			//followcomments
 			jQuery("#FollowComments_HeaderTitle").text(cbase.getlanguagevalue("commentsSubscriptions"));
@@ -309,7 +318,7 @@
 
 	function _fillOptions(oOptions) {
 		//trackcomments
-		jQuery("#option_autoViewEnabled").attr("checked", oOptions["autoview_enabled"]);
+		//jQuery("#option_autoViewEnabled").attr("checked", oOptions["autoview_enabled"]);
 		
 		jQuery("#option_autoViewHeight").attr("value", oOptions["autoview_height"]);
 		jQuery("#option_autoViewHeight_slider").slider("option","value",oOptions["autoview_height"]);
@@ -319,6 +328,12 @@
 
 		jQuery("#option_autoViewRightMargin").attr("value", oOptions["autoview_rightmargin"]);
 		jQuery("#option_autoViewRightMargin_slider").slider("option","value",oOptions["autoview_rightmargin"]);
+
+		//prefech
+		jQuery("#option_autoViewPrefetchEnabled").attr("checked", oOptions["autoview_prefetchenabled"]);
+
+		jQuery("#option_autoViewPrefetchInterval").attr("value", oOptions["autoview_prefetchinterval"]);
+		jQuery("#option_autoViewPrefetchInterval_slider").slider("option", "value", oOptions["autoview_prefetchinterval"]);
 
 		//followcomments
 		jQuery("#option_followCheckEnabled").attr("checked", oOptions["follow_checkenabled"]);
@@ -418,10 +433,13 @@
 	function onclick_saveOptions(event, ui) {
 		//get options first
 		cbase.sendmessage("getOptions", null, function (oOptions) {
-			oOptions["autoview_enabled"] = jQuery("#option_autoViewEnabled").attr("checked");
+			//oOptions["autoview_enabled"] = jQuery("#option_autoViewEnabled").attr("checked");
 			oOptions["autoview_height"] = parseInt(jQuery("#option_autoViewHeight").attr("value"));
 			oOptions["autoview_leftmargin"] = parseInt(jQuery("#option_autoViewLeftMargin").attr("value"));
 			oOptions["autoview_rightmargin"] = parseInt(jQuery("#option_autoViewRightMargin").attr("value"));
+
+			oOptions["autoview_prefetchenabled"] = jQuery("#option_autoViewPrefetchEnabled").attr("checked");
+			oOptions["autoview_prefetchinterval"] = parseInt(jQuery("#option_autoViewPrefetchInterval").attr("value"));
 
 			oOptions["follow_checkenabled"] = jQuery("#option_followCheckEnabled").attr("checked");
 			oOptions["follow_checkinterval"] = parseInt(jQuery("#option_followCheckInterval").attr("value"));
@@ -510,8 +528,8 @@
 		<table id="tabs-options-table" style="visibility:hidden;">
 			<tr><td colspan="2"><span id="TrackComments_HeaderTitle" class="title"></span></td></tr>
 			<tr>
-				<td class="level1"><label id="option_autoViewEnabled_desp" for="option_autoViewEnabled"></label></td>
-				<td><input id="option_autoViewEnabled" type="checkbox" /></td>
+				<td class="level1" colspan="2"><label style="font-weight:bold;" id="option_autoViewSize_desp" _for="option_autoViewEnabled"></label></td>
+				<!--<td><input id="option_autoViewEnabled" type="checkbox" /></td>-->
 			</tr>
 			<tr>
 				<td class="level2"><label id="option_autoViewHeight_desp"></label></td>
@@ -526,9 +544,18 @@
 				<td><input id="option_autoViewRightMargin" type="text" size="5" slider="option_autoViewRightMargin_slider" /><span id="option_autoViewRightMargin_slider" for="option_autoViewRightMargin" class="option-slider"></span></td>
 			</tr>
 
+			<tr>
+				<td class="level1"><label style="font-weight:bold;" id="option_autoViewPrefetchEnabled_desp" for="option_autoViewPrefetchEnabled"></label></td>
+				<td><input id="option_autoViewPrefetchEnabled" type="checkbox" /></td>
+			</tr>
+			<tr>
+				<td class="level2"><label id="option_autoViewPrefetchInterval_desp"></label></td>
+				<td><input id="option_autoViewPrefetchInterval" type="text" size="5" slider="option_autoViewPrefetchInterval_slider" /><span id="option_autoViewPrefetchInterval_slider" for="option_autoViewPrefetchInterval" class="option-slider"></span></td>
+			</tr>
+
 			<tr><td colspan="2"><span id="FollowComments_HeaderTitle" class="title"></span></td></tr>
 			<tr>
-				<td class="level1"><label id="option_followCheckEnabled_desp" for="option_followCheckEnabled"></label></td>
+				<td class="level1"><label style="font-weight:bold;" id="option_followCheckEnabled_desp" for="option_followCheckEnabled"></label></td>
 				<td><input id="option_followCheckEnabled" type="checkbox" /></td>
 			</tr>
 			<tr>
