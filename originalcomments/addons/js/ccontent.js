@@ -136,7 +136,6 @@ function feed_tools_system(window, document, jq) {
 
 	this._nCurrentArticleIndex = 0;
 
-	this._nLoadingStartCounter = 0;
 
 	////	-- methods
 	this.initialize = __initialize;
@@ -159,8 +158,10 @@ function feed_tools_system(window, document, jq) {
 	this.refreshArticleComments = __refreshArticleComments;
 	this.refreshCurrentArticleCommentsOuter = __refreshCurrentArticleCommentsOuter;
 	this.getCurrentArticleIndex = __getCurrentArticleIndex;
+	this.getCurrentArticleEntity=__getCurrentArticleEntity;
 	this._fire_ongetcurrentarticle = __fire_ongetcurrentarticle;
 	this._prepareArticleEntity = __prepareArticleEntity;
+	this._switchcomments = __switchcomments;
 
 	//2010.08.03
 	this._autotrack_getcommentsparams_trackurl = __autotrack_getcommentsparams_trackurl;
@@ -280,6 +281,8 @@ function feed_tools_system(window, document, jq) {
 
 	//
 	function __readerOnline_start() {
+		var oThis = this;
+
 		//
 		this._oMapForArticles = new Object();
 		this._oMapForFeeds = new Object();
@@ -292,6 +295,29 @@ function feed_tools_system(window, document, jq) {
 
 		//
 		this._createtimer(true);
+
+		//hotkeys
+		jq(document).bind("keydown", function (event) {
+			var code = event.which ? event.which : event.keyCode;
+			if (code == 255)
+				return;
+
+			//
+			if (String.fromCharCode(code).toLowerCase() == 'c' && !event.ctrlKey) {
+				//not input or textarea
+				var oElement = ctools.getEventElement(event);
+				var sTagName = oElement.tagName.toLowerCase();
+				if (sTagName == "input" || sTagName == "textarea")
+					return;
+
+				//current article
+				var oEntity = oThis.getCurrentArticleEntity();
+				if (oEntity != null) {
+					oThis._switchcomments(oEntity);
+					return false;
+				}
+			}
+		});
 	}
 
 	function __setglobalfunctions(bSet) {
@@ -424,7 +450,9 @@ function feed_tools_system(window, document, jq) {
 
 			oEntity["showOrder"] = this._autotrack_showorder();
 
-			oEntity["checkOnce"] = false;
+			oEntity["_ready"] = false;
+			oEntity["_checkOnce"] = false;
+			oEntity["_loadingStartCounter"]=0;
 
 			//
 			this._oMapForArticles[nIndexNew] = oEntity;
@@ -456,13 +484,16 @@ function feed_tools_system(window, document, jq) {
 		//
 		if (oDiv == null) {
 			if (bCreateIfEmpty) {
+				//reset
+				oEntity["_ready"] = false;
+				oEntity["_checkOnce"] = false;
+
 				//append div to the end
 				oDiv = document.createElement("span");
 
 				oDiv.id = 'pimshell_commentsbuttonscontainer';
-				oDiv.setAttribute('_ready', false);
 				oDiv.setAttribute('_index',nIndex);
-				oDiv.className = 'link unselectable pimshell_buttonscontainer';
+				oDiv.className = 'link unselectable pimshell_buttonscontainer_hide';
 
 				//image
 				oDiv.style.backgroundImage = String2.format("url({0})", cbase.getURL("addons/images/button16.png"));
@@ -495,6 +526,12 @@ function feed_tools_system(window, document, jq) {
 				//2010.11.20 clear old articles
 				var nIndex = ctools.getAttribute(oArticleElement, "_index_oc", 0);
 				this._autotrack_clearoldarticles(nIndex);
+
+				//2010.12.22 only for viewcomments as to show comments immediately.
+				if (this._autotrack_enabled()) {
+					//switch
+					this._switchcomments(oEntity);
+				}
 			}
 		}
 
@@ -525,8 +562,7 @@ function feed_tools_system(window, document, jq) {
 				oDiv = document.createElement("div");
 
 				oDiv.id = 'pimshell_advancedcomments';
-				//oDiv.setAttribute('_ready', false);
-				oDiv.style.cssText='display:none;font-size:12px;margin-left:30px;margin-top:10px;margin-bottom:20px;margin-right:5px;border:solid 1px gray;padding-left:12px;padding-top:5px;padding-bottom:5px;padding-right:5px;';
+				oDiv.className = 'pimshell_commentscontainer';
 
 				//raise event of onappendcommentscontainer
 				var oEvent = this._createevent();
@@ -554,7 +590,7 @@ function feed_tools_system(window, document, jq) {
 		this._getcommentsbuttonscontainer(oEntity, true);
 
 		//2010.12.21
-		if (oEntity["checkOnce"] == false) {
+		if (oEntity["_checkOnce"] == false) {
 			if (this._autotrack_prefetchenabled()) {
 				var nInterval = this._autotrack_prefetchenabledinterval() * 1000;
 				window.setTimeout(function () {
@@ -587,7 +623,7 @@ function feed_tools_system(window, document, jq) {
 		var oThis = this;
 
 		//only check once
-		oEntity["checkOnce"] = true;
+		oEntity["_checkOnce"] = true;
 
 		//article
 		var oArticleElement = oEntity["articleElement"];
@@ -609,7 +645,7 @@ function feed_tools_system(window, document, jq) {
 		}
 
 		//check ready
-		var bReady = ctools.getAttribute(oDiv, "_ready", false);
+		var bReady = oEntity["_ready"];
 		if (bReady && !bForceTry) {
 			oCallback(bReady);
 			return;
@@ -707,7 +743,7 @@ function feed_tools_system(window, document, jq) {
 	}
 
 	//
-	function __setcomments(oEntity, bSucceeded) {
+	function __setcomments(oEntity, bVisibleOptional) {
 		//info
 		var oArticleElement = oEntity["articleElement"];
 		var nIndex = oEntity["index"];
@@ -735,21 +771,34 @@ function feed_tools_system(window, document, jq) {
 			}
 		}
 
-		//
+		//visible
+		var bVisible;
+		if (bVisibleOptional != null)
+			bVisible = bVisibleOptional;
+		else
+			bVisible=this._getcommentscontainervisible(oEntity);
+
+		//text and css
 		var sText;
-		if(this._getcommentscontainervisible(oEntity)){
+		var sClassName;
+		if (bVisible) {
 			sText = cbase.getlanguagevalue("hideComments");
+			sClassName = 'link unselectable pimshell_buttonscontainer_show';
 		}
 		else{
 			sText = cbase.getlanguagevalue("showComments");
+			sClassName = 'link unselectable pimshell_buttonscontainer_hide';
 		}
 
 		//set text
 		sText+=sTextStatus;
 		jq("#showCommentsText",oDiv).html(sText);
 
+		//set css
+		oDiv.className = sClassName;
+
 		//ready
-		oDiv.setAttribute("_ready", true);
+		oEntity["_ready"] = true;
 	}
 
 	function __debug_enabled() {
@@ -841,9 +890,20 @@ function feed_tools_system(window, document, jq) {
 			return;
 		}
 		else {
+			//first, change buttons style
+			if (bVisible) {
+				oThis._setcomments(oEntity, bVisible);
+			}
+
+			//
 			var oMethod = bVisible ? jq(oDiv).slideDown : jq(oDiv).slideUp;
 			oMethod.call(jq(oDiv), "normal", function () {
-				oThis._setcomments(oEntity);
+				//last, change buttons style
+				if (!bVisible) {
+					oThis._setcomments(oEntity, bVisible);
+				}
+
+				//
 				if (oCallback != null) oCallback(null);
 				return;
 			});
@@ -872,9 +932,11 @@ function feed_tools_system(window, document, jq) {
 				oDiv2 = document.createElement("div");
 
 				oDiv2.id = 'pimshell_advancedcomments_autotrack';
-				oDiv2.style.cssText = String2.format('height:{0}px;padding-top:10px;padding-bottom:0px;padding-right:{1}px;padding-left:{2}px;',
-												parseInt(this._autotrack_height()) + 75,
-												this._autotrack_rightmargin(),this._autotrack_leftmargin());
+				oDiv2.style.cssText = String2.format('height:{0}px;padding-right:{1}px;padding-left:{2}px;',
+												parseInt(this._autotrack_height()) + 70,
+												this._autotrack_rightmargin(), this._autotrack_leftmargin());
+
+				oDiv2.className = 'pimshell_comments';
 
 				oDiv.appendChild(oDiv2);
 
@@ -890,8 +952,8 @@ function feed_tools_system(window, document, jq) {
 		return oDiv2;
 	}
 
-	function __loadingStart(oEntity){
-		if(this._nLoadingStartCounter++ ==0)
+	function __loadingStart(oEntity) {
+		if(oEntity["_loadingStartCounter"]++ ==0)
 		{
 			//
 			var oSpan1=this._getcommentsbuttonscontainer(oEntity,false);
@@ -904,7 +966,7 @@ function feed_tools_system(window, document, jq) {
 	}
 
 	function __loadingStop(oEntity) {
-		if(--this._nLoadingStartCounter ==0)
+		if (--oEntity["_loadingStartCounter"] == 0)
 		{
 			//
 			var oSpan1=this._getcommentsbuttonscontainer(oEntity,false);
@@ -966,11 +1028,10 @@ function feed_tools_system(window, document, jq) {
 				return;
 
 			//toolbar
-			var oPageInfo = jq("#pimshell_advancedcomments_autotrack_toolbar #pageInfo", oDiv2);
+			var oPageInfo = jq("#pimshell_advancedcomments_autotrack_pager #pageInfo", oDiv2);
 			oPageInfo.show();
 			jq("#pageIndex", oPageInfo).text(nPageIndex);
 			jq("#pageCount", oPageInfo).text(nPageCount);
-			jq("#totalCount", oPageInfo).text(nTotalCount);
 
 			//article link maybe changed
 			jq("#pimshell_advancedcomments_autotrack_toolbar #gotoarticle", oDiv2).attr("href", oEntity["articleLink"]);
@@ -1008,22 +1069,22 @@ function feed_tools_system(window, document, jq) {
 		//toolbar
 		var oToolbar = document.createElement("div");
 		oToolbar.id = 'pimshell_advancedcomments_autotrack_toolbar';
-		oToolbar.style.cssText = "height:25px;";
+		oToolbar.className = 'pimshell_comments_toolbar';
 		oDiv2.appendChild(oToolbar);
 
 		var sHtml_Toolbar = String2.format("\
-									<img id='loading' src='{1}' style='display:none;' />\
-									<img id='showOrder' _index='{0}' src='{2}' unselectable='on' onselectstart='return false;' style='-moz-user-select:none;margin-right:4px;color:blue;cursor:pointer;' title='{3}' />\
-									<img id='refresh' _index='{0}' src='{4}' unselectable='on' onselectstart='return false;' style='-moz-user-select:none;margin-right:4px;color:blue;cursor:pointer;' title='{5}' />\
-									<span id='pageInfo' style='vertical-align:top;display:none;margin-right:4px;'><span id='pageIndex' style='vertical-align:top;color:#5377A9;'></span>/<span id='pageCount' style='vertical-align:top;'></span>(<span id='totalCount' style='vertical-align:top;color:#5377A9;'></span>)</span>\
-									<a id='gotoarticle' href='{6}' target='_blank'><img border='0' src='{7}' /></a>\
+									<span id='showOrder' _index='{0}' class='pimshell_cmd_withtext unselectable' style='background-image:url({1});' title='{2}'></span>\
+									<span id='refresh' _index='{0}' class='pimshell_cmd_withtext unselectable' style='background-image:url({3});' title='{4}'></span>\
+									<span id='subscribe' _index='{0}' class='pimshell_cmd_withtext unselectable' style='background-image:url({5});' title='{6}'></span>\
+									<a id='gotoarticle' href='{7}' target='_blank'><img border='0' src='{8}' style='position:relative;top:4px;' /></a>\
 									",
 									nIndex,
-									cbase.getURL("addons/images/loading.gif"),
 									sShowOrder == "desc" ? cbase.getURL("addons/images/down.gif") : cbase.getURL("addons/images/up.gif"),
 									cbase.getlanguagevalue("ascdesc"),
 									cbase.getURL("addons/images/refresh.ico"),
 									cbase.getlanguagevalue("refresh"),
+									cbase.getURL("addons/images/subscribe.png"),
+									cbase.getlanguagevalue("follow"),
 									ctools.HTMLEncode(oEntity["articleLink"]),
 									cbase.getURL("addons/images/goto.gif")
 									);
@@ -1032,22 +1093,29 @@ function feed_tools_system(window, document, jq) {
 
 		jq("#showOrder", oToolbar).click(this._delegate_click_showOrder);
 		jq("#refresh", oToolbar).click(this._delegate_click_refresh);
+		jq("#subscribe", oToolbar).click(this._delegate_click_followComments);
 
 		//content
 		var oContent = document.createElement("div");
 		oContent.id = 'pimshell_advancedcomments_autotrack_content';
-		oContent.style.cssText = String2.format('height:{0}px;border:solid 1px gray;overflow-y:auto;',
-													this._autotrack_height());
+		oContent.style.cssText = String2.format('height:{0}px;background-image:url({1})',
+													this._autotrack_height(),
+													cbase.getURL("addons/images/chinafunbk.png")
+												);
+		oContent.className = 'pimshell_comments_body';
+		
+		//append		
 		oDiv2.appendChild(oContent);
 
 		//pager
 		var oPager = document.createElement("div");
 		oPager.id = 'pimshell_advancedcomments_autotrack_pager';
-		oPager.style.cssText = "height:25px;";
+		oPager.className = 'pimshell_comments_pager';
 		oDiv2.appendChild(oPager);
 
 		//
 		var sHtml_Pager = String2.format("<div style='margin-top:4px;'>\
+									<span id='pageInfo' style='vertical-align:top;display:none;margin-right:4px;'><span id='pageIndex' style='vertical-align:top;color:#5377A9;'></span>/<span id='pageCount' style='vertical-align:top;'></span></span>\
 									<img id='pageFirst' _index='{0}' src='{1}' unselectable='on' onselectstart='return false;' style='-moz-user-select:none;margin-right:4px;color:blue;cursor:pointer;' title=\"{2}\" />\
 									<img id='pagePrevious' _index='{0}' src='{3}' unselectable='on' onselectstart='return false;' style='-moz-user-select:none;margin-right:4px;color:blue;cursor:pointer;' title=\"{4}\" />\
 									<img id='pageNext' _index='{0}' src='{5}' unselectable='on' onselectstart='return false;' style='-moz-user-select:none;margin-right:4px;color:blue;cursor:pointer;' title=\"{6}\" />\
@@ -1087,6 +1155,23 @@ function feed_tools_system(window, document, jq) {
 		}
 	}
 
+	function __switchcomments(oEntity) {
+		//switch show
+		var bVisible = this._getcommentscontainervisible(oEntity);
+		if (bVisible) {
+			this._setcommentscontainervisible(oEntity, false);
+		}
+		else {
+			if (oEntity["_loadingStartCounter"] > 0) {
+				//donothing
+			}
+			else {
+				//not forcetryconfig
+				this._tryconfigAndShow(oEntity, false, true);
+			}
+		} 
+	}
+
 	//
 	function __pimshell_click_showComments(event) {
 		//important, avoid raise twice
@@ -1113,20 +1198,8 @@ function feed_tools_system(window, document, jq) {
 			cbase.sendmessage("newTab", { url: sURL, active: event.shiftKey }, function () { });
 		}
 		else {
-			//switch show
-			var bVisible = this._getcommentscontainervisible(oEntity);
-			if (bVisible) {
-				this._setcommentscontainervisible(oEntity, false);
-			}
-			else {
-				if (this._nLoadingStartCounter > 0) {
-					//donothing
-				}
-				else {
-					//not forcetryconfig
-					this._tryconfigAndShow(oEntity, false, true);
-				}
-			} 
+			//switch
+			this._switchcomments(oEntity);
 		}
 	}
 
@@ -1192,7 +1265,7 @@ function feed_tools_system(window, document, jq) {
 
 		//clear comments
 		oDiv.innerHTML = "";
-		oDiv.setAttribute("_ready", false);
+		oEntity["_ready"] = false;
 
 		//try config again
 		this._tryconfigAndShow(oEntity, true,true);
@@ -1229,7 +1302,8 @@ function feed_tools_system(window, document, jq) {
 			var a = jq(oParentScrollContainer).scrollTop();
 			var b = jq(oSpan1).offset().top;
 			var c = jq(oParentScrollContainer).offset().top;
-			jq(oParentScrollContainer).animate({ scrollTop: a + b - c }, "normal", null, function () {
+			//-2 for top border
+			jq(oParentScrollContainer).animate({ scrollTop: a + b - c - 2  }, "normal", null, function () {
 				oCallback(null);
 				return;
 			});
@@ -1280,12 +1354,22 @@ function feed_tools_system(window, document, jq) {
 		//
 		var sShowOrderNew = (oEntity["showOrder"] == "desc") ? "" : "desc";
 		oEntity["showOrder"] = sShowOrderNew;
-		jq("#pimshell_advancedcomments_autotrack_toolbar #showOrder", oDiv2).attr('src', sShowOrderNew == "desc" ? cbase.getURL("addons/images/down.gif") : cbase.getURL("addons/images/up.gif"));
+
+		var sBKImageURL=String2.format("url({0})",sShowOrderNew == "desc" ? cbase.getURL("addons/images/down.gif") : cbase.getURL("addons/images/up.gif"));
+		jq("#pimshell_advancedcomments_autotrack_toolbar #showOrder", oDiv2).css({ 'background-image': sBKImageURL });
 		
 		//
 		cbase.sendmessage("changeShowOrder", sShowOrderNew, function () {
 			oThis._autotrack_parsepage(oEntity, 1,true);
 		});
+	}
+
+	function __getCurrentArticleEntity(){
+		var nIndex=this.getCurrentArticleIndex();
+		if(nIndex==0)
+			return null;
+		else
+			return this._oMapForArticles[nIndex];
 	}
 
 	function __getCurrentArticleIndex() {
@@ -1359,7 +1443,7 @@ function feed_tools_system(window, document, jq) {
 			return;
 
 		//info
-		var oPageInfo = jq("#pimshell_advancedcomments_autotrack_toolbar #pageInfo", oDiv2);
+		var oPageInfo = jq("#pimshell_advancedcomments_autotrack_pager #pageInfo", oDiv2);
 		var nPageIndex = ctools.adjustvalue( jq("#pageIndex", oPageInfo).text(),-1);
 		var nPageCount = ctools.adjustvalue(jq("#pageCount", oPageInfo).text(), -1);
 
