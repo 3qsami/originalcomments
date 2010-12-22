@@ -109,6 +109,39 @@ function feed_readerOnline_events_viewcomments(window,document,jq) {
 		jq("#cmd_trackComments", oCommentsContainer).css("display", "none");
 	}
 
+	this.onappendcommentsbuttonscontainer = function (e) {
+		var oArticleElement = e.articleElement;
+		var oCommentsContainer = e.commentscontainer;
+
+		var oArticleBody = ctools.getFirstJQElement(jq("#article-body", oArticleElement));
+		if (oArticleBody == null)
+			oArticleElement.appendChild(oCommentsContainer);
+		else
+			oArticleBody.appendChild(oCommentsContainer);
+
+		e.cancelBubble = true;
+	}
+
+	this.ongetcommentsbuttonscontainer = function (e) {
+		var oArticleElement = e.articleElement;
+
+		var oCommentsContainer = null;
+
+		var oArticleBody = ctools.getFirstJQElement(jq("#article-body", oArticleElement));
+		if (oArticleBody == null)
+			oCommentsContainer = ctools.getFirstJQElement(jq("#pimshell_commentsbuttonscontainer", oArticleElement));
+		else
+			oCommentsContainer = ctools.getFirstJQElement(jq("#pimshell_commentsbuttonscontainer", oArticleBody));
+
+		e.returnValue = oCommentsContainer;
+		e.cancelBubble = true;
+	}
+
+	this.ongetparentscrollcontainer = function (e) {
+		//nothing
+	}
+
+
 	this.ongetoption = function (e) {
 		var sName = e.name;
 		var oValue = e.value;

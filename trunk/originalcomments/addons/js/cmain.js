@@ -2071,7 +2071,7 @@ var CArticleCommentsTools2 = {
 
 	combineCommentsText: function (nCounter, oEntityset, sShowOrder) {
 		//begin
-		var sHtml_CommentList = "<div style='color:Gray;'>";
+		var sHtml_CommentList = "<div>";
 
 		//init
 		var bAlternating = false;
@@ -2105,10 +2105,10 @@ var CArticleCommentsTools2 = {
 			//href
 			var sHref = "";
 			if (Sys.getAttribute(oEntity, "url", "") != "") {
-				sHref = String2.format("href='{0}' target='blank'", ctools.HTMLEncode(oEntity["url"]));
+				sHref = String2.format("href='{0}' target='blank' style='display:inline-block;width:90px;overflow:hidden;'", ctools.HTMLEncode(oEntity["url"]));
 			}
 			else {
-				sHref = "style='color:Gray;'";
+				sHref = "style='color:black;display:inline-block;width:90px;overflow:hidden;'";
 			}
 
 			//datetime
@@ -2123,22 +2123,37 @@ var CArticleCommentsTools2 = {
 			var sContent = this.adjustContentText(Sys.getAttribute(oEntity, "content", ""));
 			var sReply = this.adjustContentText(Sys.getAttribute(oEntity, "reply", ""));
 
+			//reply
+			if (sReply != "") {
+				sReply = String2.format("<div style='padding-left:50px;padding-right:20px;padding-top:2px;padding-bottom:2px;color:Black;'>{0}</div>", sReply);
+			}
+
 			//html
 			//tr设置样式，避免外层的样式被table中止
 			var sHtml_Comment = String2.format("\
-					<div style='{0}' id='comment:{1}'>\
-						<div><table><tbody><tr style='color:Gray;font-size:12px;'>\
-								<td><span>{2}</span>&nbsp;<img src='{3}' height='32' width='32' /></td>\
-								<td><a {4} id='comment:author'>{5}</a><br />\
-									<span>{6}</span>\</td>\
-								</tr></tbody></table>\
-						</div>\
-						<div style='padding-left:60px;padding-right:20px;padding-top:6px;padding-bottom:6px;color:Black;' id='comment:content'>{7}</div>\
-						<div style='padding-left:100px;padding-right:20px;padding-top:6px;padding-bottom:6px;color:Black;'>{8}</div>\
+					<div class='pimshell_comment_container' style='{0}' id='comment:{1}'>\
+						<table style='border-spacing:0px;0px;'><tr><td style='border-spacing:0px;0px;vertical-align:top;'>\
+							<div class='pimshell_comment_part1'><table style='border-spacing:0px;0px;'><tbody><tr style='font-size:12px;'>\
+									<td style='border-spacing:0px;0px;'><span>{2}</span><br /><img src='{3}' height='32' width='32' /></td>\
+									<td style='border-spacing:0px;0px;'><a {4} id='comment:author'>{5}</a><br />\
+										<span style='display:inline-block;width:100px;overflow:hidden;'>{6}</span>\</td>\
+									</tr></tbody></table>\
+							</div>\
+						</td><td style='border-spacing:0px;0px;vertical-align:top;'>\
+							<div class='pimshell_comment_part2' style='background-image:url({9});'></div>\
+						</td><td style='border-spacing:0px;0px;vertical-align:top;'>\
+							<div class='pimshell_comment_part3'>\
+								<div id='comment:content'>{7}</div>\
+								{8}\
+							</div>\
+						</td></tr></table>\
 					</div>",
 					sClassFeedComment, oEntity["id"], nCounter, sAvatar,
-					sHref, oEntity["author"], sDatetime,
-					sContent, sReply
+					sHref,
+					String2.trim(oEntity["author"]),
+					sDatetime,
+					sContent, sReply,
+					cbase.getURL("addons/images/chinafunti.png")
 					);
 
 			//

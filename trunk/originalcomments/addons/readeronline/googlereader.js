@@ -271,6 +271,18 @@ function feed_readerOnline_events_googlereader(window,document,jq) {
 		var sResult = ctools.combineUrl(sLink, "http://www.google.com/");
 		return sResult;
 	}
+
+	//
+	this.ongetoption = function (e) {
+		var sName = e.name;
+		var oValue = e.value;
+
+		//
+		if (sName == "autoview_enabled") {
+			e.returnValue = false;
+			e.cancelBubble = true;
+		}
+	}
 }
 
 ////	Reader Online Events -- end	

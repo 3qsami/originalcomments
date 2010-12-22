@@ -2,6 +2,7 @@
 <head>
 <title></title>
 <link type="text/css" rel="Stylesheet" href="../style/main.css" />
+<link type="text/css" rel="Stylesheet" href="../style/content.css" />
 <link type="text/css" rel="Stylesheet" href="../style/ui-lightness/jquery-ui.css" />
 <style type="text/css">
 	.option-slider
@@ -368,13 +369,15 @@
 			var s = String2.format("<div style='float:right;'>\
 									<a href='{1}' target='_blank' title='{2}' style='margin-right:4px;'><img border='0' src='{3}' /></a>\
 									<a href='#' onclick='return onclick_unsubscribe(event,{0});' title='{4}' style='margin-right:4px;'><img border='0' src='{5}' /></a>\
-									</div><div style='both:clear;'></div>{6}",
+									</div><div style='both:clear;'></div>\
+									<div class='pimshell_comments_body' style='background-image:url({6})'>{7}</div>",
 									nIndex,
 									ctools.HTMLEncode(oFollowInfo["articleLink"]),
 									cbase.getlanguagevalue("viewOriginal"),
 									cbase.getURL("addons/images/goto.gif"),
 									cbase.getlanguagevalue("unsubscribe"),
 									cbase.getURL("addons/images/unsubscribe.png"),
+									cbase.getURL("addons/images/chinafunbk.png"),
 									oResult);
 			oEleContent.html(s);
 

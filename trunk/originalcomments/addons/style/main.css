@@ -15,6 +15,15 @@ a:hover,a:focus
 	color:Red;	
 }
 
+/* same as google reader*/
+.link {
+cursor: pointer;
+}
+
+.unselectable {
+-webkit-user-select: none;
+}
+
 /* 2010.04.23 special for comment's content */
 blockquote
 {

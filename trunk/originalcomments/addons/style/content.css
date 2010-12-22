@@ -5,7 +5,96 @@ blockquote
 	padding:4px 4px 12px 4px;border:solid 1px gray;background-color:#CC99FF;
 }
 
-.pimshell_buttonscontainer
+.pimshell_buttonscontainer_hide
 {
-	background:transparent url(none) no-repeat;padding:1px 8px 1px 18px;white-space:nowrap;	
+	background:transparent url(none) no-repeat;
+	background-position:2px center;
+	padding:2px 8px 2px 18px;
+	white-space:nowrap;
+	border-left:2px none #E78F08;
+	border-top:2px none #E78F08;
+	border-right:2px none #E78F08;
+	border-bottom:2px none #E78F08;
+	border-bottom-left-radius: 4px 4px;
+	border-bottom-right-radius: 4px 4px;
+	border-top-left-radius: 4px 4px;
+	border-top-right-radius: 4px 4px;
+	background-color:#F3F5FC;
+}
+
+.pimshell_buttonscontainer_show
+{
+	background:transparent url(none) no-repeat;
+	background-position:2px center;
+	padding:2px 8px 2px 18px;
+	white-space:nowrap;
+	border-left:2px solid #E78F08;
+	border-top:2px solid #E78F08;
+	border-right:2px solid #E78F08;
+	border-bottom:2px none #E78F08;
+	border-bottom-left-radius: 4px 4px;
+	border-bottom-right-radius: 4px 4px;
+	border-top-left-radius: 4px 4px;
+	border-top-right-radius: 4px 4px;
+	background-color:#F3F5FC;
+}
+
+.pimshell_commentscontainer
+{
+	display:none;
+	font-size:12px;
+	border:solid 2px #E78F08;
+	padding-left:5px;padding-top:5px;padding-bottom:5px;padding-right:5px;
+}
+
+.pimshell_comments
+{
+	padding-top:10px;padding-bottom:0px;
+}
+
+.pimshell_comments_toolbar
+{
+	height:22px;text-align:right;
+}
+
+.pimshell_comments_pager
+{
+	height:22px;text-align:right;
+}
+
+.pimshell_cmd_withtext
+{
+	color:blue;cursor:pointer;
+	padding:1px 2px 1px 18px;
+	background:transparent url(none) no-repeat;
+}
+
+.pimshell_comments_body
+{
+	border:solid 1px #888;overflow-y:auto;
+	background:#EEE url(none) repeat-y; 
+}
+
+.pimshell_comment_container
+{
+}
+
+.pimshell_comment_part1
+{
+	position:relative;
+}
+
+.pimshell_comment_part2
+{
+	height: 20px;
+	width: 10px;
+	position:relative;
+	right: -22px;
+	top: 6px;
+}
+
+.pimshell_comment_part3
+{
+	position:relative;
+	padding-left:35px;padding-right:20px;padding-top:13px;padding-bottom:2px;color:Black;
 }
