@@ -92,9 +92,9 @@ function createMainContext(window, document, jq) {
 			if (oOptions["autoview_height"] == null)
 				oOptions["autoview_height"] = 300;
 			if (oOptions["autoview_leftmargin"] == null)
-				oOptions["autoview_leftmargin"] = 100;
+				oOptions["autoview_leftmargin"] = 15;
 			if (oOptions["autoview_rightmargin"] == null)
-				oOptions["autoview_rightmargin"] = 100;
+				oOptions["autoview_rightmargin"] = 20;
 			if (oOptions["autoview_showorder"] == null)
 				oOptions["autoview_showorder"] = "";
 			if (oOptions["follow_checkenabled"] == null)
@@ -105,7 +105,7 @@ function createMainContext(window, document, jq) {
 			if (oOptions["autoview_prefetchenabled"] == null)
 				oOptions["autoview_prefetchenabled"] = true;
 			if (oOptions["autoview_prefetchinterval"] == null)
-				oOptions["autoview_prefetchinterval"] = 2;	//seconds
+				oOptions["autoview_prefetchinterval"] = 0;	//seconds
 
 			//ok
 			return oOptions;

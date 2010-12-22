@@ -30,6 +30,7 @@ function feed_readerOnline_events_googlereader(window,document,jq) {
 	this.ongetcommentscontainer = __ongetcommentscontainer;
 	this.onappendcommentsbuttonscontainer = __onappendcommentsbuttonscontainer;
 	this.ongetcommentsbuttonscontainer = __ongetcommentsbuttonscontainer;
+	this.ongetparentscrollcontainer = __ongetparentscrollcontainer;
 
 	this._getcurrententry = __getcurrententry;
 	this._getcurrentfeed = __getcurrentfeed;
@@ -101,6 +102,12 @@ function feed_readerOnline_events_googlereader(window,document,jq) {
 				callback(true);
 			}
 		}
+	}
+
+	//
+	function __ongetparentscrollcontainer(e) {
+		e.returnValue = ctools.getFirstJQElement(jq("#entries"));
+		e.cancelBubble = true;
 	}
 
 	//
