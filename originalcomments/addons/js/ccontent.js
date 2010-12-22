@@ -136,6 +136,8 @@ function feed_tools_system(window, document, jq) {
 
 	this._nCurrentArticleIndex = 0;
 
+	this._nLoadingStartCounter = 0;
+
 	////	-- methods
 	this.initialize = __initialize;
 	this.dispose = __dispose;
@@ -151,6 +153,7 @@ function feed_tools_system(window, document, jq) {
 	this._getcommentsbuttonscontainer = __getcommentsbuttonscontainer;
 	this._getcommentscontainer = __getcommentscontainer;
 	this._getcommentscontainervisible = __getcommentscontainervisible;
+	this._setcommentscontainervisible = __setcommentscontainervisible;
 	this._setcomments = __setcomments;
 	this._setcomments2 = __setcomments2;
 	this.refreshArticleComments = __refreshArticleComments;
@@ -174,6 +177,8 @@ function feed_tools_system(window, document, jq) {
 	this._autotrack_createcontentparts = __autotrack_createcontentparts;
 	this._autotrack_parsepage = __autotrack_parsepage;
 	this._forceshowcommentscontainer = __forceshowcommentscontainer;
+	this._loadingStart = __loadingStart;
+	this._loadingStop = __loadingStop;
 
 	this._currentArticleIndexChanged = __currentArticleIndexChanged;
 
@@ -190,7 +195,6 @@ function feed_tools_system(window, document, jq) {
 	this._delegate_click_feedback = null;
 	this._delegate_click_requestForm = null;
 	this._delegate_click_checkAgain = null;
-	this._delegate_click_trackComments = null;
 	this._delegate_click_followComments = null;
 	this._delegate_click_showOrder = null;
 	this._delegate_click_refresh = null;
@@ -295,7 +299,6 @@ function feed_tools_system(window, document, jq) {
 			this._delegate_click_feedback = ctools.createDelegate(this, __pimshell_click_feedback);
 			this._delegate_click_requestForm = ctools.createDelegate(this, __pimshell_click_requestForm);
 			this._delegate_click_checkAgain = ctools.createDelegate(this, __pimshell_click_checkAgain);
-			this._delegate_click_trackComments = ctools.createDelegate(this, __pimshell_click_trackComments);
 			this._delegate_click_followComments = ctools.createDelegate(this, __pimshell_click_followComments);
 			this._delegate_click_showOrder = ctools.createDelegate(this, __pimshell_click_showOrder);
 			this._delegate_click_refresh = ctools.createDelegate(this, __pimshell_click_refresh);
@@ -306,7 +309,6 @@ function feed_tools_system(window, document, jq) {
 			this._delegate_click_feedback = null;
 			this._delegate_click_requestForm = null;
 			this._delegate_click_checkAgain = null;
-			this._delegate_click_trackComments = null;
 			this._delegate_click_followComments = null;
 			this._delegate_click_showOrder = null;
 			this._delegate_click_refresh = null;
@@ -462,21 +464,23 @@ function feed_tools_system(window, document, jq) {
 				oDiv.setAttribute('_index',nIndex);
 				oDiv.className = 'link unselectable pimshell_buttonscontainer';
 
-				//click
-				jq(oDiv).click(this._delegate_click_showComments);
-
 				//image
 				oDiv.style.backgroundImage = String2.format("url({0})", cbase.getURL("addons/images/button16.png"));
 				
 				//text and loading image
 				var sHtml_Buttons = String2.format("\
-									<span id='showCommentsText'>{0}</span><img id='loading' src='{1}' style='display:none;height:12px;width:12px;' />\
+									<span id='showCommentsText' _index='{0}'>{1}</span><img id='loading' src='{2}' style='display:none;height:12px;width:16px;' />\
 									",
+									nIndex,
 									cbase.getlanguagevalue("showComments"),
 									cbase.getURL("addons/images/loading.gif")
 									);
 
 				oDiv.innerHTML = sHtml_Buttons;
+
+				//click
+				jq(oDiv).click(this._delegate_click_showComments);
+				jq("#showCommentsText", oDiv).click(this._delegate_click_showComments);
 
 				//raise event of onappendcommentscontainer
 				var oEvent = this._createevent();
@@ -497,7 +501,10 @@ function feed_tools_system(window, document, jq) {
 		return oDiv;
 	}
 
-	function __getcommentscontainer(oArticleElement, bCreateIfEmpty) {
+	function __getcommentscontainer(oEntity, bCreateIfEmpty) {
+		//
+		var oArticleElement = oEntity["articleElement"];
+
 		//check div
 		var oDiv = null;
 
@@ -519,7 +526,7 @@ function feed_tools_system(window, document, jq) {
 
 				oDiv.id = 'pimshell_advancedcomments';
 				//oDiv.setAttribute('_ready', false);
-				oDiv.style.cssText='font-size:12px;margin-left:30px;margin-top:10px;margin-bottom:20px;margin-right:5px;border:solid 1px gray;padding-left:12px;padding-top:5px;padding-bottom:5px;padding-right:5px;';
+				oDiv.style.cssText='display:none;font-size:12px;margin-left:30px;margin-top:10px;margin-bottom:20px;margin-right:5px;border:solid 1px gray;padding-left:12px;padding-top:5px;padding-bottom:5px;padding-right:5px;';
 
 				//raise event of onappendcommentscontainer
 				var oEvent = this._createevent();
@@ -603,16 +610,8 @@ function feed_tools_system(window, document, jq) {
 
 		//check ready
 		var bReady = ctools.getAttribute(oDiv, "_ready", false);
-		//if (bReady && !bForceTry)
-		//	return;
-		if (bReady)
-		{
-			oCallback(true);
-			return;
-		}
-		else if (!bForceTry)
-		{
-			oCallback(false);
+		if (bReady && !bForceTry) {
+			oCallback(bReady);
 			return;
 		}
 
@@ -631,7 +630,14 @@ function feed_tools_system(window, document, jq) {
 			oTmp["feedTitle"] = oEntity["feedTitle"];
 			oTmp["formId"] = oEntity["formId"];
 
+			//loading
+			oThis._loadingStart(oEntity);
+
+			//
 			cbase.sendmessage("commentsCheck", oTmp, function (oParams) {
+				//
+				oThis._loadingStop(oEntity);
+				//
 				oEntity["formId"] = oParams["formId"];
 				oEntity["formStep"] = oParams["formStep"];
 				oEntity["checkStatus"] = oParams["succeeded"];
@@ -643,6 +649,8 @@ function feed_tools_system(window, document, jq) {
 
 	//
 	function __setcomments2(oEntity) {
+		var oThis = this;
+
 		//info
 		var oArticleElement = oEntity["articleElement"];
 		var nIndex = oEntity["index"];
@@ -651,14 +659,14 @@ function feed_tools_system(window, document, jq) {
 		var bCheckStatus=oEntity["checkStatus"];
 
 		//force exists
-		var oDiv = this._getcommentscontainer(oArticleElement, true);
+		var oDiv = this._getcommentscontainer(oEntity, true);
 
 		//
 		var sHtml_Comment = "";
 		if(bCheckStatus===false)
 		{
 			sHtml_Comment = String2.format("<div>\
-										<span id='cmd_checkAgain' _index='{0}' unselectable='on' onselectstart='return false;' style='-moz-user-select:none;margin-right:4px;color:blue;cursor:pointer;'>{1}</span>\
+										<span id='cmd_checkAgain' _index='{0}' unselectable='on' onselectstart='return false;' style='-moz-user-select:none;margin-right:4px;color:blue;cursor:pointer;color:red;'>{1}</span>\
 										</div>",
 										nIndex,
 										cbase.getlanguagevalue("checkagainTitle")
@@ -666,7 +674,7 @@ function feed_tools_system(window, document, jq) {
 		}
 		else if(sFormId==""){
 			sHtml_Comment = String2.format("<div>\
-										<span id='cmd_requestForm' _index='{0}' unselectable='on' onselectstart='return false;' style='-moz-user-select:none;margin-right:4px;color:blue;cursor:pointer;'>{1}</span>\
+										<span id='cmd_requestForm' _index='{0}' unselectable='on' onselectstart='return false;' style='-moz-user-select:none;margin-right:4px;color:blue;cursor:pointer;color:red;'>{1}</span>\
 										</div>",
 										nIndex,
 										cbase.getlanguagevalue("requestFormTitle")
@@ -677,9 +685,12 @@ function feed_tools_system(window, document, jq) {
 		}
 
 		//
-		if(sHtml_Comment==""){
+		if (sHtml_Comment == "") {
 			//show comments
-			this._forceshowcommentscontainer(oEntity);
+			oThis._forceshowcommentscontainer(oEntity, function () {
+				//visible
+				oThis._setcommentscontainervisible(oEntity, true, function () { });
+			});
 		}
 		else
 		{
@@ -689,6 +700,9 @@ function feed_tools_system(window, document, jq) {
 			//events
 			jq("#cmd_requestForm", oDiv).click(this._delegate_click_requestForm);
 			jq("#cmd_checkAgain", oDiv).click(this._delegate_click_checkAgain);
+
+			//visible
+			oThis._setcommentscontainervisible(oEntity, true);
 		}
 	}
 
@@ -724,10 +738,10 @@ function feed_tools_system(window, document, jq) {
 		//
 		var sText;
 		if(this._getcommentscontainervisible(oEntity)){
-			sText=cbase.getlanguagevalue("showComments");
+			sText = cbase.getlanguagevalue("hideComments");
 		}
 		else{
-			sText=cbase.getlanguagevalue("hideComments");
+			sText = cbase.getlanguagevalue("showComments");
 		}
 
 		//set text
@@ -811,11 +825,29 @@ function feed_tools_system(window, document, jq) {
 	}
 
 	function __getcommentscontainervisible(oEntity){
-		var oDiv = this._getcommentsbuttonscontainer(oEntity, false);
+		var oDiv = this._getcommentscontainer(oEntity, false);
 		if (oDiv == null)
 			return false;
 		else
 			return oDiv.style.display != "none";
+	}
+
+	function __setcommentscontainervisible(oEntity, bVisible,oCallback) {
+		var oThis = this;
+
+		var oDiv = this._getcommentscontainer(oEntity, bVisible);
+		if (oDiv == null) {
+			if (oCallback != null) oCallback(null);
+			return;
+		}
+		else {
+			var oMethod = bVisible ? jq(oDiv).slideDown : jq(oDiv).slideUp;
+			oMethod.call(jq(oDiv), "normal", function () {
+				oThis._setcomments(oEntity);
+				if (oCallback != null) oCallback(null);
+				return;
+			});
+		}
 	}
 
 	function __autotrack_gettrackcontainervisible(oEntity) {
@@ -829,7 +861,7 @@ function feed_tools_system(window, document, jq) {
 	function __autotrack_gettrackcontainer(oEntity, bCreateIfEmpty) {
 		var oArticleElement = oEntity["articleElement"];
 
-		var oDiv = this._getcommentscontainer(oArticleElement, false);
+		var oDiv = this._getcommentscontainer(oEntity, false);
 		if (oDiv == null)
 			return null;
 
@@ -858,6 +890,32 @@ function feed_tools_system(window, document, jq) {
 		return oDiv2;
 	}
 
+	function __loadingStart(oEntity){
+		if(this._nLoadingStartCounter++ ==0)
+		{
+			//
+			var oSpan1=this._getcommentsbuttonscontainer(oEntity,false);
+			if(oSpan1==null)
+				return;
+
+			//loading
+			jq("#loading", oSpan1).show();
+		}
+	}
+
+	function __loadingStop(oEntity) {
+		if(--this._nLoadingStartCounter ==0)
+		{
+			//
+			var oSpan1=this._getcommentsbuttonscontainer(oEntity,false);
+			if(oSpan1==null)
+				return;
+
+			//loading
+			jq("#loading", oSpan1).hide();
+		}
+	}
+
 	function __autotrack_parsepage(oEntity, nPageIndex,bForceTop) {
 		var oThis = this;
 
@@ -867,7 +925,7 @@ function feed_tools_system(window, document, jq) {
 			return;
 
 		//loading
-		jq("#loading", oSpan1).show();
+		oThis._loadingStart(oEntity);
 
 		//params
 		var oParams = new Object();
@@ -882,12 +940,12 @@ function feed_tools_system(window, document, jq) {
 			
 		//
 		cbase.sendmessage("showPage", oParams, function (oResult) {
+			//loading
+			oThis._loadingStop(oEntity);
+
 			//do nothing
 			if (oResult == null)
 				return;
-
-			//loading
-			jq("#loading", oSpan1).hide();
 
 			//if failed donnot change anything
 			if (oResult["status"] != "succeeded")
@@ -899,21 +957,13 @@ function feed_tools_system(window, document, jq) {
 			var nPageSize = oResult["pagesize"];
 
 			//record totalcount for show
-			oEntity["totalcount"]=nTotalCount;
+			oEntity["totalcount"] = nTotalCount;
 			oThis._setcomments(oEntity);
 
 			//oDiv2 maybe null
 			var oDiv2 = oThis._autotrack_gettrackcontainer(oEntity, false);
 			if (oDiv2 == null)
 				return;
-
-			//content
-			jq("#pimshell_advancedcomments_autotrack_content", oDiv2).html(oResult["content"]).attr('scrollTop', 0);
-
-			//2010.11.22 just scrollIntoView
-			if (bForceTop) {
-				oThis._forceshowcommentscontainer(oEntity);
-			}
 
 			//toolbar
 			var oPageInfo = jq("#pimshell_advancedcomments_autotrack_toolbar #pageInfo", oDiv2);
@@ -936,6 +986,13 @@ function feed_tools_system(window, document, jq) {
 			jq("#pageLast", oPager).attr('src',
 										nPageIndex >= nPageCount ? cbase.getURL("addons/images/page-last-disabled.gif") : cbase.getURL("addons/images/page-last.gif"));
 
+			//content
+			jq("#pimshell_advancedcomments_autotrack_content", oDiv2).html(oResult["content"]).attr('scrollTop', 0);
+
+			//2010.11.22 just scrollIntoView
+			if (bForceTop) {
+				oThis._forceshowcommentscontainer(oEntity, function () { });
+			}
 
 		});	
 	}
@@ -1032,6 +1089,10 @@ function feed_tools_system(window, document, jq) {
 
 	//
 	function __pimshell_click_showComments(event) {
+		//important, avoid raise twice
+		event.stopPropagation();
+
+		//
 		var oElement = ctools.getEventElement(event);
 		var nIndex = oElement.getAttribute("_index");
 
@@ -1040,7 +1101,33 @@ function feed_tools_system(window, document, jq) {
 		if (oEntity == null)
 			return;
 
-		
+		//
+		if (event.shiftKey || event.ctrlKey) {
+			//url
+			var sURL = cbase.getURL("addons/content/viewcomments.htm");
+			sURL = ctools.appendQueryStringValue(sURL, "platform", cbase.getPlatform());
+			sURL = ctools.appendQueryStringValue(sURL, "title", oEntity["articleTitle"]);
+			sURL = ctools.appendQueryStringValue(sURL, "url", oEntity["articleLink"]);
+			sURL = ctools.appendQueryStringValue(sURL, "formId", oEntity["formId"]);
+			//open
+			cbase.sendmessage("newTab", { url: sURL, active: event.shiftKey }, function () { });
+		}
+		else {
+			//switch show
+			var bVisible = this._getcommentscontainervisible(oEntity);
+			if (bVisible) {
+				this._setcommentscontainervisible(oEntity, false);
+			}
+			else {
+				if (this._nLoadingStartCounter > 0) {
+					//donothing
+				}
+				else {
+					//not forcetryconfig
+					this._tryconfigAndShow(oEntity, false, true);
+				}
+			} 
+		}
 	}
 
 	//
@@ -1097,8 +1184,7 @@ function feed_tools_system(window, document, jq) {
 			return;
 
 		//check if exists
-		var oArticleElement=oEntity["articleElement"];
-		var oDiv = this._getcommentscontainer(oArticleElement, false);
+		var oDiv = this._getcommentscontainer(oEntity, false);
 		if (oDiv == null) {
 			//may be cleared.
 			return;
@@ -1112,61 +1198,45 @@ function feed_tools_system(window, document, jq) {
 		this._tryconfigAndShow(oEntity, true,true);
 	}
 
-	function __forceshowcommentscontainer(oEntity) {
+	function __forceshowcommentscontainer(oEntity,oCallback) {
 		//		force show comments
 		var oDiv2 = this._autotrack_gettrackcontainer(oEntity, true);
 		//		to top
-		var oDiv = this._getcommentscontainer(oEntity["articleElement"], false);
-		if (oDiv != null) {
-			oDiv.scrollIntoView();
+		var oSpan1 = this._getcommentsbuttonscontainer(oEntity, false);
+		if (oSpan1 == null) {
+			oCallback(null);
+			return;
+		}
+
+		//raise event of onappendcommentscontainer
+		var oParentScrollContainer = null;
+
+		var oEvent = this._createevent();
+		oEvent.articleElement = oEntity["articleElement"];
+
+		this._fireevent("ongetparentscrollcontainer", oEvent);
+		if (oEvent.cancelBubble) {
+			oParentScrollContainer = oEvent.returnValue;
+		}
+
+		if (oParentScrollContainer == null) {
+			oSpan1.scrollIntoView();
+
+			oCallback(null);
+			return;
+		}
+		else {
+			var a = jq(oParentScrollContainer).scrollTop();
+			var b = jq(oSpan1).offset().top;
+			var c = jq(oParentScrollContainer).offset().top;
+			jq(oParentScrollContainer).animate({ scrollTop: a + b - c }, "normal", null, function () {
+				oCallback(null);
+				return;
+			});
 		}
 	}
 
-	//
-	function __pimshell_click_trackComments(event) {
-		var oElement = ctools.getEventElement(event);
-		var nIndex = oElement.getAttribute("_index");
-
-		var oEntity = this._oMapForArticles[nIndex];
-		if (oEntity != null) {
-
-			if (event.shiftKey || event.ctrlKey) {
-				//url
-				var sURL = cbase.getURL("addons/content/viewcomments.htm");
-				sURL = ctools.appendQueryStringValue(sURL, "platform", cbase.getPlatform());
-				sURL = ctools.appendQueryStringValue(sURL, "title", oEntity["articleTitle"]);
-				sURL = ctools.appendQueryStringValue(sURL, "url", oEntity["articleLink"]);
-				sURL = ctools.appendQueryStringValue(sURL, "formId", oEntity["formId"]);
-				//open
-				cbase.sendmessage("newTab", { url: sURL, active: event.shiftKey }, function () { });
-			}
-			else {
-				//2010.11.20 just scrollIntoView
-				this._forceshowcommentscontainer(oEntity);
-
-				/*
-				//switch
-				if (this._autotrack_gettrackcontainervisible(oEntity)) {
-					var oDiv2 = this._autotrack_gettrackcontainer(oEntity, false);
-					oDiv2.style.display = "none";
-				}
-				else {
-					var oDiv2 = this._autotrack_gettrackcontainer(oEntity, true);
-					if (oDiv2 != null) {
-						oDiv2.style.display = "block";
-
-						//2010.08.06 top
-						var oDiv = this._getcommentscontainer(oEntity["articleElement"], false);
-						if (oDiv != null) {
-							oDiv.scrollIntoView();
-						}
-					}
-				}*/
-			}
-
-		}
-	}
-
+	
 	function __pimshell_click_followComments(event) {
 		var oElement = ctools.getEventElement(event);
 		var nIndex = oElement.getAttribute("_index");
