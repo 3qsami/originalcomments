@@ -366,10 +366,10 @@
 
 		cbase.sendmessage("getFollowCommentsContent", oFollowInfo["articleLink"], function (oResult) {
 			//comments
-			var s = String2.format("<div style='float:right;'>\
+			var s = String2.format("<div style='text-align:right;'>\
 									<a href='{1}' target='_blank' title='{2}' style='margin-right:4px;'><img border='0' src='{3}' /></a>\
 									<a href='#' onclick='return onclick_unsubscribe(event,{0});' title='{4}' style='margin-right:4px;'><img border='0' src='{5}' /></a>\
-									</div><div style='both:clear;'></div>\
+									</div>\
 									<div class='pimshell_comments_body' style='background-image:url({6})'>{7}</div>",
 									nIndex,
 									ctools.HTMLEncode(oFollowInfo["articleLink"]),
