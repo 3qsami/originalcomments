@@ -15,8 +15,6 @@ blockquote
 	border-top:2px none #E78F08;
 	border-right:2px none #E78F08;
 	border-bottom:2px none #E78F08;
-	border-bottom-left-radius: 4px 4px;
-	border-bottom-right-radius: 4px 4px;
 	border-top-left-radius: 4px 4px;
 	border-top-right-radius: 4px 4px;
 	background-color:#F3F5FC;
@@ -32,8 +30,6 @@ blockquote
 	border-top:2px solid #E78F08;
 	border-right:2px solid #E78F08;
 	border-bottom:2px none #E78F08;
-	border-bottom-left-radius: 4px 4px;
-	border-bottom-right-radius: 4px 4px;
 	border-top-left-radius: 4px 4px;
 	border-top-right-radius: 4px 4px;
 	background-color:#F3F5FC;
@@ -45,6 +41,10 @@ blockquote
 	font-size:12px;
 	border:solid 2px #E78F08;
 	padding-left:5px;padding-top:5px;padding-bottom:5px;padding-right:5px;
+	border-bottom-left-radius: 4px 4px;
+	border-bottom-right-radius: 4px 4px;
+	border-top-left-radius: 4px 4px;
+	border-top-right-radius: 4px 4px;
 }
 
 .pimshell_comments
@@ -71,30 +71,95 @@ blockquote
 
 .pimshell_comments_body
 {
-	border:solid 1px #888;overflow-y:auto;
-	background:#EEE url(none) repeat-y; 
+	background-color:#F7F3ED;
+	border:solid 1px #888;overflow-y:auto; 
+	border-bottom-left-radius: 4px 4px;
+	border-bottom-right-radius: 4px 4px;
+	border-top-left-radius: 4px 4px;
+	border-top-right-radius: 4px 4px;
 }
 
-.pimshell_comment_container
+
+.pimshell_commentlist
+{
+	margin: 0px;
+	padding: 0px;
+}
+
+.pimshell_comment_li
+{
+	margin-left:10px;
+	margin-right:10px;
+	padding-top:8px;
+	padding-bottom:8px;
+	border-bottom:1px dashed #8D8D8D;
+}
+
+.pimshell_comment_normal
+{}
+
+.pimshell_comment_alt
+{}
+
+.pimshell_comment_dl
 {
 }
 
-.pimshell_comment_part1
+.pimshell_comment_dt
 {
-	position:relative;
+	float: left;
+	height: 36px;
+	width: 36px;
+	margin-top:5px;
 }
 
-.pimshell_comment_part2
+.pimshell_comment_dd
 {
-	height: 20px;
-	width: 10px;
-	position:relative;
-	right: -22px;
-	top: 6px;
+	margin-left: 40px;
 }
 
-.pimshell_comment_part3
+.pimshell_comment_avatar
+{}
+
+.pimshell_comment_number
 {
-	position:relative;
-	padding-left:35px;padding-right:20px;padding-top:13px;padding-bottom:2px;color:Black;
+	color: #900;
+}
+
+.pimshell_comment_site
+{
+	padding-left:4px;
+	font-style:normal;
+}
+
+.pimshell_comment_url
+{}
+
+.pimshell_comment_author
+{
+	color: #222;
+	font-weight:bold;
+}
+
+.pimshell_comment_date
+{
+	color: #8D8D8D;
+}
+
+.pimshell_comment_text
+{
+	font-size: 14px;
+}
+
+.pimshell_comment_content
+{
+	padding-top:10px;
+	padding-bottom:5px;
+}
+
+.pimshell_comment_reply
+{
+	padding-top:10px;
+	padding-bottom:5px;
+	padding-left:20px;
 }

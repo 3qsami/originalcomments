@@ -1098,9 +1098,8 @@ function feed_tools_system(window, document, jq) {
 		//content
 		var oContent = document.createElement("div");
 		oContent.id = 'pimshell_advancedcomments_autotrack_content';
-		oContent.style.cssText = String2.format('height:{0}px;background-image:url({1})',
-													this._autotrack_height(),
-													cbase.getURL("addons/images/chinafunbk.png")
+		oContent.style.cssText = String2.format('height:{0}px;',
+													this._autotrack_height()
 												);
 		oContent.className = 'pimshell_comments_body';
 		
