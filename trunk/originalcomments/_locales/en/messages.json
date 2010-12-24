@@ -145,5 +145,11 @@
   },
   "hideComments":{
 	"message":"Hide Comments"
+  },
+  "notSupported":{
+	"message":"not supported"
+  },
+  "accessFailed":{
+	"message":"access failed"
   }
 }

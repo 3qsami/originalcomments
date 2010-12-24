@@ -5,6 +5,16 @@ blockquote
 	padding:4px 4px 12px 4px;border:solid 1px gray;background-color:#CC99FF;
 }
 
+.pimshell_warning
+{
+	color:#900;	
+}
+
+.pimshell_link
+{
+	cursor: pointer;
+}
+
 .pimshell_buttonscontainer_hide
 {
 	background:transparent url(none) no-repeat;

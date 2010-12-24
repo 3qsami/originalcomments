@@ -701,16 +701,16 @@ function feed_tools_system(window, document, jq) {
 		var sHtml_Comment = "";
 		if(bCheckStatus===false)
 		{
-			sHtml_Comment = String2.format("<div>\
-										<span id='cmd_checkAgain' _index='{0}' unselectable='on' onselectstart='return false;' style='-moz-user-select:none;margin-right:4px;color:blue;cursor:pointer;color:red;'>{1}</span>\
+			sHtml_Comment = String2.format("<div style='text-align:center;'>\
+										<span id='cmd_checkAgain' _index='{0}' class='pimshell_warning pimshell_link unselectable' style='margin-right:4px;'>{1}</span>\
 										</div>",
 										nIndex,
 										cbase.getlanguagevalue("checkagainTitle")
 										);
 		}
 		else if(sFormId==""){
-			sHtml_Comment = String2.format("<div>\
-										<span id='cmd_requestForm' _index='{0}' unselectable='on' onselectstart='return false;' style='-moz-user-select:none;margin-right:4px;color:blue;cursor:pointer;color:red;'>{1}</span>\
+			sHtml_Comment = String2.format("<div style='text-align:center;'>\
+										<span id='cmd_requestForm' _index='{0}' class='pimshell_warning pimshell_link unselectable' style='margin-right:4px;'>{1}</span>\
 										</div>",
 										nIndex,
 										cbase.getlanguagevalue("requestFormTitle")
@@ -722,11 +722,7 @@ function feed_tools_system(window, document, jq) {
 
 		//
 		if (sHtml_Comment == "") {
-			//show comments
-			oThis._forceshowcommentscontainer(oEntity, function () {
-				//visible
-				oThis._setcommentscontainervisible(oEntity, true, function () { });
-			});
+			//do nothing			
 		}
 		else
 		{
@@ -737,9 +733,13 @@ function feed_tools_system(window, document, jq) {
 			jq("#cmd_requestForm", oDiv).click(this._delegate_click_requestForm);
 			jq("#cmd_checkAgain", oDiv).click(this._delegate_click_checkAgain);
 
-			//visible
-			oThis._setcommentscontainervisible(oEntity, true);
 		}
+
+		//show comments
+		oThis._forceshowcommentscontainer(oEntity, function () {
+			//visible
+			oThis._setcommentscontainervisible(oEntity, true, function () { });
+		});
 	}
 
 	//
@@ -760,14 +760,23 @@ function feed_tools_system(window, document, jq) {
 
 		//
 		var sTextStatus="";
-		if(bCheckStatus===false || sFormId == "")
+		if (bCheckStatus === false) {
+			sTextStatus = String2.format("(<span _index='{0}' class='pimshell_warning'>{1}</span>)",
+											nIndex, cbase.getlanguagevalue("accessFailed")
+										);
+		}
+		else if (sFormId == "")
 		{
-			sTextStatus="(?)";
+			sTextStatus = String2.format("(<span _index='{0}' class='pimshell_warning'>{1}</span>)",
+											nIndex, cbase.getlanguagevalue("notSupported")
+										);
 		}
 		else{
 			var nTotalCount=oEntity["totalcount"];
 			if(nTotalCount!=null){
-				sTextStatus = String2.format("(<span style='color:red;'>{0}</span>)", nTotalCount);
+				sTextStatus = String2.format("(<span _index='{0}' class='pimshell_warning'>{1}</span>)",
+											nIndex, nTotalCount
+										);
 			}
 		}
 
@@ -1161,14 +1170,9 @@ function feed_tools_system(window, document, jq) {
 			this._setcommentscontainervisible(oEntity, false);
 		}
 		else {
-			if (oEntity["_loadingStartCounter"] > 0) {
-				//donothing
-			}
-			else {
-				//not forcetryconfig
-				this._tryconfigAndShow(oEntity, false, true);
-			}
-		} 
+			//not forcetryconfig
+			this._tryconfigAndShow(oEntity, false, true);
+		}
 	}
 
 	//
@@ -1270,9 +1274,16 @@ function feed_tools_system(window, document, jq) {
 		this._tryconfigAndShow(oEntity, true,true);
 	}
 
-	function __forceshowcommentscontainer(oEntity,oCallback) {
+	function __forceshowcommentscontainer(oEntity, oCallback) {
+		//
+		var sFormId = oEntity["formId"];
+		var bCheckStatus = oEntity["checkStatus"];
+
 		//		force show comments
-		var oDiv2 = this._autotrack_gettrackcontainer(oEntity, true);
+		if (bCheckStatus !== false && sFormId != "") {
+			var oDiv2 = this._autotrack_gettrackcontainer(oEntity, true);
+		}
+
 		//		to top
 		var oSpan1 = this._getcommentsbuttonscontainer(oEntity, false);
 		if (oSpan1 == null) {
@@ -1280,7 +1291,7 @@ function feed_tools_system(window, document, jq) {
 			return;
 		}
 
-		//raise event of onappendcommentscontainer
+		//raise event of ongetparentscrollcontainer
 		var oParentScrollContainer = null;
 
 		var oEvent = this._createevent();

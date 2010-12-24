@@ -145,6 +145,11 @@
   },
   "hideComments":{
 	"message":"隐藏评论"
+  },
+  "notSupported":{
+	"message":"未支持"
+  },
+  "accessFailed":{
+	"message":"访问失败"
   }
-
 }
