@@ -108,7 +108,7 @@
 
 			//stat
 			//totalcount
-			var s = String2.format("<span>{0}</span>: <span style='color:red;' id='subscriptionsCount'>{1}</span>",
+			var s = String2.format("<span>{0}</span>: <span class='pimshell_warning' id='subscriptionsCount'>{1}</span>",
 											cbase.getlanguagevalue("commentsSubscriptions"),
 											oArrayFollowComments.length
 											);
@@ -125,7 +125,7 @@
 				var s = String2.format("<h4 _index='{0}' id='accordion-subscriptions-{0}'><div style='max-width:600px;display:block;overflow:hidden;white-space:nowrap;'>\
 											<a href='#' onclick='return onclick_unsubscribe_subscriptions(event,{0});' title='{1}' style='margin-right:4px;'><img border='0' src='{2}' /></a>\
 											<span style='display:inline-block;width:120px;margin-right:6px;'>{3}</span>\
-											<span title='{4}' style='display:inline-block;width:16px;margin-right:6px;color:red;'>{5}</span>\
+											<span title='{4}' style='display:inline-block;width:16px;margin-right:6px;' class='pimshell_warning'>{5}</span>\
 											<img src='{6}' width='16px' height='16px' _for='feedicon' />&nbsp;\
 											<a href='{7}' target='_blank'>{8}</a>\
 											</div></h4>",
@@ -178,7 +178,7 @@
 			}
 			else {
 				//totalcount
-				var s = String2.format("<span>{0}</span>: <span style='color:red;' id='totalCount'>{1}</span>",
+				var s = String2.format("<span>{0}</span>: <span class='pimshell_warning' id='totalCount'>{1}</span>",
 											cbase.getlanguagevalue("newComments"),
 											nTotalCount
 											);
@@ -194,7 +194,7 @@
 
 					var sIconURL = _getFeedIcon(!String2.isEmpty(oFollowInfo["feedLink"]) ? oFollowInfo["feedLink"] : oFollowInfo["articleLink"]);
 					var s = String2.format("<h3 _index='{0}' id='accordion-comments-header-{0}'><a href=\"#\"><div style='max-width:600px;display:block;overflow:hidden;white-space:nowrap;'>\
-												<span id='count' title='{1}' style='display:inline-block;width:16px;margin-right:6px;color:red;'>{2}</span>\
+												<span id='count' title='{1}' style='display:inline-block;width:16px;margin-right:6px;' class='pimshell_warning'>{2}</span>\
 												<img src='{3}' width='16px' height='16px' _for='feedicon' />&nbsp;\
 												<span>{4}</span>\
 												</div></a></h3><div id='accordion-comments-content-{0}'></div>",
