@@ -1048,13 +1048,13 @@ function feed_tools_system(window, document, jq) {
 			//pager
 			var oPager = jq("#pimshell_advancedcomments_autotrack_pager", oDiv2);
 			jq("#pageFirst", oPager).attr('src',
-										nPageIndex <= 1 ? cbase.getURL("addons/images/page-first-disabled.gif") : cbase.getURL("addons/images/page-first.gif"));
+										nPageIndex <= 1 ? cbase.getURL("addons/images/page-first-disabled.png") : cbase.getURL("addons/images/page-first.png"));
 			jq("#pagePrevious", oPager).attr('src',
-										nPageIndex <= 1 ? cbase.getURL("addons/images/page-prev-disabled.gif") : cbase.getURL("addons/images/page-prev.gif"));
+										nPageIndex <= 1 ? cbase.getURL("addons/images/page-prev-disabled.png") : cbase.getURL("addons/images/page-prev.png"));
 			jq("#pageNext", oPager).attr('src',
-										nPageIndex >= nPageCount ? cbase.getURL("addons/images/page-next-disabled.gif") : cbase.getURL("addons/images/page-next.gif"));
+										nPageIndex >= nPageCount ? cbase.getURL("addons/images/page-next-disabled.png") : cbase.getURL("addons/images/page-next.png"));
 			jq("#pageLast", oPager).attr('src',
-										nPageIndex >= nPageCount ? cbase.getURL("addons/images/page-last-disabled.gif") : cbase.getURL("addons/images/page-last.gif"));
+										nPageIndex >= nPageCount ? cbase.getURL("addons/images/page-last-disabled.png") : cbase.getURL("addons/images/page-last.png"));
 
 			//content
 			jq("#pimshell_advancedcomments_autotrack_content", oDiv2).html(oResult["content"]).attr('scrollTop', 0);
@@ -1085,7 +1085,7 @@ function feed_tools_system(window, document, jq) {
 									<span id='showOrder' _index='{0}' class='pimshell_cmd_withtext unselectable' style='background-image:url({1});' title='{2}'></span>\
 									<span id='refresh' _index='{0}' class='pimshell_cmd_withtext unselectable' style='background-image:url({3});' title='{4}'></span>\
 									<span id='subscribe' _index='{0}' class='pimshell_cmd_withtext unselectable' style='background-image:url({5});' title='{6}'></span>\
-									<a id='gotoarticle' href='{7}' target='_blank'><img border='0' src='{8}' style='position:relative;top:4px;' /></a>\
+									<a id='gotoarticle' href='{7}' target='_blank' title='{8}'><img border='0' src='{9}' style='position:relative;top:4px;' /></a>\
 									",
 									nIndex,
 									sShowOrder == "desc" ? cbase.getURL("addons/images/down.gif") : cbase.getURL("addons/images/up.gif"),
@@ -1095,6 +1095,7 @@ function feed_tools_system(window, document, jq) {
 									cbase.getURL("addons/images/subscribe.png"),
 									cbase.getlanguagevalue("follow"),
 									ctools.HTMLEncode(oEntity["articleLink"]),
+									cbase.getlanguagevalue("viewOriginal"),
 									cbase.getURL("addons/images/goto.gif")
 									);
 
@@ -1122,23 +1123,23 @@ function feed_tools_system(window, document, jq) {
 		oDiv2.appendChild(oPager);
 
 		//
-		var sHtml_Pager = String2.format("<div style='margin-top:4px;'>\
+		var sHtml_Pager = String2.format("<div class='pimshell_pager'>\
 									<span id='pageInfo' style='vertical-align:top;display:none;margin-right:4px;'><span id='pageIndex' style='vertical-align:top;color:#5377A9;'></span>/<span id='pageCount' style='vertical-align:top;'></span></span>\
-									<img id='pageFirst' _index='{0}' src='{1}' unselectable='on' onselectstart='return false;' style='-moz-user-select:none;margin-right:4px;color:blue;cursor:pointer;' title=\"{2}\" />\
-									<img id='pagePrevious' _index='{0}' src='{3}' unselectable='on' onselectstart='return false;' style='-moz-user-select:none;margin-right:4px;color:blue;cursor:pointer;' title=\"{4}\" />\
-									<img id='pageNext' _index='{0}' src='{5}' unselectable='on' onselectstart='return false;' style='-moz-user-select:none;margin-right:4px;color:blue;cursor:pointer;' title=\"{6}\" />\
-									<img id='pageLast' _index='{0}' src='{7}' unselectable='on' onselectstart='return false;' style='-moz-user-select:none;margin-right:4px;color:blue;cursor:pointer;' title=\"{8}\" />\
+									<img id='pageFirst' _index='{0}' src='{1}' class='pimshell_warning pimshell_link unselectable' title=\"{2}\" />\
+									<img id='pagePrevious' _index='{0}' src='{3}' class='pimshell_warning pimshell_link unselectable' title=\"{4}\" />\
+									<img id='pageNext' _index='{0}' src='{5}' class='pimshell_warning pimshell_link unselectable' title=\"{6}\" />\
+									<img id='pageLast' _index='{0}' src='{7}' class='pimshell_warning pimshell_link unselectable' title=\"{8}\" />\
 									</div>\
 									<div style='margin-top:4px;'><span id='feedback' _index='{0}' style='cursor:pointer;color:Green; font-weight:bold;'>* {9}</span></div>\
 									",
 									nIndex,
-									cbase.getURL("addons/images/page-first-disabled.gif"),
+									cbase.getURL("addons/images/page-first-disabled.png"),
 									cbase.getlanguagevalue("pageFirst"),
-									cbase.getURL("addons/images/page-prev-disabled.gif"),
+									cbase.getURL("addons/images/page-prev-disabled.png"),
 									cbase.getlanguagevalue("pagePrevious"),
-									cbase.getURL("addons/images/page-next-disabled.gif"),
+									cbase.getURL("addons/images/page-next-disabled.png"),
 									cbase.getlanguagevalue("pageNext"),
-									cbase.getURL("addons/images/page-last-disabled.gif"),
+									cbase.getURL("addons/images/page-last-disabled.png"),
 									cbase.getlanguagevalue("pageLast"),
 									cbase.getlanguagevalue("viewcommentfeedbackprompt")
 									);
