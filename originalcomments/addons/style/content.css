@@ -64,12 +64,11 @@ blockquote
 
 .pimshell_comments_toolbar
 {
-	height:22px;text-align:right;
 }
 
 .pimshell_comments_pager
 {
-	height:22px;text-align:right;
+	margin-top:4px;
 }
 
 .pimshell_cmd_withtext
@@ -81,6 +80,7 @@ blockquote
 
 .pimshell_comments_body
 {
+	clear:both;
 	background-color:#F7F3ED;
 	border:solid 1px #888;overflow-y:auto; 
 	border-bottom-left-radius: 4px 4px;
@@ -174,9 +174,14 @@ blockquote
 	padding-left:20px;
 }
 
+.pimshell_pager_feedback
+{
+	float:left;
+}
+
 .pimshell_pager
 {
-	margin-top:4px;
+	float:right;
 }
 
 .pimshell_pager img
@@ -191,4 +196,34 @@ blockquote
 	border-bottom-right-radius: 6px 6px;
 	border-top-left-radius: 6px 6px;
 	border-top-right-radius: 6px 6px;
+}
+
+.pimshell_toolbar
+{
+	float:right;
+	padding-top:14px;
+}
+
+.pimshell_toolbar img
+{
+	border:2px solid transparent;
+}
+
+.pimshell_toolbar img:hover
+{
+	border:2px solid #CCCCFF;
+	border-bottom-left-radius: 6px 6px;
+	border-bottom-right-radius: 6px 6px;
+	border-top-left-radius: 6px 6px;
+	border-top-right-radius: 6px 6px;
+}
+
+.pimshell_pageinfo
+{
+	display:inline-block;
+	width:40px;
+	visibility:hidden;
+	position:relative;
+	top:-4px;
+	text-align:right;
 }

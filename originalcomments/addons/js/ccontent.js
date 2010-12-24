@@ -1037,8 +1037,8 @@ function feed_tools_system(window, document, jq) {
 				return;
 
 			//toolbar
-			var oPageInfo = jq("#pimshell_advancedcomments_autotrack_pager #pageInfo", oDiv2);
-			oPageInfo.show();
+			var oPageInfo = jq("#pageInfo", oDiv2);
+			oPageInfo.css({'visibility':'visible'}); //.show();
 			jq("#pageIndex", oPageInfo).text(nPageIndex);
 			jq("#pageCount", oPageInfo).text(nPageCount);
 
@@ -1047,13 +1047,13 @@ function feed_tools_system(window, document, jq) {
 
 			//pager
 			var oPager = jq("#pimshell_advancedcomments_autotrack_pager", oDiv2);
-			jq("#pageFirst", oPager).attr('src',
+			jq("#pageFirst", oDiv2).attr('src',
 										nPageIndex <= 1 ? cbase.getURL("addons/images/page-first-disabled.png") : cbase.getURL("addons/images/page-first.png"));
-			jq("#pagePrevious", oPager).attr('src',
+			jq("#pagePrevious", oDiv2).attr('src',
 										nPageIndex <= 1 ? cbase.getURL("addons/images/page-prev-disabled.png") : cbase.getURL("addons/images/page-prev.png"));
-			jq("#pageNext", oPager).attr('src',
+			jq("#pageNext", oDiv2).attr('src',
 										nPageIndex >= nPageCount ? cbase.getURL("addons/images/page-next-disabled.png") : cbase.getURL("addons/images/page-next.png"));
-			jq("#pageLast", oPager).attr('src',
+			jq("#pageLast", oDiv2).attr('src',
 										nPageIndex >= nPageCount ? cbase.getURL("addons/images/page-last-disabled.png") : cbase.getURL("addons/images/page-last.png"));
 
 			//content
@@ -1075,18 +1075,38 @@ function feed_tools_system(window, document, jq) {
 		var nIndex = oEntity["index"];
 		var sShowOrder = oEntity["showOrder"];
 
+		//pager html
+		var sHtml_Pager_General = String2.format("<div class='pimshell_pager'>\
+											<span id='pageInfo' class='pimshell_pageinfo'><span id='pageIndex' style='color:#5377A9;'></span>/<span id='pageCount' style=''></span></span>\
+											<img id='pageFirst' _index='{0}' src='{1}' class='pimshell_warning pimshell_link unselectable' title=\"{2}\" />\
+											<img id='pagePrevious' _index='{0}' src='{3}' class='pimshell_warning pimshell_link unselectable' title=\"{4}\" />\
+											<img id='pageNext' _index='{0}' src='{5}' class='pimshell_warning pimshell_link unselectable' title=\"{6}\" />\
+											<img id='pageLast' _index='{0}' src='{7}' class='pimshell_warning pimshell_link unselectable' title=\"{8}\" />\
+										</div>\
+									",
+									nIndex,
+									cbase.getURL("addons/images/page-first-disabled.png"),
+									cbase.getlanguagevalue("pageFirst"),
+									cbase.getURL("addons/images/page-prev-disabled.png"),
+									cbase.getlanguagevalue("pagePrevious"),
+									cbase.getURL("addons/images/page-next-disabled.png"),
+									cbase.getlanguagevalue("pageNext"),
+									cbase.getURL("addons/images/page-last-disabled.png"),
+									cbase.getlanguagevalue("pageLast")
+									);
+
 		//toolbar
 		var oToolbar = document.createElement("div");
 		oToolbar.id = 'pimshell_advancedcomments_autotrack_toolbar';
 		oToolbar.className = 'pimshell_comments_toolbar';
 		oDiv2.appendChild(oToolbar);
 
-		var sHtml_Toolbar = String2.format("\
-									<span id='showOrder' _index='{0}' class='pimshell_cmd_withtext unselectable' style='background-image:url({1});' title='{2}'></span>\
-									<span id='refresh' _index='{0}' class='pimshell_cmd_withtext unselectable' style='background-image:url({3});' title='{4}'></span>\
-									<span id='subscribe' _index='{0}' class='pimshell_cmd_withtext unselectable' style='background-image:url({5});' title='{6}'></span>\
-									<a id='gotoarticle' href='{7}' target='_blank' title='{8}'><img border='0' src='{9}' style='position:relative;top:4px;' /></a>\
-									",
+		var sHtml_Toolbar = String2.format("{10}<div class='pimshell_toolbar'>\
+									<img id='showOrder' _index='{0}' src='{1}' class='pimshell_warning pimshell_link unselectable' title='{2}' />\
+									<img id='refresh' _index='{0}' src='{3}' class='pimshell_warning pimshell_link unselectable' title='{4}' />\
+									<img id='subscribe' _index='{0}' src='{5}' class='pimshell_warning pimshell_link unselectable' title='{6}' />\
+									<a id='gotoarticle' href='{7}' target='_blank' title='{8}'><img src='{9}' /></a>\
+									</div>",
 									nIndex,
 									sShowOrder == "desc" ? cbase.getURL("addons/images/down.gif") : cbase.getURL("addons/images/up.gif"),
 									cbase.getlanguagevalue("ascdesc"),
@@ -1096,7 +1116,8 @@ function feed_tools_system(window, document, jq) {
 									cbase.getlanguagevalue("follow"),
 									ctools.HTMLEncode(oEntity["articleLink"]),
 									cbase.getlanguagevalue("viewOriginal"),
-									cbase.getURL("addons/images/goto.gif")
+									cbase.getURL("addons/images/goto.gif"),
+									sHtml_Pager_General
 									);
 
 		oToolbar.innerHTML = sHtml_Toolbar;
@@ -1122,35 +1143,19 @@ function feed_tools_system(window, document, jq) {
 		oPager.className = 'pimshell_comments_pager';
 		oDiv2.appendChild(oPager);
 
-		//
-		var sHtml_Pager = String2.format("<div class='pimshell_pager'>\
-									<span id='pageInfo' style='vertical-align:top;display:none;margin-right:4px;'><span id='pageIndex' style='vertical-align:top;color:#5377A9;'></span>/<span id='pageCount' style='vertical-align:top;'></span></span>\
-									<img id='pageFirst' _index='{0}' src='{1}' class='pimshell_warning pimshell_link unselectable' title=\"{2}\" />\
-									<img id='pagePrevious' _index='{0}' src='{3}' class='pimshell_warning pimshell_link unselectable' title=\"{4}\" />\
-									<img id='pageNext' _index='{0}' src='{5}' class='pimshell_warning pimshell_link unselectable' title=\"{6}\" />\
-									<img id='pageLast' _index='{0}' src='{7}' class='pimshell_warning pimshell_link unselectable' title=\"{8}\" />\
-									</div>\
-									<div style='margin-top:4px;'><span id='feedback' _index='{0}' style='cursor:pointer;color:Green; font-weight:bold;'>* {9}</span></div>\
-									",
-									nIndex,
-									cbase.getURL("addons/images/page-first-disabled.png"),
-									cbase.getlanguagevalue("pageFirst"),
-									cbase.getURL("addons/images/page-prev-disabled.png"),
-									cbase.getlanguagevalue("pagePrevious"),
-									cbase.getURL("addons/images/page-next-disabled.png"),
-									cbase.getlanguagevalue("pageNext"),
-									cbase.getURL("addons/images/page-last-disabled.png"),
-									cbase.getlanguagevalue("pageLast"),
-									cbase.getlanguagevalue("viewcommentfeedbackprompt")
-									);
+		var sHtml_Pager = String2.format("{0}<div class='pimshell_pager_feedback'><span id='feedback' _index='{1}' style='cursor:pointer;color:Green; font-weight:bold;'>* {2}</span></div>",
+											sHtml_Pager_General,
+											nIndex,
+											cbase.getlanguagevalue("viewcommentfeedbackprompt")
+										);
 
 		oPager.innerHTML = sHtml_Pager;
 
-		jq("#pageFirst", oPager).click(this._delegate_click_showPage);
-		jq("#pagePrevious", oPager).click(this._delegate_click_showPage);
-		jq("#pageNext", oPager).click(this._delegate_click_showPage);
-		jq("#pageLast", oPager).click(this._delegate_click_showPage);
-		jq("#feedback", oPager).click(this._delegate_click_feedback);
+		jq("#pageFirst", oDiv2).click(this._delegate_click_showPage);
+		jq("#pagePrevious", oDiv2).click(this._delegate_click_showPage);
+		jq("#pageNext", oDiv2).click(this._delegate_click_showPage);
+		jq("#pageLast", oDiv2).click(this._delegate_click_showPage);
+		jq("#feedback", oDiv2).click(this._delegate_click_feedback);
 	}
 
 	
@@ -1366,8 +1371,8 @@ function feed_tools_system(window, document, jq) {
 		var sShowOrderNew = (oEntity["showOrder"] == "desc") ? "" : "desc";
 		oEntity["showOrder"] = sShowOrderNew;
 
-		var sBKImageURL=String2.format("url({0})",sShowOrderNew == "desc" ? cbase.getURL("addons/images/down.gif") : cbase.getURL("addons/images/up.gif"));
-		jq("#pimshell_advancedcomments_autotrack_toolbar #showOrder", oDiv2).css({ 'background-image': sBKImageURL });
+		var sBKImageURL=String2.format("{0}",sShowOrderNew == "desc" ? cbase.getURL("addons/images/down.gif") : cbase.getURL("addons/images/up.gif"));
+		jq("#pimshell_advancedcomments_autotrack_toolbar #showOrder", oDiv2).attr('src', sBKImageURL);
 		
 		//
 		cbase.sendmessage("changeShowOrder", sShowOrderNew, function () {
