@@ -295,7 +295,7 @@ var ctools = {
 		}
 	},
 	HTMLEncode: function (str) {
-		if (str == "")
+		if (String2.isEmpty(str))
 			return "";
 
 		//avoid encode twice
@@ -329,13 +329,22 @@ var String2 = {
 		return this.compare(str1.toLowerCase(), str2.toLowerCase());
 	},
 	trim: function (str) {
-		return str.replace(/^\s\s*/, '').replace(/\s\s*$/, '');
+		if (String2.isEmpty(str))
+			return "";
+		else
+			return str.replace(/^\s\s*/, '').replace(/\s\s*$/, '');
 	},
 	trimLeft: function (str) {
-		return str.replace(/^\s\s*/, '');
+		if (String2.isEmpty(str))
+			return "";
+		else
+			return str.replace(/^\s\s*/, '');
 	},
 	trimRight: function (str) {
-		return str.replace(/\s\s*$/, '');
+		if (String2.isEmpty(str))
+			return "";
+		else
+			return str.replace(/\s\s*$/, '');
 	},
 	format: function () {
 		var nLen = arguments.length;
