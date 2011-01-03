@@ -34,6 +34,7 @@
 <script type="text/javascript" src="../js/ctools.js"></script>
 <script type="text/javascript" src="../js/cpage.js"></script>
 <script type="text/javascript" src="../lib/prettydate.js"></script>
+<script type="text/javascript" src="../lib/shortcut.js"></script>
 
 
 <script type="text/javascript">
@@ -297,6 +298,13 @@
 			jQuery("#option_followCheckInterval").change(oninputchange);
 			jQuery("#option_followCheckInterval_slider").slider({ min: 10, max: 1440, step: 10, change: onsliderchange });
 
+			//shortcuts
+			jQuery("#Shortcuts_HeaderTitle").text(cbase.getlanguagevalue("shortcuts"));
+
+			jQuery("#option_shortcutsShowComments_desp").text(cbase.getlanguagevalue("showhidecomments"));
+			jQuery("#option_shortcutsShowComments").change(oninputchange);
+			jQuery("#option_shortcutsShowComments").keydown(onkeydown_shortcuts);
+
 			//buttons
 			jQuery("#saveOptions")
 													.text(cbase.getlanguagevalue("saveOptions"))
@@ -341,6 +349,11 @@
 		
 		jQuery("#option_followCheckInterval").attr("value", oOptions["follow_checkinterval"]);
 		jQuery("#option_followCheckInterval_slider").slider("option","value",oOptions["follow_checkinterval"]);
+
+		//shortcuts
+		jQuery("#option_shortcutsShowComments").attr("_value", oOptions["shortcuts_showcomments"])
+												.attr("value", keycodes[oOptions["shortcuts_showcomments"]]);
+		
 	}
 
 	function onchange_accordion(event, ui) {
@@ -446,6 +459,9 @@
 			oOptions["follow_checkenabled"] = jQuery("#option_followCheckEnabled").attr("checked");
 			oOptions["follow_checkinterval"] = parseInt(jQuery("#option_followCheckInterval").attr("value"));
 
+			//shortcuts
+			oOptions["shortcuts_showcomments"] = parseInt(jQuery("#option_shortcutsShowComments").attr("_value"));
+
 			//save
 			cbase.sendmessage("saveOptions", oOptions, function () {
 				_optionsModified(false);
@@ -482,6 +498,23 @@
 		_optionsModified(true);
 	}
 
+	//
+	function onkeydown_shortcuts(event) {
+		var oElement = ctools.getEventElement(event);
+		var code = event.which ? event.which : event.keyCode;
+
+		if(keycodes[code]!=null){
+			oElement.value = keycodes[code];
+			oElement.setAttribute('_value',code);
+		
+			//modified
+			_optionsModified(true);
+		}
+
+		event.preventDefault();	
+	}
+
+	//
 	function onsliderchange(event, ui) {
 		if (event.originalEvent == null)
 			return;
@@ -564,6 +597,14 @@
 				<td class="level2"><label id="option_followCheckInterval_desp"></label></td>
 				<td><input id="option_followCheckInterval" type="text" size="5" slider="option_followCheckInterval_slider" /><span id="option_followCheckInterval_slider" for="option_followCheckInterval" class="option-slider"></span></td>
 			</tr>
+
+			<tr><td colspan="2"><span id="Shortcuts_HeaderTitle" class="title"></span></td></tr>
+			<tr>
+				<td class="level2"><label id="option_shortcutsShowComments_desp"></label></td>
+				<td><input id="option_shortcutsShowComments" type="text" size="5" /></td>
+			</tr>
+
+			<tr><td colspan="2">&nbsp;</td></tr>
 			<tr>
 				<td>&nbsp;</td>
 				<td><button id="saveOptions"></button><button id="loadDefaultOptions"></button></td>
