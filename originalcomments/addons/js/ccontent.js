@@ -303,7 +303,14 @@ function feed_tools_system(window, document, jq) {
 				return;
 
 			//
-			if (String.fromCharCode(code).toLowerCase() == 'c' && !event.ctrlKey) {
+			if (code == 38 || code == 40) {
+
+			}
+			else if (code == parseInt(oThis._oContent.m_oOptions["shortcuts_showcomments"])
+						&& !event.ctrlKey
+						&& !event.altKey
+						&& !event.shiftKey
+						) {
 				//not input or textarea
 				var oElement = ctools.getEventElement(event);
 				var sTagName = oElement.tagName.toLowerCase();

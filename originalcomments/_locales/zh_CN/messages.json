@@ -151,5 +151,11 @@
   },
   "accessFailed":{
 	"message":"访问失败"
+  },
+  "shortcuts":{
+	"message":"键盘快捷键"
+  },
+  "showhidecomments":{
+	"message":"显示/隐藏 评论"
   }
 }
