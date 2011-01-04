@@ -113,6 +113,9 @@
   "autoViewPrefetchInterval":{
 	"message":"预加载延时 (秒)"
   },
+  "autoViewPrefetchAutoDisplay":{
+	"message":"如果有评论自动显示"
+  },
   "followCheckEnabled":{
 	"message":"定期检测新评论"
   },

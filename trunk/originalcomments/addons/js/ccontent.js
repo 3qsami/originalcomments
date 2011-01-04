@@ -162,6 +162,8 @@ function feed_tools_system(window, document, jq) {
 	this._fire_ongetcurrentarticle = __fire_ongetcurrentarticle;
 	this._prepareArticleEntity = __prepareArticleEntity;
 	this._switchcomments = __switchcomments;
+	this._getparentscrollcontainer = __getparentscrollcontainer;
+	this._checkcommentsbuttoncontainerposition = __checkcommentsbuttoncontainerposition;
 
 	//2010.08.03
 	this._autotrack_getcommentsparams_trackurl = __autotrack_getcommentsparams_trackurl;
@@ -169,6 +171,7 @@ function feed_tools_system(window, document, jq) {
 	this._autotrack_gettrackcontainervisible = __autotrack_gettrackcontainervisible;
 	this._autotrack_prefetchenabled = __autotrack_prefetchenabled;
 	this._autotrack_prefetchenabledinterval = __autotrack_prefetchenabledinterval;
+	this._autotrack_prefetchautodisplay = __autotrack_prefetchautodisplay;
 	this._autotrack_enabled = __autotrack_enabled;
 	this._autotrack_height = __autotrack_height;
 	this._autotrack_leftmargin = __autotrack_leftmargin;
@@ -535,10 +538,12 @@ function feed_tools_system(window, document, jq) {
 				this._autotrack_clearoldarticles(nIndex);
 
 				//2010.12.22 only for viewcomments as to show comments immediately.
-				if (this._autotrack_enabled()) {
-					//switch
-					this._switchcomments(oEntity);
-				}
+				//2011.01.05 need not any longer
+//				if (this._autotrack_enabled()) {
+//					//switch
+//					this._switchcomments(oEntity);
+//				}
+
 			}
 		}
 
@@ -847,6 +852,10 @@ function feed_tools_system(window, document, jq) {
 		return this._oContent.m_oOptions["autoview_prefetchinterval"];
 	}
 
+	function __autotrack_prefetchautodisplay() {
+		return this._oContent.m_oOptions["autoview_prefetchautodisplay"];
+	}
+
 	function __autotrack_enabled() {
 		//raise event of ongetoption
 		var oEvent = this._createevent();
@@ -937,7 +946,7 @@ function feed_tools_system(window, document, jq) {
 	function __autotrack_gettrackcontainer(oEntity, bCreateIfEmpty) {
 		var oArticleElement = oEntity["articleElement"];
 
-		var oDiv = this._getcommentscontainer(oEntity, false);
+		var oDiv = this._getcommentscontainer(oEntity, bCreateIfEmpty);
 		if (oDiv == null)
 			return null;
 
@@ -1039,13 +1048,14 @@ function feed_tools_system(window, document, jq) {
 			oThis._setcomments(oEntity);
 
 			//oDiv2 maybe null
-			var oDiv2 = oThis._autotrack_gettrackcontainer(oEntity, false);
+			var bForceCreateDiv2 = !bForceTop && oThis._autotrack_prefetchautodisplay() && nTotalCount > 0;
+			var oDiv2 = oThis._autotrack_gettrackcontainer(oEntity, bForceCreateDiv2);
 			if (oDiv2 == null)
 				return;
 
 			//toolbar
 			var oPageInfo = jq("#pageInfo", oDiv2);
-			oPageInfo.css({'visibility':'visible'}); //.show();
+			oPageInfo.css({ 'visibility': 'visible' }); //.show();
 			jq("#pageIndex", oPageInfo).text(nPageIndex);
 			jq("#pageCount", oPageInfo).text(nPageCount);
 
@@ -1069,6 +1079,13 @@ function feed_tools_system(window, document, jq) {
 			//2010.11.22 just scrollIntoView
 			if (bForceTop) {
 				oThis._forceshowcommentscontainer(oEntity, function () { });
+			}
+			else {
+				//2011.01.04 autodisplay
+				if (oThis._autotrack_prefetchautodisplay() && nTotalCount > 0) {
+					//visible
+					oThis._setcommentscontainervisible(oEntity, true, function () { });
+				}
 			}
 
 		});	
@@ -1180,7 +1197,16 @@ function feed_tools_system(window, document, jq) {
 		//switch show
 		var bVisible = this._getcommentscontainervisible(oEntity);
 		if (bVisible) {
-			this._setcommentscontainervisible(oEntity, false);
+			//2011.01.05 check the position
+			if (this._checkcommentsbuttoncontainerposition(oEntity)) {
+				//top
+				//not forcetryconfig
+				this._tryconfigAndShow(oEntity, false, true);
+			}
+			else {
+				//hide
+				this._setcommentscontainervisible(oEntity, false);
+			}
 		}
 		else {
 			//not forcetryconfig
@@ -1287,6 +1313,42 @@ function feed_tools_system(window, document, jq) {
 		this._tryconfigAndShow(oEntity, true,true);
 	}
 
+	//return true if below to the parent
+	function __checkcommentsbuttoncontainerposition(oEntity) {
+		//
+		var oSpan1 = this._getcommentsbuttonscontainer(oEntity, false);
+		if (oSpan1 == null) {
+			return false;
+		}
+
+		//
+		var oParentScrollContainer = this._getparentscrollcontainer(oEntity);
+		if (oParentScrollContainer == null)
+			return false; //ignore
+
+		//
+		var b = jq(oSpan1).offset().top;
+		var c = jq(oParentScrollContainer).offset().top;
+
+		var h = jq(oParentScrollContainer).height();
+		return b >= h + c;
+	}
+
+	function __getparentscrollcontainer(oEntity) {
+		//raise event of ongetparentscrollcontainer
+		var oParentScrollContainer = null;
+
+		var oEvent = this._createevent();
+		oEvent.articleElement = oEntity["articleElement"];
+
+		this._fireevent("ongetparentscrollcontainer", oEvent);
+		if (oEvent.cancelBubble) {
+			oParentScrollContainer = oEvent.returnValue;
+		}
+
+		return oParentScrollContainer;
+	}
+
 	function __forceshowcommentscontainer(oEntity, oCallback) {
 		//
 		var sFormId = oEntity["formId"];
@@ -1305,16 +1367,7 @@ function feed_tools_system(window, document, jq) {
 		}
 
 		//raise event of ongetparentscrollcontainer
-		var oParentScrollContainer = null;
-
-		var oEvent = this._createevent();
-		oEvent.articleElement = oEntity["articleElement"];
-
-		this._fireevent("ongetparentscrollcontainer", oEvent);
-		if (oEvent.cancelBubble) {
-			oParentScrollContainer = oEvent.returnValue;
-		}
-
+		var oParentScrollContainer = this._getparentscrollcontainer(oEntity);
 		if (oParentScrollContainer == null) {
 			oSpan1.scrollIntoView();
 
@@ -1325,7 +1378,9 @@ function feed_tools_system(window, document, jq) {
 			var a = jq(oParentScrollContainer).scrollTop();
 			var b = jq(oSpan1).offset().top;
 			var c = jq(oParentScrollContainer).offset().top;
+
 			//-2 for top border
+			//2010.01.05 -20 避免“展开模式”下show/hide时跳到下一个条目（不起作用）
 			jq(oParentScrollContainer).animate({ scrollTop: a + b - c - 2  }, "normal", null, function () {
 				oCallback(null);
 				return;

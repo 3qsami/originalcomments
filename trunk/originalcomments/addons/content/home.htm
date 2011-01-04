@@ -288,6 +288,9 @@
 			jQuery("#option_autoViewPrefetchInterval").change(oninputchange);
 			jQuery("#option_autoViewPrefetchInterval_slider").slider({ min: 0, max: 10, step: 1, change: onsliderchange });
 
+			jQuery("#option_autoViewPrefetchAutoDisplay_desp").text(cbase.getlanguagevalue("autoViewPrefetchAutoDisplay"));
+			jQuery("#option_autoViewPrefetchAutoDisplay").change(oninputchange);
+
 			//followcomments
 			jQuery("#FollowComments_HeaderTitle").text(cbase.getlanguagevalue("commentsSubscriptions"));
 
@@ -343,6 +346,8 @@
 
 		jQuery("#option_autoViewPrefetchInterval").attr("value", oOptions["autoview_prefetchinterval"]);
 		jQuery("#option_autoViewPrefetchInterval_slider").slider("option", "value", oOptions["autoview_prefetchinterval"]);
+
+		jQuery("#option_autoViewPrefetchAutoDisplay").attr("checked", oOptions["autoview_prefetchautodisplay"]);
 
 		//followcomments
 		jQuery("#option_followCheckEnabled").attr("checked", oOptions["follow_checkenabled"]);
@@ -455,6 +460,7 @@
 
 			oOptions["autoview_prefetchenabled"] = jQuery("#option_autoViewPrefetchEnabled").attr("checked");
 			oOptions["autoview_prefetchinterval"] = parseInt(jQuery("#option_autoViewPrefetchInterval").attr("value"));
+			oOptions["autoview_prefetchautodisplay"] = jQuery("#option_autoViewPrefetchAutoDisplay").attr("checked");
 
 			oOptions["follow_checkenabled"] = jQuery("#option_followCheckEnabled").attr("checked");
 			oOptions["follow_checkinterval"] = parseInt(jQuery("#option_followCheckInterval").attr("value"));
@@ -586,6 +592,10 @@
 			<tr>
 				<td class="level2"><label id="option_autoViewPrefetchInterval_desp"></label></td>
 				<td><input id="option_autoViewPrefetchInterval" type="text" size="5" slider="option_autoViewPrefetchInterval_slider" /><span id="option_autoViewPrefetchInterval_slider" for="option_autoViewPrefetchInterval" class="option-slider"></span></td>
+			</tr>
+			<tr>
+				<td class="level2"><label id="option_autoViewPrefetchAutoDisplay_desp"></label></td>
+				<td><input id="option_autoViewPrefetchAutoDisplay" type="checkbox" /></td>
 			</tr>
 
 			<tr><td colspan="2"><span id="FollowComments_HeaderTitle" class="title"></span></td></tr>
