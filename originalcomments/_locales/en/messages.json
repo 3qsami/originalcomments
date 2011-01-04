@@ -113,6 +113,9 @@
   "autoViewPrefetchInterval":{
 	"message":"Pre-fetch delay (Seconds)"
   },
+  "autoViewPrefetchAutoDisplay":{
+	"message":"Auto display if have comments"
+  },
   "followCheckEnabled":{
 	"message":"Check the new comments frequently"
   },
