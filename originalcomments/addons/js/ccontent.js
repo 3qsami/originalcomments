@@ -537,12 +537,11 @@ function feed_tools_system(window, document, jq) {
 				var nIndex = ctools.getAttribute(oArticleElement, "_index_oc", 0);
 				this._autotrack_clearoldarticles(nIndex);
 
-				//2010.12.22 only for viewcomments as to show comments immediately.
-				//2011.01.05 need not any longer
-//				if (this._autotrack_enabled()) {
-//					//switch
-//					this._switchcomments(oEntity);
-//				}
+				//2010.12.22 only for viewcomments.htm as to show comments immediately.
+				if (this._autotrack_enabled()) {
+					//switch
+					this._switchcomments(oEntity);
+				}
 
 			}
 		}
