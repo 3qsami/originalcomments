@@ -956,7 +956,7 @@ function feed_tools_system(window, document, jq) {
 				oDiv2 = document.createElement("div");
 
 				oDiv2.id = 'pimshell_advancedcomments_autotrack';
-				oDiv2.style.cssText = String2.format('height:{0}px;padding-right:{1}px;padding-left:{2}px;',
+				oDiv2.style.cssText = String2.format('_max-height:{0}px;padding-right:{1}px;padding-left:{2}px;',
 												parseInt(this._autotrack_height()) + 70,
 												this._autotrack_rightmargin(), this._autotrack_leftmargin());
 
@@ -1152,7 +1152,7 @@ function feed_tools_system(window, document, jq) {
 		//content
 		var oContent = document.createElement("div");
 		oContent.id = 'pimshell_advancedcomments_autotrack_content';
-		oContent.style.cssText = String2.format('height:{0}px;',
+		oContent.style.cssText = String2.format('max-height:{0}px;',
 													this._autotrack_height()
 												);
 		oContent.className = 'pimshell_comments_body';
@@ -1164,6 +1164,8 @@ function feed_tools_system(window, document, jq) {
 		var oPager = document.createElement("div");
 		oPager.id = 'pimshell_advancedcomments_autotrack_pager';
 		oPager.className = 'pimshell_comments_pager';
+		oPager.style.cssText = 'height:35px;';
+
 		oDiv2.appendChild(oPager);
 
 		var sHtml_Pager = String2.format("{0}<div class='pimshell_pager_feedback'><span id='feedback' _index='{1}' style='cursor:pointer;color:Green; font-weight:bold;'>* {2}</span></div>",
