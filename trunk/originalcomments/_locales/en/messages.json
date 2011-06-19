@@ -1,12 +1,12 @@
 ﻿{
   "name": {
-    "message": "Original Comments for Google Reader"
+    "message": "Original Comments for GoogleReader"
   },
   "description": {
     "message": "Directly view original comments in Google Reader."
   },
   "actiontitle": {
-    "message": "Original Comments for Google Reader"
+    "message": "Original Comments for GoogleReader"
   },
   "requestForm":{
 	"message":"Request Form"
