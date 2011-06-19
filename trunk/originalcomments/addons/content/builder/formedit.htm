@@ -196,13 +196,13 @@
 		//check if signed
 		XMLHttpManager.openRequest2(URL_Feed_WebCalls_checkloginstatus, null, function (oRequest) {
 			if (oRequest.status != 200) {
-				window.alert("Cannot check your login status.");
+				window.alert(cbase.getlanguagevalue("builder_loginstatus_cannotcheck"));
 				callback(false);
 			}
 			else {
 				var sStatus = oRequest.responseText;
 				if (sStatus !== "true") {
-					if (window.confirm("You must login in first. Do you login in now?")) {
+					if (window.confirm(cbase.getlanguagevalue("builder_loginstatus_notlogin"))) {
 						cbase.newTab(URL_Feed_Signin, true);
 					}
 
@@ -243,17 +243,23 @@
 					oBody["FormXML"] = oFormContent["FormXML"];
 					oBody["FormJS"] = oFormContent["FormJS"];
 
+					//2011.06.19
+					oBody["testreg_regexp"] = oFormContent["testreg_regexp"];
+					oBody["testreg_result"] = oFormContent["testreg_result"];
+					oBody["testreg_text"] = oFormContent["testreg_text"];
+					oBody["debug_articlelink"] = oFormContent["debug_articlelink"];
+
 					//post
 					var oParams = new Object();
 					oParams["httpVerb"] = "post";
 					oParams["body"] = oBody;
 					XMLHttpManager.openRequest2(URL_Feed_FormPost, oParams, function (oRequest) {
 						if (oRequest.status == 200 && oRequest.responseText=="true") {
-							window.alert("Thanks for your submission! Submission involves a review process so your item may not immediately appear on the site.");
+							window.alert(cbase.getlanguagevalue("builder_publish_succeed"));
 							callback(true);
 						}
 						else {
-							window.alert("Failed to publish form.");
+							window.alert(cbase.getlanguagevalue("builder_publish_failed"));
 							callback(false);
 						}
 					});
@@ -384,7 +390,7 @@
 				_combineFormInfo(oFormInfo, oFormInfo);
 				cbase.sendmessage("debug_setform", oFormInfo, function (bSucceeded) {
 					if (bSucceeded) {
-						window.alert("System Form takes effect now.");
+						window.alert(cbase.getlanguagevalue("builder_debug_systemform_takeeffect"));
 					}
 				});
 			}

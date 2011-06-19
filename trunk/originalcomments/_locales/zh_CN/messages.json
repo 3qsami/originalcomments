@@ -160,5 +160,20 @@
   },
   "showhidecomments":{
 	"message":"显示/隐藏 评论"
+  },
+  "builder_loginstatus_cannotcheck":{
+	"message":"无法检测用户登录状态。"
+  },
+  "builder_loginstatus_notlogin":{
+	"message":"您必须先登录。你想现在登录吗？"
+  },
+  "builder_publish_succeeded":{
+	"message":"感谢您的提交。您提交的内容需要经过审核通过后，才能显示在网站上。"
+  },
+  "builder_publish_failed":{
+	"message":"上传解析器失败。"
+  },
+  "builder_debug_systemform_takeeffect":{
+	"message":"系统解析器已生效。"
   }
 }

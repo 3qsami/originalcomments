@@ -209,6 +209,9 @@ var ctools = {
 			return null;
 	},
 	getNodeText: function (oNode) {
+		if (oNode == null)
+			return "";
+
 		var s = oNode.textContent;
 		if (this.isempty(s))
 			s = oNode.text;
