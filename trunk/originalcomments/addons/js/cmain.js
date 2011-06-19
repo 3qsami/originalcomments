@@ -1608,6 +1608,9 @@ function createMainContext(window, document, jq) {
 
 		//check if form has error
 		this._sendFormCheck = function (bFailed) {
+			//2011.06.19 neednot
+			return;
+
 			//
 			if (this.m_bSendFormCheckOnce)
 				return;
@@ -1633,7 +1636,7 @@ function createMainContext(window, document, jq) {
 				sURL = ctools.appendQueryStringValue(sURL, 'FormId', this.m_sFormId);
 				sURL = ctools.appendQueryStringValue(sURL, 'Desp', sMessage);
 
-				XMLHttpManager.openRequest2(sURL,null,null);
+				XMLHttpManager.openRequest2(sURL, null, null);
 			}
 		};
 
