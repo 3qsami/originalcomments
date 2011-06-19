@@ -160,5 +160,20 @@
   },
   "showhidecomments":{
 	"message":"show/hide comments"
+  },
+  "builder_loginstatus_cannotcheck":{
+	"message":"Cannot check your login status."
+  },
+  "builder_loginstatus_notlogin":{
+	"message":"You must login in first. Do you login in now?"
+  },
+  "builder_publish_succeeded":{
+	"message":"Thanks for your submission! Submission involves a review process so your item may not immediately appear on the site."
+  },
+  "builder_publish_failed":{
+	"message":"Failed to publish Parser."
+  },
+  "builder_debug_systemform_takeeffect":{
+	"message":"System Form takes effect now."
   }
 }

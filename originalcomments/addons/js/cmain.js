@@ -107,7 +107,7 @@ function createMainContext(window, document, jq) {
 			if (oOptions["autoview_prefetchinterval"] == null)
 				oOptions["autoview_prefetchinterval"] = 0; //seconds
 			if (oOptions["autoview_prefetchautodisplay"] == null)
-				oOptions["autoview_prefetchautodisplay"] = false;
+				oOptions["autoview_prefetchautodisplay"] = true;
 
 			//shortcuts
 			if (oOptions["shortcuts_showcomments"] == null)
