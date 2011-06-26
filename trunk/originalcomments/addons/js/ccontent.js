@@ -1124,11 +1124,12 @@ function feed_tools_system(window, document, jq) {
 		oToolbar.className = 'pimshell_comments_toolbar';
 		oDiv2.appendChild(oToolbar);
 
-		var sHtml_Toolbar = String2.format("{10}<div class='pimshell_toolbar'>\
+		var sHtml_Toolbar = String2.format("{13}<div class='pimshell_toolbar'>\
 									<img id='showOrder' _index='{0}' src='{1}' class='pimshell_warning pimshell_link unselectable' title='{2}' />\
 									<img id='refresh' _index='{0}' src='{3}' class='pimshell_warning pimshell_link unselectable' title='{4}' />\
 									<img id='subscribe' _index='{0}' src='{5}' class='pimshell_warning pimshell_link unselectable' title='{6}' />\
 									<a id='gotoarticle' href='{7}' target='_blank' title='{8}'><img src='{9}' /></a>\
+									<a id='viewparser' href='{10}' target='_blank' title='{11}'><img src='{12}' /></a>\
 									</div>",
 									nIndex,
 									sShowOrder == "desc" ? cbase.getURL("addons/images/down.gif") : cbase.getURL("addons/images/up.gif"),
@@ -1140,6 +1141,12 @@ function feed_tools_system(window, document, jq) {
 									ctools.HTMLEncode(oEntity["articleLink"]),
 									cbase.getlanguagevalue("viewOriginal"),
 									cbase.getURL("addons/images/goto.gif"),
+									String2.format("{0}?platform={1}&FormId={2}", 
+													cbase.getURL("addons/content/builder/edit.htm"),
+													cbase.getPlatform(), oEntity["formId"]
+													),
+									cbase.getlanguagevalue("builder_viewparser"),
+									cbase.getURL("addons/images/spider.png"),
 									sHtml_Pager_General
 									);
 
