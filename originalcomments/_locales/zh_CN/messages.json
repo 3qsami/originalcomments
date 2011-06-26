@@ -175,5 +175,11 @@
   },
   "builder_debug_systemform_takeeffect":{
 	"message":"系统解析器已生效。"
+  },
+  "builder_parserstudio":{
+	"message":"评论解析器制作"
+  },
+  "builder_viewparser":{
+	"message":"查看评论解析器"
   }
 }

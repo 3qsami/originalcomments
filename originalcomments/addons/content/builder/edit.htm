@@ -255,7 +255,7 @@
 					oParams["body"] = oBody;
 					XMLHttpManager.openRequest2(URL_Feed_FormPost, oParams, function (oRequest) {
 						if (oRequest.status == 200 && oRequest.responseText=="true") {
-							window.alert(cbase.getlanguagevalue("builder_publish_succeed"));
+							window.alert(cbase.getlanguagevalue("builder_publish_succeeded"));
 							callback(true);
 						}
 						else {

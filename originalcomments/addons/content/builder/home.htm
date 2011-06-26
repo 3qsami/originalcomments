@@ -252,8 +252,10 @@
 	<script type="text/javascript">
 
 	function onclick_edit(event, sFormId) {
-		var sURL = String2.format("{0}?platform=chrome&FormId={1}",
-										cbase.getURL("addons/content/builder/formedit.htm"), sFormId);
+		var sURL = String2.format("{0}?platform={1}&FormId={2}",
+										cbase.getURL("addons/content/builder/edit.htm"),
+										cbase.getPlatform(),
+										sFormId);
 		cbase.newTab(sURL, true);
 	}
 	function onclick_clone(event, sFormIdSource) {

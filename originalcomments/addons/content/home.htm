@@ -67,6 +67,10 @@
 				//hotkeys
 				jQuery.hotkeys.add('ctrl+s', onhotkeys_save);
 
+				//2011.06.26
+				jQuery("#id_parserstudio").text(cbase.getlanguagevalue("builder_parserstudio"))
+											.attr("href",String2.format("builder/home.htm?platform={0}",cbase.getPlatform()));
+
 				//ok
 				jQuery(document.body).css('visibility', 'visible');
 			});
@@ -547,6 +551,14 @@
 		<ul>
 			<li><a href="http://getsatisfaction.com/originalcomments">Support and FAQs</a></li>
 			<li><a href="https://chrome.google.com/webstore/detail/bakgcnaldcjegdemmmkkmghcbmliojjd">Welcome your advice and rating</a></li>
+		</ul>
+	</div>
+</div>
+<div style="float:left; width:300px; " class="demo-config-menu">
+	<div class="demos-nav">
+		<ul>
+			<li>&nbsp;</li>
+			<li><a href="builder/home.htm" id="id_parserstudio"></a></li>
 		</ul>
 	</div>
 </div>

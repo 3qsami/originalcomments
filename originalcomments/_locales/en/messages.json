@@ -175,5 +175,11 @@
   },
   "builder_debug_systemform_takeeffect":{
 	"message":"System Form takes effect now."
+  },
+  "builder_parserstudio":{
+	"message":"Comments Parser Studio"
+  },
+  "builder_viewparser":{
+	"message":"View Comments Parser"
   }
 }
