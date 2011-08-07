@@ -224,9 +224,9 @@ var json_parse = (function () {
 	var at,     // The index of the current character
         ch,     // The current character
         escapee = {
-			//2010.11.28 '
+        	//2010.11.28 '
         	'\'': '\'',
-			'"': '"',
+        	'"': '"',
         	'\\': '\\',
         	'/': '/',
         	b: '\b',
@@ -489,7 +489,7 @@ var json_parse = (function () {
         			key = string(false);
         			white();
         			next(':');
-					//2010.11.28 not check
+        			//2010.11.28 not check
         			//if (Object.hasOwnProperty.call(object, key)) {
         			//	error('Duplicate key "' + key + '"');
         			//}
@@ -519,7 +519,7 @@ var json_parse = (function () {
 				return array();
 			case '"':
 				return string(true);
-			//2010.11.28
+				//2010.11.28
 			case '\'':
 				return string(true);
 			case '-':
@@ -535,6 +535,11 @@ var json_parse = (function () {
 	return function (source, reviver) {
 		var result;
 
+		//2011.08.06 check source first
+		if (source == null || source == "")
+			return null;
+
+		//
 		text = source;
 		at = 0;
 		ch = ' ';

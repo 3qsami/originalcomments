@@ -28,19 +28,11 @@
 <script type="text/javascript" src="../../js/ccontent.js"></script>
 <script type="text/javascript" src="../../readeronline/viewcomments.js"></script>
 
+<script type="text/javascript" src="js/ccommon.js"></script>
+
 <script type="text/javascript">
 
-	// url
 	
-	var URL_Feed_WebCalls_checkloginstatus = "http://www.pimshell.com/formgallery/WebCalls.aspx?action=checkloginstatus";
-	var URL_Feed_Signin = "http://www.pimshell.com/formgallery/signin.aspx";
-	var URL_Feed_FormPost = "http://www.pimshell.com/formgallery/Post.aspx";
-	
-	
-//	var URL_Feed_WebCalls_checkloginstatus = "http://localhost:49448/WebCalls.aspx?action=checkloginstatus";
-//	var URL_Feed_Signin = "http://localhost:49448/signin.aspx";
-//	var URL_Feed_FormPost = "http://localhost:49448/Post.aspx";
-//	
 
 	//
 	(function () {
@@ -74,7 +66,7 @@
 
 					//
 					g_sFormId = oParts["FormId"];
-					_fillFormInfo();
+					_fillFormInfo_downloadfirst();
 
 					//ok
 					jQuery(document.body).css('visibility', 'visible');
@@ -88,6 +80,32 @@
 <script type="text/javascript">
 	var g_sFormId = "";
 
+	//
+	function _fillFormInfo_downloadfirst() {
+		if (String2.isEmpty(g_sFormId))
+			return;
+
+		//check if exists
+		var oForms = _getOptionsForms();
+		var oFormInfo = oForms[g_sFormId];
+		if (oFormInfo != null) {
+			_fillFormInfo();
+		}
+		else {
+			//
+			ccommon.importform(g_sFormId, function (result) {
+				if (result) {
+					//
+					_fillFormInfo();
+				}
+				else {
+					window.alert(cbase.getlanguagevalue("builder_edit_downloadparser_failed"));
+				}
+			});
+		}
+	}
+
+	//
 	function _fillFormInfo() {
 		if (String2.isEmpty(g_sFormId))
 			return;
@@ -200,8 +218,8 @@
 				callback(false);
 			}
 			else {
-				var sStatus = oRequest.responseText;
-				if (sStatus !== "true") {
+				var oResult = cbase.json_parse(oRequest.responseText);
+				if (oResult.result !== "true") {
 					if (window.confirm(cbase.getlanguagevalue("builder_loginstatus_notlogin"))) {
 						cbase.newTab(URL_Feed_Signin, true);
 					}
@@ -412,27 +430,6 @@
 				}
 			});
 		}
-	}
-
-	function _getOptionsForms() {
-		var oForms = cbase.getoption("builder.forms", null);
-		if (oForms == null) {
-			oForms = new Object();
-		}
-		return oForms;
-	}
-	function _setOptionsForms(oForms) {
-		cbase.setoption("builder.forms", oForms);
-	}
-	function _getFormContent(sFormId) {
-		var oFormContent = cbase.getoption("builder.form.content:" + sFormId, null);
-		if (oFormContent == null) {
-			oFormContent = new Object();
-		}
-		return oFormContent;
-	}
-	function _setFormContent(oFormContent) {
-		cbase.setoption("builder.form.content:" + oFormContent["formId"], oFormContent);
 	}
 
 </script>
