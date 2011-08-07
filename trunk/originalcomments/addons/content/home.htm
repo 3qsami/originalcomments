@@ -68,8 +68,8 @@
 				jQuery.hotkeys.add('ctrl+s', onhotkeys_save);
 
 				//2011.06.26
-				jQuery("#id_parserstudio").text(cbase.getlanguagevalue("builder_parserstudio"))
-											.attr("href",String2.format("builder/home.htm?platform={0}",cbase.getPlatform()));
+				jQuery("#id_parserstudio_text").text(cbase.getlanguagevalue("builder_parserstudio"));
+				jQuery("#id_parserstudio").attr("href",String2.format("builder/home.htm?platform={0}",cbase.getPlatform()));
 
 				//ok
 				jQuery(document.body).css('visibility', 'visible');
@@ -558,7 +558,7 @@
 	<div class="demos-nav">
 		<ul>
 			<li>&nbsp;</li>
-			<li><a href="builder/home.htm" id="id_parserstudio"></a></li>
+			<li><a href="builder/home.htm" id="id_parserstudio"><img border="0" src="../images/spider.png" /><span id="id_parserstudio_text"></span></a></li>
 		</ul>
 	</div>
 </div>

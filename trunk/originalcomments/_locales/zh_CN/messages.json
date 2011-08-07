@@ -181,5 +181,8 @@
   },
   "builder_viewparser":{
 	"message":"查看评论解析器"
+  },
+  "builder_edit_downloadparser_failed":{
+	"message":"下载评论解析器失败。"
   }
 }

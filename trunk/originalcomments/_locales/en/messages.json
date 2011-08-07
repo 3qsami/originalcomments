@@ -181,5 +181,8 @@
   },
   "builder_viewparser":{
 	"message":"View Comments Parser"
+  },
+  "builder_edit_downloadparser_failed":{
+	"message":"Failed to download Parser."
   }
 }
