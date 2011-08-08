@@ -227,3 +227,18 @@ blockquote , .pimshell_blockquote
 	top:-4px;
 	text-align:right;
 }
+
+.pimshell_general_link a:link, 
+.pimshell_general_link a:visited {
+	padding: 1px 8px 4px;
+	color: #1B75BB;
+	text-decoration:none;
+}
+
+.pimshell_general_link a:hover,
+.pimshell_general_link a:focus {
+    background: #f3f3f3;
+    color:#C77405;
+    text-decoration:underline;
+    -moz-border-radius: 3px; -webkit-border-radius: 3px;
+}

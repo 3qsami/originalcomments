@@ -9,10 +9,10 @@
     "message": "原文评论支持Google Reader"
   },
   "requestForm":{
-	"message":"申请窗体"
+	"message":"发送申请"
   },
   "requestFormTitle":{
-	"message":"还未支持。请以后再试，或提交一个申请。"
+	"message":"还未支持。请以后再试，或提交一个申请，或你亲自制作一个评论解析器。"
   },
   "trackComments":{
 	"message":"查看评论"
@@ -176,13 +176,16 @@
   "builder_debug_systemform_takeeffect":{
 	"message":"系统解析器已生效。"
   },
-  "builder_parserstudio":{
-	"message":"评论解析器制作"
+  "builder_openparserstudio":{
+	"message":"打开评论解析器制作间"
   },
   "builder_viewparser":{
 	"message":"查看评论解析器"
   },
   "builder_edit_downloadparser_failed":{
 	"message":"下载评论解析器失败。"
+  },
+  "builder_feedback_send":{
+	"message":"发送反馈"
   }
 }

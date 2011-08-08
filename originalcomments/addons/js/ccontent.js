@@ -8,7 +8,16 @@
 /// <reference path="cbase.js" />
 /// <reference path="ctools.js" />
 
+// url
 
+var URL_Feed_FormWant="http://www.pimshell.com/formgallery/Want.aspx";
+var URL_Feed_FormFeedback = "http://www.pimshell.com/formgallery/Feedback.aspx";
+
+//	var URL_Feed_FormWant = "http://localhost:49448/Want.aspx";
+//	var URL_Feed_FormFeedback = "http://localhost:49448/Feedback.aspx";
+//	
+
+//
 function createContentContext(window, document, jq) {
 	
 	//
@@ -720,11 +729,32 @@ function feed_tools_system(window, document, jq) {
 										);
 		}
 		else if(sFormId==""){
-			sHtml_Comment = String2.format("<div style='text-align:center;'>\
-										<span id='cmd_requestForm' _index='{0}' class='pimshell_warning pimshell_link unselectable' style='margin-right:4px;'>{1}</span>\
-										</div>",
-										nIndex,
-										cbase.getlanguagevalue("requestFormTitle")
+			//info
+			var sFormWantURL = ctools.appendQueryStringValue(URL_Feed_FormWant, 'Title', __pimshell_getArticleTitle(oEntity));
+			sFormWantURL = ctools.appendQueryStringValue(sFormWantURL, 'URL', __pimshell_getArticleLink(oEntity));
+
+			//
+			sHtml_Comment = String2.format("\
+									<div class='pimshell_pager_feedback'>\
+										<div style='color:Red; font-weight:bold;' >* {0}</div>\
+										<div class='pimshell_general_link'>\
+											<a href='{1}' target='_blank'><img src='{2}' />{3}</a>\
+											<a href='{4}' target='_blank'><img src='{5}' />{6}</a>\
+										</div>\
+									</div>\
+									<div style='clear:both;'></div>\
+									",
+										cbase.getlanguagevalue("requestFormTitle"),
+
+										sFormWantURL,
+										cbase.getURL("addons/images/feedback.gif"),
+										cbase.getlanguagevalue("requestForm"),
+
+										String2.format("{0}?platform={1}",
+													cbase.getURL("addons/content/builder/home.htm"),
+													cbase.getPlatform()),
+										cbase.getURL("addons/images/spider.png"),
+										cbase.getlanguagevalue("builder_openparserstudio")
 										);
 		}
 		else{
@@ -741,7 +771,7 @@ function feed_tools_system(window, document, jq) {
 			oDiv.innerHTML = sHtml_Comment;
 
 			//events
-			jq("#cmd_requestForm", oDiv).click(this._delegate_click_requestForm);
+			//jq("#cmd_requestForm", oDiv).click(this._delegate_click_requestForm);
 			jq("#cmd_checkAgain", oDiv).click(this._delegate_click_checkAgain);
 
 		}
@@ -1124,12 +1154,11 @@ function feed_tools_system(window, document, jq) {
 		oToolbar.className = 'pimshell_comments_toolbar';
 		oDiv2.appendChild(oToolbar);
 
-		var sHtml_Toolbar = String2.format("{13}<div class='pimshell_toolbar'>\
+		var sHtml_Toolbar = String2.format("{10}<div class='pimshell_toolbar'>\
 									<img id='showOrder' _index='{0}' src='{1}' class='pimshell_warning pimshell_link unselectable' title='{2}' />\
 									<img id='refresh' _index='{0}' src='{3}' class='pimshell_warning pimshell_link unselectable' title='{4}' />\
 									<img id='subscribe' _index='{0}' src='{5}' class='pimshell_warning pimshell_link unselectable' title='{6}' />\
 									<a id='gotoarticle' href='{7}' target='_blank' title='{8}'><img src='{9}' /></a>\
-									<a id='viewparser' href='{10}' target='_blank' title='{11}'><img src='{12}' /></a>\
 									</div>",
 									nIndex,
 									sShowOrder == "desc" ? cbase.getURL("addons/images/down.gif") : cbase.getURL("addons/images/up.gif"),
@@ -1141,12 +1170,6 @@ function feed_tools_system(window, document, jq) {
 									ctools.HTMLEncode(oEntity["articleLink"]),
 									cbase.getlanguagevalue("viewOriginal"),
 									cbase.getURL("addons/images/goto.gif"),
-									String2.format("{0}?platform={1}&FormId={2}", 
-													cbase.getURL("addons/content/builder/edit.htm"),
-													cbase.getPlatform(), oEntity["formId"]
-													),
-									cbase.getlanguagevalue("builder_viewparser"),
-									cbase.getURL("addons/images/spider.png"),
 									sHtml_Pager_General
 									);
 
@@ -1171,14 +1194,49 @@ function feed_tools_system(window, document, jq) {
 		var oPager = document.createElement("div");
 		oPager.id = 'pimshell_advancedcomments_autotrack_pager';
 		oPager.className = 'pimshell_comments_pager';
-		oPager.style.cssText = 'height:35px;';
+
+		//2011.08.08 not use height,otherwise cannot layout properly when width is limited. 
+		//oPager.style.cssText = 'height:35px;';
 
 		oDiv2.appendChild(oPager);
 
-		var sHtml_Pager = String2.format("{0}<div class='pimshell_pager_feedback'><span id='feedback' _index='{1}' style='cursor:pointer;color:Green; font-weight:bold;'>* {2}</span></div>",
+		//		feedback info
+		var sFeedbackURL = ctools.appendQueryStringValue(URL_Feed_FormFeedback, 'Title', oEntity["articleTitle"]);
+		sFeedbackURL = ctools.appendQueryStringValue(sFeedbackURL, 'URL', oEntity["articleLink"]);
+		sFeedbackURL = ctools.appendQueryStringValue(sFeedbackURL, 'FormId', oEntity["formId"]);
+
+		//
+		var sHtml_Pager = String2.format("{0}\
+									<div class='pimshell_pager_feedback'>\
+										<div id='feedback' _index='{1}' style='color:Green; font-weight:bold;' >* {2}</div>\
+										<div class='pimshell_general_link'>\
+											<a href='{3}' target='_blank'><img src='{4}' />{5}</a>\
+											<a href='{6}' target='_blank'><img src='{7}' />{8}</a>\
+											<a href='{9}' target='_blank'><img src='{10}' />{11}</a>\
+										</div>\
+									</div>\
+									<div style='clear:both;'></div>\
+									",
 											sHtml_Pager_General,
 											nIndex,
-											cbase.getlanguagevalue("viewcommentfeedbackprompt")
+											cbase.getlanguagevalue("viewcommentfeedbackprompt"),
+											
+											sFeedbackURL,
+											cbase.getURL("addons/images/feedback.gif"),
+											cbase.getlanguagevalue("builder_feedback_send"),
+
+											String2.format("{0}?platform={1}&FormId={2}",
+													cbase.getURL("addons/content/builder/edit.htm"),
+													cbase.getPlatform(), oEntity["formId"]
+													),
+											cbase.getURL("addons/images/spider.png"),
+											cbase.getlanguagevalue("builder_viewparser"),
+
+											String2.format("{0}?platform={1}",
+													cbase.getURL("addons/content/builder/home.htm"),
+													cbase.getPlatform()),
+											cbase.getURL("addons/images/spider.png"),
+											cbase.getlanguagevalue("builder_openparserstudio")
 										);
 
 		oPager.innerHTML = sHtml_Pager;
@@ -1187,7 +1245,7 @@ function feed_tools_system(window, document, jq) {
 		jq("#pagePrevious", oDiv2).click(this._delegate_click_showPage);
 		jq("#pageNext", oDiv2).click(this._delegate_click_showPage);
 		jq("#pageLast", oDiv2).click(this._delegate_click_showPage);
-		jq("#feedback", oDiv2).click(this._delegate_click_feedback);
+		//jq("#feedback", oDiv2).click(this._delegate_click_feedback);
 	}
 
 	
@@ -1285,16 +1343,31 @@ function feed_tools_system(window, document, jq) {
 
 		//
 		var oParams = new Object();
-		if (oEntity["formStep"] == "article") {
-			oParams["title"] = oEntity["articleTitle"];
-			oParams["url"] = oEntity["articleLink"];
-		}
-		else {
-			oParams["title"] = oEntity["feedTitle"];
-			oParams["url"] = oEntity["feedLink"];
-		}
+
+		oParams["title"] = __pimshell_getArticleTitle(oEntity);
+		oParams["url"] = __pimshell_getArticleLink(oEntity);
 
 		cbase.sendmessage("formWant", oParams, function () { });
+	}
+
+	function __pimshell_getArticleLink(oEntity)
+	{
+		if (oEntity["formStep"] == "article") {
+			return oEntity["articleLink"];
+		}
+		else {
+			return oEntity["feedLink"];
+		}
+	}
+
+	function __pimshell_getArticleTitle(oEntity)
+	{
+		if (oEntity["formStep"] == "article") {
+			return oEntity["articleTitle"];
+		}
+		else {
+			return oEntity["feedTitle"];
+		}
 	}
 
 	function __pimshell_click_checkAgain(event) {

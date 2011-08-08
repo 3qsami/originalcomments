@@ -9,10 +9,10 @@
     "message": "Original Comments for Google Reader"
   },
   "requestForm":{
-	"message":"Request Form"
+	"message":"Send Request"
   },
   "requestFormTitle":{
-	"message":"Not supported yet. Please try again later, or send a request."
+	"message":"Not supported yet. Please try again later, or send a request, or create a comments parser by yourself."
   },
   "trackComments":{
 	"message":"View Comments"
@@ -176,13 +176,16 @@
   "builder_debug_systemform_takeeffect":{
 	"message":"System Form takes effect now."
   },
-  "builder_parserstudio":{
-	"message":"Comments Parser Studio"
+  "builder_openparserstudio":{
+	"message":"Open Comments Parser Studio"
   },
   "builder_viewparser":{
 	"message":"View Comments Parser"
   },
   "builder_edit_downloadparser_failed":{
 	"message":"Failed to download Parser."
+  },
+  "builder_feedback_send":{
+	"message":"Send Feedback"
   }
 }
