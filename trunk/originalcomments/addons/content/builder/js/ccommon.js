@@ -15,11 +15,13 @@ var URL_Feed_FormDownload = "http://www.pimshell.com/formgallery/Download.aspx";
 var URL_Feed_WebCalls_checkloginstatus = "http://www.pimshell.com/formgallery/WebCalls.aspx?action=checkloginstatus";
 var URL_Feed_Signin = "http://www.pimshell.com/formgallery/signin.aspx";
 var URL_Feed_FormPost = "http://www.pimshell.com/formgallery/Post.aspx";
+var URL_Feed_FormFeedback = "http://www.pimshell.com/formgallery/Feedback.aspx";
 
 
 //	var URL_Feed_WebCalls_checkloginstatus = "http://localhost:49448/WebCalls.aspx?action=checkloginstatus";
 //	var URL_Feed_Signin = "http://localhost:49448/signin.aspx";
 //	var URL_Feed_FormPost = "http://localhost:49448/Post.aspx";
+//	var URL_Feed_FormFeedback = "http://localhost:49448/Feedback.aspx";
 //	
 
 // common
