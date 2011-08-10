@@ -271,10 +271,11 @@
 					var oParams = new Object();
 					oParams["httpVerb"] = "post";
 					oParams["body"] = oBody;
-					XMLHttpManager.openRequest2(URL_Feed_FormPost, oParams, function (oRequest) {
-						if (oRequest.status == 200 && oRequest.responseText=="true") {
-							window.alert(cbase.getlanguagevalue("builder_publish_succeeded"));
-							callback(true);
+					XMLHttpManager.openRequest2(URL_Feed_WebCalls_publishparser, oParams, function (oRequest) {
+						if (oRequest.status == 200) {
+							var oResult = cbase.json_parse(oRequest.responseText);
+							window.alert(oResult.message);
+							callback(oResult.result === "true");
 						}
 						else {
 							window.alert(cbase.getlanguagevalue("builder_publish_failed"));
