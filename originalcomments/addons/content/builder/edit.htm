@@ -65,7 +65,7 @@
 					jQuery(document).bind("keydown", onhotkeys_save);
 
 					//
-					g_sFormId = oParts["FormId"];
+					g_sFormId = ctools.adjustGuid(oParts["FormId"]);
 					_fillFormInfo_downloadfirst();
 
 					//ok

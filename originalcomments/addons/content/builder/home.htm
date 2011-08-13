@@ -45,6 +45,9 @@
 		//cbase
 		var sBaseSrc = String2.format("../../{0}/js/cbase.js", oParts["platform"]);
 		ctools.loadScriptSrc(document, sBaseSrc, function () {
+			//page context
+			createPageContext(window, document, jQuery);
+
 			//ok
 			jQuery(document).ready(function () {
 				//title
@@ -81,6 +84,9 @@
 		if (index == 0) {
 			ontabsshow_myparsers(panel);
 		}
+		else if (index == 1) {
+			ontabsshow_samples(panel);
+		}
 	}
 
 	function ontabsshow_myparsers(panel) {
@@ -93,6 +99,19 @@
 
 		//
 		_fillformlist();
+	}
+
+	function ontabsshow_samples(panel) {
+
+		//2011.08.13
+		if (panel.attr("_inited") === "true")
+			return;
+
+		//2011.08.13 当成功后不再获取
+		_fillsamplelist(function (bSucceeded) {
+			if(bSucceeded)
+				panel.attr("_inited", "true");
+		});
 	}
 
 	//
@@ -120,20 +139,24 @@
 			var sFormId = oArray[i];
 			var oFollowInfo = oForms[sFormId];
 
-			var s = String2.format("<h4 _formId='{0}' id='accordion-subscriptions-{0}'><div style='max-width:600px;display:block;overflow:hidden;white-space:nowrap;'>\
+			var s = String2.format("<div style='margin-top:6px;' _formId='{0}' id='accordion-subscriptions-{0}'><div style='display:block;white-space:nowrap;'>\
 											<a href='#' onclick='return onclick_edit(event,\"{0}\");' title='{1}' style='margin-right:4px;'><img border='0' src='{2}' /></a>\
 											<a href='#' onclick='return onclick_clone(event,\"{0}\");' title='{3}' style='margin-right:4px;'><img border='0' src='{4}' /></a>\
 											<a href='#' onclick='return onclick_delete(event,\"{0}\");' title='{5}' style='margin-right:4px;'><img border='0' src='{6}' /></a>\
-											<span>{7}</span>\
-											</div></h4>",
+											<span style='width:250px;font-weight:bolder;display:inline-block;'>{7}</span>\
+											<span>{8}</span>\
+											</div></div>",
 											sFormId,
 											'Edit',
 											cbase.getURL("addons/images/edit.gif"),
-											'Clone',
-											cbase.getURL("addons/images/copy.ico"),
+											(sFormId == '{B1C8E6FB-C609-49BA-94E5-22F6B84CF93A}') ?
+												'' : 'Clone',
+											(sFormId == '{B1C8E6FB-C609-49BA-94E5-22F6B84CF93A}') ?
+												cbase.getURL("addons/images/empty.ico") : cbase.getURL("addons/images/copy.ico"),
 											'Delete',
 											cbase.getURL("addons/images/itemdelete.ico"),
-											oFollowInfo["ItemTitle"]
+											oFollowInfo["ItemTitle"],
+											oFollowInfo["Description"]
 											);
 
 			sHtml += s;
@@ -151,6 +174,148 @@
 
 			//content
 			jQuery(oDivFormList).html(sHtml);
+		}
+	}
+
+	
+	//
+	function _fillsamplelist(callback) {
+
+		//
+		//check if signed
+		XMLHttpManager.openRequest2(URL_Feed_WebCalls_samples, null, function (oRequest) {
+			if (oRequest.status != 200) {
+				callback(false);
+			}
+			else {
+				var oResult = cbase.json_parse(oRequest.responseText);
+				var oXMLNode = ctools.nodeFromXML(oResult.result);
+
+				_fillsamplelist2(oXMLNode);
+
+				callback(true);
+			}
+		});
+
+	}
+
+	function _fillsamplelist2(oXMLNode) {
+		//subscriptions
+		var sHtml = "";
+
+		//loop
+		var oNodes = ctools.selectNodes(oXMLNode, "Table");
+		for (var i = 0; i < oNodes.length; i++) {
+			var oNode = oNodes[i];
+
+			//
+			var sFormId = ctools.adjustGuid(ctools.getNodeText(ctools.selectSingleNode(oNode, "FormId")));
+
+			var s = String2.format("<div style='margin-top:6px;' _formId='{0}' id='accordion-subscriptions-{0}'><div style='display:block;white-space:nowrap;'>\
+											<a href='#' onclick='return onclick_edit(event,\"{0}\");' title='{1}' style='margin-right:4px;'><img border='0' src='{2}' /></a>\
+											<a href='#' onclick='return onclick_clone(event,\"{0}\");' title='{3}' style='margin-right:4px;'><img border='0' src='{4}' /></a>\
+											<span style='width:250px;font-weight:bolder;display:inline-block;'>{5}</span>\
+											<span>{6}</span>\
+											</div></div>",
+											sFormId,
+											'Edit',
+											cbase.getURL("addons/images/edit.gif"),
+											(sFormId == '{B1C8E6FB-C609-49BA-94E5-22F6B84CF93A}') ?
+												'' : 'Clone',
+											(sFormId=='{B1C8E6FB-C609-49BA-94E5-22F6B84CF93A}')?
+												cbase.getURL("addons/images/empty.ico") : cbase.getURL("addons/images/copy.ico"),
+											ctools.getNodeText(ctools.selectSingleNode(oNode, "FormTitle")),
+											ctools.getNodeText(ctools.selectSingleNode(oNode, "Description"))
+											);
+
+			sHtml += s;
+		}
+
+		//force destroy old node
+		jQuery("#samplelist").remove();
+
+		//formlist
+		if (sHtml != "") {
+			//create
+			var oDivFormList = document.createElement("div");
+			oDivFormList.id = "samplelist";
+			jQuery("#tabs-samples").append(oDivFormList);
+
+			//content
+			jQuery(oDivFormList).html(sHtml);
+		}
+	}
+
+	function onclick_edit(event, sFormId) {
+		var sURL = String2.format("{0}?platform={1}&FormId={2}",
+										cbase.getURL("addons/content/builder/edit.htm"),
+										cbase.getPlatform(),
+										sFormId);
+		cbase.newTab(sURL, true);
+	}
+	function onclick_clone(event, sFormIdSource) {
+		//system form cannot clone
+		if (sFormIdSource == '{B1C8E6FB-C609-49BA-94E5-22F6B84CF93A}')
+			return;
+
+		//create guid
+		ccommon.createguid(function (sFormId) {
+			if (!String2.isEmpty(sFormId)) {
+				var oForms = _getOptionsForms();
+				var oFormInfoSource = oForms[sFormIdSource];
+				var oFormContentSource = _getFormContent(sFormIdSource);
+
+				//new
+				oFormInfo = new Object();
+				oFormInfo["CreateTime"] = new Date();
+
+				oForms[sFormId] = oFormInfo;
+
+				//info
+				oFormInfo["formId"] = sFormId;
+
+				oFormInfo["ItemTitle"] = "Clone " + oFormInfoSource["ItemTitle"];
+				oFormInfo["ModifiedTime"] = new Date();
+				oFormInfo["Version"] = "1.0.0.0";
+				oFormInfo["ReleaseTime"] = new Date();
+				oFormInfo["Publisher"] = oFormInfoSource["Publisher"];
+				oFormInfo["Email"] = oFormInfoSource["Email"];
+				oFormInfo["Homepage"] = oFormInfoSource["Homepage"];
+				oFormInfo["Description"] = oFormInfoSource["Description"];
+				oFormInfo["FormType"] = oFormInfoSource["FormType"];
+				oFormInfo["FormParam1"] = "";
+				oFormInfo["FormParam2"] = oFormInfoSource["FormParam2"];
+
+				var oFormContent = _getFormContent(sFormId);
+				oFormContent["formId"] = sFormId;
+				oFormContent["FormHTM"] = oFormContentSource["FormHTM"];
+				oFormContent["FormXML"] = oFormContentSource["FormXML"];
+				oFormContent["FormJS"] = oFormContentSource["FormJS"];
+				_setFormContent(oFormContent);
+
+				//save
+				_setOptionsForms(oForms);
+
+				//refresh
+				_fillformlist(oForms);
+
+				//open
+				onclick_edit(null, sFormId);
+			}
+		});
+	}
+	function onclick_delete(event, sFormId) {
+		if (window.confirm("Are you sure you want to delete this form?")) {
+			//forminfo
+			var oForms = _getOptionsForms();
+			delete oForms[sFormId];
+			_setOptionsForms(oForms);
+
+			//formcontent
+			_removeFormContent(sFormId);
+
+			//refresh
+			_fillformlist(oForms);
 		}
 	}
 
@@ -177,7 +342,6 @@
 	<div id="tabs-myparsers">
 	</div>
 	<div id="tabs-samples">
-		<iframe src="http://www.pimshell.com/formgallery/FormSamples.aspx" frameborder="0" width="100%" height="500px" ></iframe>
 	</div>
 	<div id="tabs-wantedparsers">
 		<iframe src="http://www.pimshell.com/formgallery/FormWantedList.aspx" frameborder="0" width="100%" height="500px" ></iframe>
