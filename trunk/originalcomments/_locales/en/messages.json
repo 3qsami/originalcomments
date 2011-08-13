@@ -161,6 +161,12 @@
   "showhidecomments":{
 	"message":"show/hide comments"
   },
+  "opengooglereader":{
+	"message":"Open Google Reader"
+  },
+  "advicerating":{
+	"message":"Welcome your advice and rating"
+  },
   "builder_loginstatus_cannotcheck":{
 	"message":"Cannot check your login status."
   },
@@ -187,5 +193,23 @@
   },
   "builder_feedback_send":{
 	"message":"Send Feedback"
+  },
+  "builder_studio_title":{
+	"message":"Comments Parser Studio"
+  },
+  "builder_studio_document":{
+	"message":"Developer Documentation"
+  },
+  "builder_studio_myparsers":{
+	"message":"My Parsers"
+  },
+  "builder_studio_samples":{
+	"message":"Samples"
+  },
+  "builder_studio_wantedparsers":{
+	"message":"Wanted Parsers"
+  },
+  "builder_studio_top":{
+	"message":"Top 10"
   }
 }

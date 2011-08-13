@@ -161,6 +161,12 @@
   "showhidecomments":{
 	"message":"显示/隐藏 评论"
   },
+  "opengooglereader":{
+	"message":"打开Google Reader"
+  },
+  "advicerating":{
+	"message":"欢迎您提建议并评分"
+  },
   "builder_loginstatus_cannotcheck":{
 	"message":"无法检测用户登录状态。"
   },
@@ -187,5 +193,23 @@
   },
   "builder_feedback_send":{
 	"message":"发送反馈"
+  },
+  "builder_studio_title":{
+	"message":"评论解析器制作间"
+  },
+  "builder_studio_document":{
+	"message":"开发者文档"
+  },
+  "builder_studio_myparsers":{
+	"message":"我的解析器"
+  },
+  "builder_studio_samples":{
+	"message":"例子"
+  },
+  "builder_studio_wantedparsers":{
+	"message":"想要的解析器"
+  },
+  "builder_studio_top":{
+	"message":"排行榜"
   }
 }
