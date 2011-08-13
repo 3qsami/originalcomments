@@ -1,107 +1,126 @@
 <html>
 <head>
-	<title>Form List</title>
-	<link type="text/css" rel="Stylesheet" href="../../style/main.css" />
-	<link type="text/css" rel="Stylesheet" href="../../style/ui-lightness/jquery-ui.css" />
-	<script type="text/javascript" src="../../lib/jquery.min.js"></script>
-	<script type="text/javascript">
-		//jq
-		var jQuery = createJQuery(window);
+<title></title>
+<link type="text/css" rel="Stylesheet" href="../../style/main.css" />
+<link type="text/css" rel="Stylesheet" href="../../style/content.css" />
+<link type="text/css" rel="Stylesheet" href="../../style/ui-lightness/jquery-ui.css" />
+<style type="text/css">
+	.option-slider
+	{
+		display:inline-block;width:200px;margin-left:20px;
+	}
+	
+	.level1
+	{
+		padding-left:20px;
+	}
+	.level2
+	{
+		padding-left:50px;
+	}
+</style>
+
+<script type="text/javascript" src="../../lib/jquery.min.js"></script>
+
+<script type="text/javascript">
+	//jq
+	var jQuery = createJQuery(window);
 </script>
-	<script type="text/javascript" src="../../lib/jquery-ui.min.js"></script>
-	<script type="text/javascript" src="../../js/cbase.js"></script>
-	<script type="text/javascript" src="../../js/ctools.js"></script>
-	<script type="text/javascript" src="../../js/cpage.js"></script>
-	<script type="text/javascript" src="js/ccommon.js"></script>
-	<script type="text/javascript">
 
-		//
-		(function () {
-			//url
-			var oParts = ctools.splitURL(document.URL);
+<script type="text/javascript" src="../../lib/jquery-ui.min.js"></script>
 
-			//cbase
-			var sBaseSrc = String2.format("../../{0}/js/cbase.js", oParts["platform"]);
-			ctools.loadScriptSrc(document, sBaseSrc, function () {
-				//page context
-				createPageContext(window, document, jQuery);
+<script type="text/javascript" src="../../js/cbase.js"></script>
+<script type="text/javascript" src="../../js/ctools.js"></script>
+<script type="text/javascript" src="../../js/cpage.js"></script>
+<script type="text/javascript" src="js/ccommon.js"></script>
+
+
+<script type="text/javascript">
+	
+	//
+	(function () {
+		//url
+		var oParts = ctools.splitURL(document.URL);
+
+		//cbase
+		var sBaseSrc = String2.format("../../{0}/js/cbase.js", oParts["platform"]);
+		ctools.loadScriptSrc(document, sBaseSrc, function () {
+			//ok
+			jQuery(document).ready(function () {
+				//title
+				document.title = cbase.getlanguagevalue("builder_studio_title");
+
+				//tabs name
+				jQuery("#tabaction-myparsers").text(cbase.getlanguagevalue("builder_studio_myparsers"));
+				jQuery("#tabaction-samples").text(cbase.getlanguagevalue("builder_studio_samples"));
+				jQuery("#tabaction-wantedparsers").text(cbase.getlanguagevalue("builder_studio_wantedparsers"));
+				jQuery("#tabaction-top").text(cbase.getlanguagevalue("builder_studio_top"));
+
+				//tabs
+				var nSelectedIndex = 0;
+				jQuery("#tabs").tabs({ selected: nSelectedIndex, show: ontabsshow });
+
+				//
+				jQuery("#id_developerdocumentation").text(cbase.getlanguagevalue("builder_studio_document"));
+				jQuery("#id_advicerating").text(cbase.getlanguagevalue("advicerating"));
 
 				//ok
-				jQuery(document).ready(function () {
-
-					//
-					jQuery("#cmd_new").button();
-					jQuery("#cmd_import").button();
-
-					//fill
-					_fillformlist();
-
-					//check action
-					_checkURLAction(oParts);
-
-					//ok
-					jQuery(document.body).css('visibility', 'visible');
-				});
+				jQuery(document.body).css('visibility', 'visible');
 			});
+		});
+	})();
 
-		})();
+	
+	//
+	function ontabsshow(event,ui){
+		var index = ui.index;
+		var panel = ui.panel;
+		//panel maybe jquery object or dom element
+		panel = jQuery(panel);
 
-		//check url action
-		function _checkURLAction(oParts) {
-			var action = oParts["action"];
-			var sFormId = oParts["formId"];
-			var sArticleLink = oParts["url"];
-
-			if (action == "importform") {
-				if (!String2.isEmpty(sFormId)) {
-					//import
-					ccommon.importform(sFormId, function (result) {
-						if (result) {
-							//2011.08.07
-							_fillformlist();
-
-							//update debug_articlelink
-							//2010.12.12 not change link if not empty
-							var oFormContent = _getFormContent(sFormId);
-							if (String2.isEmpty(oFormContent["debug_articlelink"])) {
-								oFormContent["debug_articlelink"] = sArticleLink;
-								_setFormContent(oFormContent);
-							}
-
-							//edit
-							onclick_edit(null, sFormId);
-						}
-					});
-				}
-			}
+		if (index == 0) {
+			ontabsshow_myparsers(panel);
 		}
+	}
+
+	function ontabsshow_myparsers(panel) {
+		//only once
+		//2011.08.13 总是重新获取
+//		if (panel.attr("_inited") === "true")
+//			return;
+//		else
+//			panel.attr("_inited", "true");
 
 		//
-		function _fillformlist(oForms) {
-			if(oForms==null)
-				oForms = _getOptionsForms();
+		_fillformlist();
+	}
 
-			//order by ModifiedTime desc
-			var oArray = new Array();
-			for (var sFormId in oForms) {
-				oArray.push(sFormId);
-			}
-			//desc
-			oArray.sort(function (x, y) {
-				var a = new Date(oForms[x]["ModifiedTime"]);
-				var b = new Date(oForms[y]["ModifiedTime"]);
-				return a == b ? 0 : (a > b ? -1 : 1);
-			});
+	//
+	function _fillformlist(oForms) {
+		if (oForms == null)
+			oForms = _getOptionsForms();
 
-			//subscriptions
-			var sHtml = "";
+		//order by ModifiedTime desc
+		var oArray = new Array();
+		for (var sFormId in oForms) {
+			oArray.push(sFormId);
+		}
+		//desc
+		oArray.sort(function (x, y) {
+			var a = new Date(oForms[x]["ModifiedTime"]);
+			var b = new Date(oForms[y]["ModifiedTime"]);
+			return a == b ? 0 : (a > b ? -1 : 1);
+		});
 
-			//loop
-			for (var i = 0; i < oArray.length; i++) {
-				var sFormId = oArray[i];
-				var oFollowInfo = oForms[sFormId];
+		//subscriptions
+		var sHtml = "";
 
-				var s = String2.format("<h4 _formId='{0}' id='accordion-subscriptions-{0}'><div style='max-width:600px;display:block;overflow:hidden;white-space:nowrap;'>\
+		//loop
+		for (var i = 0; i < oArray.length; i++) {
+			var sFormId = oArray[i];
+			var oFollowInfo = oForms[sFormId];
+
+			var s = String2.format("<h4 _formId='{0}' id='accordion-subscriptions-{0}'><div style='max-width:600px;display:block;overflow:hidden;white-space:nowrap;'>\
 											<a href='#' onclick='return onclick_edit(event,\"{0}\");' title='{1}' style='margin-right:4px;'><img border='0' src='{2}' /></a>\
 											<a href='#' onclick='return onclick_clone(event,\"{0}\");' title='{3}' style='margin-right:4px;'><img border='0' src='{4}' /></a>\
 											<a href='#' onclick='return onclick_delete(event,\"{0}\");' title='{5}' style='margin-right:4px;'><img border='0' src='{6}' /></a>\
@@ -117,258 +136,56 @@
 											oFollowInfo["ItemTitle"]
 											);
 
-				sHtml += s;
-			}
-
-			//force destroy old node
-			jQuery("#formlist").remove();
-
-			//formlist
-			if (sHtml != "") {
-				//create
-				var oDivFormList = document.createElement("div");
-				oDivFormList.id = "formlist";
-				jQuery("#container_formlist").append(oDivFormList);
-
-				//content
-				jQuery(oDivFormList).html(sHtml);
-			}
-
-			//
-			jQuery("#formlistStat").text(oArray.length);
+			sHtml += s;
 		}
-	</script>
-	<script type="text/javascript">
 
-	function onclick_edit(event, sFormId) {
-		var sURL = String2.format("{0}?platform={1}&FormId={2}",
-										cbase.getURL("addons/content/builder/edit.htm"),
-										cbase.getPlatform(),
-										sFormId);
-		cbase.newTab(sURL, true);
-	}
-	function onclick_clone(event, sFormIdSource) {
-		//create guid
-		ccommon.createguid(function (sFormId) {
-			if (!String2.isEmpty(sFormId)) {
-				var oForms = _getOptionsForms();
-				var oFormInfoSource = oForms[sFormIdSource];
-				var oFormContentSource = _getFormContent(sFormIdSource);
+		//force destroy old node
+		jQuery("#formlist").remove();
 
-				//new
-				oFormInfo = new Object();
-				oFormInfo["CreateTime"] = new Date();
+		//formlist
+		if (sHtml != "") {
+			//create
+			var oDivFormList = document.createElement("div");
+			oDivFormList.id = "formlist";
+			jQuery("#tabs-myparsers").append(oDivFormList);
 
-				oForms[sFormId] = oFormInfo;
-
-				//info
-				oFormInfo["formId"] = sFormId;
-
-				oFormInfo["ItemTitle"] = "Clone " + oFormInfoSource["ItemTitle"];
-				oFormInfo["ModifiedTime"] = new Date();
-				oFormInfo["Version"] = "1.0.0.0";
-				oFormInfo["ReleaseTime"] = new Date();
-				oFormInfo["Publisher"] = oFormInfoSource["Publisher"];
-				oFormInfo["Email"] = oFormInfoSource["Email"];
-				oFormInfo["Homepage"] = oFormInfoSource["Homepage"];
-				oFormInfo["Description"] = oFormInfoSource["Description"];
-				oFormInfo["FormType"] = oFormInfoSource["FormType"];
-				oFormInfo["FormParam1"] = "";
-				oFormInfo["FormParam2"] = oFormInfoSource["FormParam2"];
-
-				var oFormContent = _getFormContent(sFormId);
-				oFormContent["formId"] = sFormId;
-				oFormContent["FormHTM"] = oFormContentSource["FormHTM"];
-				oFormContent["FormXML"] = oFormContentSource["FormXML"];
-				oFormContent["FormJS"] = oFormContentSource["FormJS"];
-				_setFormContent(oFormContent);
-
-				//save
-				_setOptionsForms(oForms);
-
-				//refresh
-				_fillformlist(oForms);
-
-				//open
-				onclick_edit(null, sFormId);
-			}
-		});
-	}
-	function onclick_delete(event, sFormId) {
-		if (window.confirm("Are you sure you want to delete this form?")) {
-			//forminfo
-			var oForms = _getOptionsForms();
-			delete oForms[sFormId];
-			_setOptionsForms(oForms);
-
-			//formcontent
-			_removeFormContent(sFormId);
-
-			//refresh
-			_fillformlist(oForms);
+			//content
+			jQuery(oDivFormList).html(sHtml);
 		}
 	}
-	function onclick_new() {
-		//create guid
-		ccommon.createguid(function (sFormId) {
-			if (!String2.isEmpty(sFormId)) {
-				//
-				var oForms = _getOptionsForms();
-
-				//new
-				oFormInfo = new Object();
-				oFormInfo["CreateTime"] = new Date();
-
-				oForms[sFormId] = oFormInfo;
-
-				//info
-				oFormInfo["formId"] = sFormId;
-
-				oFormInfo["ItemTitle"] = "New Form";
-				oFormInfo["ModifiedTime"] = new Date();
-				oFormInfo["Version"] = "1.0.0.0";
-				oFormInfo["ReleaseTime"] = new Date();
-				oFormInfo["Publisher"] = "";
-				oFormInfo["Email"] = "";
-				oFormInfo["Homepage"] = "";
-				oFormInfo["Description"] = "";
-				oFormInfo["FormType"] = "{C127CD9B-8059-4B0C-BD7B-077EA300073C}";
-				oFormInfo["FormParam1"] = "";
-				oFormInfo["FormParam2"] = "";
-
-				var oFormContent = _getFormContent(sFormId);
-				oFormContent["formId"] = sFormId;
-				oFormContent["FormHTM"] = "";
-				oFormContent["FormXML"] = "\
-<?xml version=\"1.0\" encoding=\"utf-16\"?>\r\n\
-<page>\r\n\
-	<formForComments>\r\n\
-		<trackComments className=\"\" eventClassName=\"\" pageOrderDirection=\"\" reference=\"{B1C8E6FB-C609-49BA-94E5-22F6B84CF93A}\">\r\n\
-		</trackComments>\r\n\
-		<resource>\r\n\
-			<sessions>\r\n\
-				<session id=\"trackComments\">\r\n\
-					<request method=\"get\">\r\n\
-						<url id=\"url\"></url>\r\n\
-					</request>\r\n\
-					<response>\r\n\
-						<matches>\r\n\
-							<match id=\"comments\"></match>\r\n\
-							<match id=\"totalcount\" onlyOnce=\"true\"></match>\r\n\
-							<match id=\"pagecount\" onlyOnce=\"true\"></match>\r\n\
-						</matches>\r\n\
-					</response>\r\n\
-				</session>\r\n\
-			</sessions>\r\n\
-			<matches>\r\n\
-				<match id=\"articleId\">\r\n\
-					<regexp>\r\n\
-						<![CDATA[\r\n\
-							\r\n\
-						]]>\r\n\
-					</regexp>\r\n\
-					<succeeded>\r\n\
-						<matches>\r\n\
-							<match index=\"1\" name=\"articleId\" />\r\n\
-						</matches>\r\n\
-					</succeeded>\r\n\
-					<failed>\r\n\
-						<matches>\r\n\
-							<match value=\"\" name=\"articleId\" />\r\n\
-						</matches>\r\n\
-					</failed>\r\n\
-				</match>\r\n\
-				<match id=\"comments\" name=\"comments\" loop=\"true\" itemOrderDirection=\"\">\r\n\
-					<regexp>\r\n\
-						<![CDATA[\r\n\
-								\r\n\
-						]]>\r\n\
-					</regexp>\r\n\
-					<succeeded>\r\n\
-						<matches>\r\n\
-							\r\n\
-						</matches>\r\n\
-					</succeeded>\r\n\
-				</match>\r\n\
-				<match id=\"totalcount\">\r\n\
-					<regexp>\r\n\
-						<![CDATA[\r\n\
-							\r\n\
-						]]>\r\n\
-					</regexp>\r\n\
-					<succeeded>\r\n\
-						<matches>\r\n\
-							<match index=\"1\" name=\"totalcount\" />\r\n\
-						</matches>\r\n\
-					</succeeded>\r\n\
-					<failed>\r\n\
-						<matches>\r\n\
-							<match value=\"-1\" name=\"totalcount\" />\r\n\
-						</matches>\r\n\
-					</failed>\r\n\
-				</match>\r\n\
-				<match id=\"pagecount\" value=\"1\" name=\"pagecount\"></match>\r\n\
-			</matches>\r\n\
-			<combines>\r\n\
-				<combine id=\"url\"><![CDATA[]]></combine>\r\n\
-			</combines>\r\n\
-		</resource>\r\n\
-	</formForComments>\r\n\
-</page>\r\n\
-				";
-				oFormContent["FormJS"] = "///////////////////////////////////////////////////////////////\r\n\
-////	Track Comments Events -- begin\r\n\
-\r\n\
-\r\n\
-////	Track Comments Events -- end\r\n	\
-///////////////////////////////////////////////////////////////\r\n\
-				";
-				_setFormContent(oFormContent);
-
-				//save
-				_setOptionsForms(oForms);
-
-				//refresh
-				_fillformlist(oForms);
-
-				//open
-				onclick_edit(null, sFormId);
-			}
-		});
-		
-		return false;
-	}
-	function onclick_import() {
-		var sFormId = window.prompt("Please specify the Form Id", "");
-		if (sFormId == "")
-			return false;
-
-		ccommon.importform(sFormId, function (result) {
-			if (result) {
-				//2011.08.07
-				_fillformlist();
-				
-				//
-				window.alert("Import completed!");
-			}
-			else {
-				window.alert("Import failed!");
-			}
-		});
-
-		return false;
-	}
-	
 
 </script>
 </head>
-<body style="visibility: hidden;">
-	<div style="float: right; width: 400px;">
-		<button id="cmd_new" onclick="return onclick_new();">New Form</button>
-		<button id="cmd_import" onclick="return onclick_import();">Import</button>
+<body style="visibility:hidden;">
+
+<div style="float:right; width:400px; " class="demo-config-menu">
+	<div class="demos-nav">
+		<ul>
+			<li><a href="http://www.pimshell.com/formgallery/development/" id="id_developerdocumentation"></a></li>
+			<li><a href="https://chrome.google.com/webstore/detail/bakgcnaldcjegdemmmkkmghcbmliojjd" id="id_advicerating"></a></li>
+		</ul>
 	</div>
-	<div style="clear: both; margin-left: 100px;" id="container_formlist">
-		<div style="font-size:20px;">Form Count:<span id="formlistStat"></span></div>
+</div>
+
+<div id="tabs" style="clear:both;">
+	<ul>
+		<li><a id="tabaction-myparsers" href="#tabs-myparsers"></a></li>
+		<li><a id="tabaction-samples" href="#tabs-samples"></a></li>
+		<li><a id="tabaction-wantedparsers" href="#tabs-wantedparsers"></a></li>
+		<li><a id="tabaction-top" href="#tabs-top"></a></li>
+	</ul>
+	<div id="tabs-myparsers">
 	</div>
+	<div id="tabs-samples">
+		<iframe src="http://www.pimshell.com/formgallery/FormSamples.htm" frameborder="0" width="100%" height="500px" ></iframe>
+	</div>
+	<div id="tabs-wantedparsers">
+		<iframe src="http://www.pimshell.com/formgallery/FormWantedList.htm" frameborder="0" width="100%" height="500px" ></iframe>
+	</div>
+	<div id="tabs-top">
+		<iframe src="http://www.pimshell.com/formgallery/FormTopList.htm" frameborder="0" width="100%" height="500px" ></iframe>
+	</div>
+</div>
+
 </body>
 </html>
