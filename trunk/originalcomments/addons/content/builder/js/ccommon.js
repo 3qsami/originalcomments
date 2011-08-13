@@ -14,6 +14,7 @@ var URL_Feed_FormDownload = "http://www.pimshell.com/formgallery/Download.aspx";
 
 var URL_Feed_WebCalls_checkloginstatus = "http://www.pimshell.com/formgallery/WebCalls.aspx?action=checkloginstatus";
 var URL_Feed_WebCalls_publishparser = "http://www.pimshell.com/formgallery/WebCalls.aspx?action=publish";
+var URL_Feed_WebCalls_samples = "http://www.pimshell.com/formgallery/WebCalls.aspx?action=samples";
 var URL_Feed_Signin = "http://www.pimshell.com/formgallery/signin.aspx";
 var URL_Feed_FormPost = "http://www.pimshell.com/formgallery/Post.aspx";
 var URL_Feed_FormFeedback = "http://www.pimshell.com/formgallery/Feedback.aspx";
