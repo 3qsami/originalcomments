@@ -72,6 +72,7 @@
 				jQuery("#id_parserstudio").attr("href",String2.format("builder/home.htm?platform={0}",cbase.getPlatform()));
 				
 				jQuery("#id_opengooglereader").text(cbase.getlanguagevalue("opengooglereader"));
+				jQuery("#id_supportfaqs").text(cbase.getlanguagevalue("supportfaqs"));
 				jQuery("#id_advicerating").text(cbase.getlanguagevalue("advicerating"));
 
 				//ok
@@ -552,8 +553,8 @@
 <div style="float:right; width:400px; " class="demo-config-menu">
 	<div class="demos-nav">
 		<ul>
-			<!--<li><a href="http://getsatisfaction.com/originalcomments">Support and FAQs</a></li>-->
 			<li><a href="https://www.google.com/reader/view/" id="id_opengooglereader"></a></li>
+			<li><a href="http://getsatisfaction.com/originalcomments" id="id_supportfaqs"></a></li>
 			<li><a href="https://chrome.google.com/webstore/detail/bakgcnaldcjegdemmmkkmghcbmliojjd" id="id_advicerating"></a></li>
 		</ul>
 	</div>
@@ -563,6 +564,7 @@
 		<ul>
 			<li>&nbsp;</li>
 			<li><a href="builder/home.htm" id="id_parserstudio"><img border="0" src="../images/spider.png" /><span id="id_parserstudio_text"></span></a></li>
+			<li>&nbsp;</li>
 		</ul>
 	</div>
 </div>

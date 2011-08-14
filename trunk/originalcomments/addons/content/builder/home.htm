@@ -65,6 +65,7 @@
 
 				//
 				jQuery("#id_developerdocumentation").text(cbase.getlanguagevalue("builder_studio_document"));
+				jQuery("#id_supportfaqs").text(cbase.getlanguagevalue("supportfaqs"));
 				jQuery("#id_advicerating").text(cbase.getlanguagevalue("advicerating"));
 
 				//ok
@@ -258,6 +259,27 @@
 		if (sFormIdSource == '{B1C8E6FB-C609-49BA-94E5-22F6B84CF93A}')
 			return;
 
+		//check if exists
+		var oForms = _getOptionsForms();
+		var oFormInfo = oForms[sFormIdSource];
+		if (oFormInfo != null) {
+			onclick_clone_2(sFormIdSource);
+		}
+		else {
+			//
+			ccommon.importform(sFormIdSource, function (result) {
+				if (result) {
+					//
+					onclick_clone_2(sFormIdSource);
+				}
+				else {
+					window.alert(cbase.getlanguagevalue("builder_edit_downloadparser_failed"));
+				}
+			});
+		}
+	}
+
+	function onclick_clone_2(sFormIdSource) {
 		//create guid
 		ccommon.createguid(function (sFormId) {
 			if (!String2.isEmpty(sFormId)) {
@@ -304,6 +326,7 @@
 			}
 		});
 	}
+
 	function onclick_delete(event, sFormId) {
 		if (window.confirm("Are you sure you want to delete this form?")) {
 			//forminfo
@@ -327,6 +350,7 @@
 	<div class="demos-nav">
 		<ul>
 			<li><a href="http://www.pimshell.com/formgallery/development/" id="id_developerdocumentation"></a></li>
+			<li><a href="http://getsatisfaction.com/originalcomments" id="id_supportfaqs"></a></li>
 			<li><a href="https://chrome.google.com/webstore/detail/bakgcnaldcjegdemmmkkmghcbmliojjd" id="id_advicerating"></a></li>
 		</ul>
 	</div>
