@@ -183,7 +183,7 @@
 	"message":"Failed to publish Parser."
   },
   "builder_debug_systemform_takeeffect":{
-	"message":"System Form takes effect now."
+	"message":"System Parser takes effect now."
   },
   "builder_openparserstudio":{
 	"message":"Open Comments Parser Studio"
@@ -214,5 +214,32 @@
   },
   "builder_studio_top":{
 	"message":"Top 10"
+  },
+  "builder_studio_delete_confirm":{
+	"message":"Are you sure you want to delete this parser?"
+  },
+  "builder_studio_edit":{
+	"message":"Edit"
+  },
+  "builder_studio_clone":{
+	"message":"Clone"
+  },
+  "builder_studio_delete":{
+	"message":"Delete"
+  },
+  "builder_edit_title":{
+	"message":"Parser Edit"
+  },
+  "builder_edit_save":{
+	"message":"Save Parser"
+  },
+  "builder_edit_publish":{
+	"message":"Publish Parser"
+  },
+  "builder_edit_debug":{
+	"message":"Debug Parser"
+  },
+  "builder_edit_gotoarticle":{
+	"message":"Goto Article"
   }
 }
