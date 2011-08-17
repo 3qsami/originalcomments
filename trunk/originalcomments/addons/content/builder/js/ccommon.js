@@ -115,7 +115,7 @@ function _importFromPXML(sResponseText) {
 						var sFormId = oNodeItem.getAttribute("itemId");
 						var sFormVersion = _getFieldValueForForm(oNodeFields, "Version");
 
-						//check form exsis and old
+						//check parser exsis and old
 						var oFormInfo = oForms[sFormId];
 						if (oFormInfo == null || oFormInfo["Version"].toString() < sFormVersion) {
 							if (oFormInfo == null) {

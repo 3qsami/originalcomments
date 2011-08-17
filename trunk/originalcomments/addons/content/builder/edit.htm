@@ -1,6 +1,6 @@
 <html>
 <head>
-<title>Form Edit</title>
+<title></title>
 <link type="text/css" rel="Stylesheet" href="../../style/main.css" />
 <link type="text/css" rel="Stylesheet" href="../../style/content.css" />
 <link type="text/css" rel="Stylesheet" href="../../style/ui-lightness/jquery-ui.css" />
@@ -59,6 +59,11 @@
 					jQuery("#cmd_publish").button();
 					jQuery("#cmd_debug").button();
 					jQuery("#cmd_runtest").button();
+
+					//text
+					jQuery("#cmd_save").button("option", "label", cbase.getlanguagevalue("builder_edit_save"));
+					jQuery("#cmd_publish").button("option", "label", cbase.getlanguagevalue("builder_edit_publish"));
+					jQuery("#cmd_debug").button("option", "label", cbase.getlanguagevalue("builder_edit_debug"));
 
 					//hotkeys
 					//		not use jQuery.hotkeys.add, otherwise tabby cannot work
@@ -150,14 +155,14 @@
 
 	function _formInfoModified(bModified) {
 		if (bModified) {
-			jQuery("#cmd_save").button("option", "label", "* " + "Save Form");
+			jQuery("#cmd_save").button("option", "label", "* " + cbase.getlanguagevalue("builder_edit_save"));
 		}
 		else {
-			jQuery("#cmd_save").button("option", "label", "Save Form");
+			jQuery("#cmd_save").button("option", "label", cbase.getlanguagevalue("builder_edit_save"));
 		}
 	}
 	function _upateDocumentTitle(oFormInfo) {
-		document.title = oFormInfo["ItemTitle"] + " - Form Edit";
+		document.title = oFormInfo["ItemTitle"] + " - " + cbase.getlanguagevalue("builder_edit_title");
 	}
 
 	function _combineFormInfo(oFormInfo,oFormContent){
@@ -401,9 +406,9 @@
 		//link
 		var sLink = jQuery("#debug_articlelink").attr("value");
 		if (String2.isEmpty(sLink)) {
-			//check if system form
+			//check if system parser
 			if (g_sFormId == "{B1C8E6FB-C609-49BA-94E5-22F6B84CF93A}") {
-				//set form first
+				//set parser first
 				var oFormInfo = new Object();
 				oFormInfo["formId"] = g_sFormId;
 				_combineFormInfo(oFormInfo, oFormInfo);
@@ -415,7 +420,7 @@
 			}
 		}
 		else {
-			//set form first
+			//set parser first
 			var oFormInfo = new Object();
 			oFormInfo["formId"] = g_sFormId;
 			oFormInfo["systemFormId"] = "{B1C8E6FB-C609-49BA-94E5-22F6B84CF93A}";
@@ -424,7 +429,7 @@
 			cbase.sendmessage("debug_setform", oFormInfo, function (bSucceeded) {
 				if (bSucceeded) {
 					//always reset articleinfo
-					jQuery("#article-title-link").attr("href", sLink).text("Goto Article").attr("_formId", g_sFormId);
+					jQuery("#article-title-link").attr("href", sLink).text(cbase.getlanguagevalue("builder_edit_gotoarticle")).attr("_formId", g_sFormId);
 
 					//reset article
 					ccontent.refreshCurrentArticleComments();
@@ -437,11 +442,11 @@
 </head>
 <body style="visibility:hidden;">
 <div style="float:right;">
-	<button id="cmd_debug" onclick="return onclick_debug();">Debug Form</button><input type="text" id="debug_articlelink" size="80" />(Article Link)
+	<button id="cmd_debug" onclick="return onclick_debug();"></button><input type="text" id="debug_articlelink" size="80" />(Article Link)
 </div>
 <div style="float:left;">
-	<button id="cmd_save" onclick="return onclick_save();">Save Form</button>
-	<button id="cmd_publish" onclick="return onclick_publish();">Publish Form</button>
+	<button id="cmd_save" onclick="return onclick_save();"></button>
+	<button id="cmd_publish" onclick="return onclick_publish();"></button>
 	<img id="img_loading" src="../../images/loading.gif" style="display:none" />
 </div>
 <div id="tabs" style="clear:both;">
@@ -477,7 +482,7 @@
                 <td colspan="3"><input type="text" id="Homepage" style="width:500px;" /></td>
             </tr>
             <tr>
-                <td nowrap class="fieldname">Match Pattern</td>
+                <td nowrap class="fieldname" style="color:#CC3300;">Match Pattern</td>
                 <td colspan="3"><input type="text" id="FormParam1" style="width:500px;" /></td>
             </tr>
   

@@ -214,5 +214,32 @@
   },
   "builder_studio_top":{
 	"message":"前10"
+  },
+  "builder_studio_delete_confirm":{
+	"message":"您确信要删除此解析器吗?"
+  },
+  "builder_studio_edit":{
+	"message":"编辑"
+  },
+  "builder_studio_clone":{
+	"message":"复制"
+  },
+  "builder_studio_delete":{
+	"message":"删除"
+  },
+  "builder_edit_title":{
+	"message":"编辑解析器"
+  },
+  "builder_edit_save":{
+	"message":"保存解析器"
+  },
+  "builder_edit_publish":{
+	"message":"发布解析器"
+  },
+  "builder_edit_debug":{
+	"message":"调试解析器"
+  },
+  "builder_edit_gotoarticle":{
+	"message":"打开原始文章"
   }
 }

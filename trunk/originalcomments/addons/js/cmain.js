@@ -256,7 +256,7 @@ function createMainContext(window, document, jq) {
 			var oThis = this;
 
 			this._checkClient2(sClientId, function (oResult) {
-				//remove all empty record, so as to match form again.
+				//remove all empty record, so as to match parser again.
 				if (oResult != null) {
 					oThis.m_oFeedLinkFormManager._removeAllEmptyRecords();
 				}
@@ -908,15 +908,15 @@ function createMainContext(window, document, jq) {
 						var sSystemFormId = oArrayInfo[3];
 						var sSystemFormVersion = oArrayInfo[4];
 
-						//1. check system form first
+						//1. check system parser first
 						oThis.m_oMain.m_oFormManager.formExistsAndValid(sSystemFormId, sSystemFormVersion, function (bSucceeded) {
 							if (!bSucceeded) {
 								callback(false, sFormId, nFormMode);
 							}
 							else {
-								//2. then check form
+								//2. then check parser
 								oThis.m_oMain.m_oFormManager.formExistsAndValid(sFormId, sVersion, function (bSucceeded) {
-									//	record system form info
+									//	record system parser info
 									if (bSucceeded) {
 										var oFormInfo = oThis.m_oMain.m_oFormManager.getFormInfo(sFormId);
 										if (oFormInfo != null) {
@@ -986,7 +986,7 @@ function createMainContext(window, document, jq) {
 				return;
 			}
 
-			//加入一个队列，避免重复检测form
+			//加入一个队列，避免重复检测parser
 			var oChecking = oThis.m_oMapFormsChecking[sFormId];
 			if (oChecking != null) {
 				oChecking.push(callback);
@@ -1010,7 +1010,7 @@ function createMainContext(window, document, jq) {
 		this._formExistsAndValid2 = function (sFormId, sVersion, bNoCache, callback) {
 			var oThis = this;
 
-			// try get form
+			// try get parser
 			var sURL = String2.format("{0}?FormId={1}", URL_Feed_FormDownload, sFormId);
 			var oParams = new Object();
 			oParams["noCache"] = bNoCache;
@@ -1031,7 +1031,7 @@ function createMainContext(window, document, jq) {
 
 				//check verison
 				if (sVersion <= oFormInfo["formVersion"].toString()) {
-					//save form info
+					//save parser info
 					oThis.m_oMapForms[sFormId] = oFormInfo;
 
 					//ok
@@ -1071,7 +1071,7 @@ function createMainContext(window, document, jq) {
 				var sSystemFormId = oFormInfoDebug["systemFormId"];
 				var sSystemFormVersion = oFormInfoDebug["systemFormVersion"];
 
-				//1. check system form first
+				//1. check system parser first
 				oThis.formExistsAndValid(sSystemFormId, sSystemFormVersion, function (bSucceeded) {
 					if (!bSucceeded) {
 						callback(false);
@@ -1142,13 +1142,13 @@ function createMainContext(window, document, jq) {
 				oRuntimeInfo = new Object();
 				//parse
 
-				//1. form xml
+				//1. parser xml
 				var oNodeRoot = ctools.nodeFromXML(oFormInfo["formXML"]);
 				oRuntimeInfo["node_formForComments"] = ctools.selectSingleNode(oNodeRoot, "formForComments");
 				oRuntimeInfo["node_trackComments"] = ctools.selectSingleNode(oRuntimeInfo["node_formForComments"], "trackComments");
 				oRuntimeInfo["pageOrderDirection"] = ctools.getAttribute(oRuntimeInfo["node_trackComments"], "pageOrderDirection", "");
 				oRuntimeInfo["cacheMode"] = ctools.getAttribute(oRuntimeInfo["node_trackComments"], "cacheMode", "");
-				//2. form js, must cache the class objcet immediately, void conflict.
+				//2. parser js, must cache the class objcet immediately, void conflict.
 				window.eval(oFormInfo["formJS"]);
 				oRuntimeInfo["trackcomments_className"] = ctools.getAttribute(oRuntimeInfo["node_trackComments"], "className", "");
 				if (oRuntimeInfo["trackcomments_className"] != "") {
@@ -1193,7 +1193,7 @@ function createMainContext(window, document, jq) {
 		this.m_nForward_tmp_totalcount=-1;
 		this.m_nForward_tmp_firstpagesize=-1;
 
-		this.m_bSendFormCheckOnce = false;	//check if form has error 
+		this.m_bSendFormCheckOnce = false; //check if parser has error 
 
 		//method
 		this.init=function(oParams){
@@ -1377,7 +1377,7 @@ function createMainContext(window, document, jq) {
 			//prepare properties
 			var oProperties = new Object();
 
-			//form
+			//parser
 			oProperties["pageIndex"] = nPageIndex;
 			oProperties["itemTitle"] = this.m_sArticleTitle;
 			oProperties["itemLink"] = this.m_sArticleLink;
@@ -1606,7 +1606,7 @@ function createMainContext(window, document, jq) {
 				this.m_nInfo_PageSize = 0;
 		};
 
-		//check if form has error
+		//check if parser has error
 		this._sendFormCheck = function (bFailed) {
 			//2011.06.19 neednot
 			return;
@@ -1656,7 +1656,7 @@ function createMainContext(window, document, jq) {
 
 
 			//2009.12.29 如果是forward,那么,pagecount有可能到最后才能确定.
-			//				除非，在form中自行计算。在这里是不用计算的
+			//				除非，在parser中自行计算。在这里是不用计算的
 			if (this.m_sCacheMode == "forward") {
 				//2009.12.29 不等于－１就按正常的模式
 				if (nPageCount == -1) {
@@ -1972,14 +1972,14 @@ function createMainContext(window, document, jq) {
 		this.showPageOuter = function (oParams, callback) {
 			var oThis = this;
 
-			//force check if form is ready
+			//force check if parser is ready
 			var sFormId = oParams["formId"];
 			var oRuntimeInfo = this.m_oMain.m_oFormManager.getRuntimeFormInfo(sFormId);
 			if (oRuntimeInfo != null) {
 				oThis.__showPageOuter(oParams, callback);
 			}
 			else {
-				//prepare form
+				//prepare parser
 				oThis.m_oMain.m_oFeedLinkFormManager._commentsCheckFormId2("", "", "", sFormId, function (bSucceeded, sFormId, nFormMode) {
 					if (!bSucceeded || sFormId == "") {
 						callback({ status: "failed" });
