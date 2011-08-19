@@ -1225,7 +1225,7 @@ function feed_tools_system(window, document, jq) {
 											cbase.getURL("addons/images/feedback.gif"),
 											cbase.getlanguagevalue("builder_feedback_send"),
 
-											String2.format("{0}?platform={1}&FormId={2}",
+											String2.format("{0}?platform={1}&formId={2}",
 													cbase.getURL("addons/content/builder/edit.htm"),
 													cbase.getPlatform(), oEntity["formId"]
 													),

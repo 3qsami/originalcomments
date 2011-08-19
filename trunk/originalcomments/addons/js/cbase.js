@@ -148,6 +148,14 @@ CBase.prototype.notifyFollowCommentsChanged = function (nCount) {
 	this.notimpl("CBase.prototype.notifyFollowCommentsChanged");
 }
 
+CBase.prototype.getCookie = function (url, name, callback) {
+	this.notimpl("CBase.prototype.getCookie");
+}
+
+CBase.prototype.setCookie = function (url, name, value) {
+	this.notimpl("CBase.prototype.getCookie");
+}
+
 //
 var cbase = new CBase();
 

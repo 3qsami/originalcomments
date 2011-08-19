@@ -104,6 +104,12 @@ function createPageContext(window, document,jq) {
 		},
 		nodeFromXML: function (sXML) {
 			return ctools.nodeFromXML(sXML);
+		},
+		getCookie: function (url, name, callback) {
+			return cbase.getCookie(url, name, callback);
+		},
+		setCookie: function (url, name, value) {
+			return cbase.setCookie(url, name, value);
 		}
 	};
 

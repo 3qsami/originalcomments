@@ -1,6 +1,6 @@
 ﻿{
   "name": "__MSG_name__",
-  "version": "1.0.55",
+  "version": "1.0.56",
   "description": "__MSG_description__",
   "icons": { "16": "addons/images/button16.png",
            "21": "addons/images/button21.png",
@@ -15,7 +15,8 @@
 	  "default_icon": "addons/images/button21.png"
   },
   "permissions": [
-    "tabs","http://*/*","https://*/*"
+    "tabs","cookies",
+	"http://*/*","https://*/*"
   ],
   "default_locale": "en",
   "content_scripts": [
