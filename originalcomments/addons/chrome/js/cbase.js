@@ -93,3 +93,15 @@ CBase.prototype.notifyFollowCommentsChanged = function (nCount) {
 	chrome.browserAction.setBadgeText({ text: sText });
 }
 
+CBase.prototype.getCookie = function (url, name, callback) {
+	chrome.cookies.get({ "url": url, "name": name },
+				function (cookie) {
+					callback(cookie?cookie.value:null);
+				}
+			);
+}
+
+CBase.prototype.setCookie = function (url, name, value) {
+	chrome.cookies.set({ "url": url, "name": name, value: value });
+}
+
