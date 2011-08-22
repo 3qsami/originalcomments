@@ -21,7 +21,7 @@
   "default_locale": "en",
   "content_scripts": [
     {
-      "matches": ["*://www.google.com/reader/view/*","*://www.google.com.hk/reader/view/*"],
+      "matches": ["*://*/reader/view/*"],
 	  "css": ["addons/style/content.css"],
       "js": ["addons/lib/jquery.min.js","addons/js/cbase.js","addons/js/ctools.js","addons/chrome/js/cbase.js","addons/js/ccontent.js","addons/chrome/js/ccontent.js","addons/readeronline/googlereader.js"]
     }
