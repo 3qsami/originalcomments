@@ -322,6 +322,7 @@ function feed_tools_system(window, document, jq) {
 						&& !event.ctrlKey
 						&& !event.altKey
 						&& !event.shiftKey
+						&& !event.metaKey
 						) {
 				//not input or textarea
 				var oElement = ctools.getEventElement(event);
@@ -1058,6 +1059,10 @@ function feed_tools_system(window, document, jq) {
 		cbase.sendmessage("showPage", oParams, function (oResult) {
 			//loading
 			oThis._loadingStop(oEntity);
+
+			//2011.08.27 if not current entry ,then ignore
+			if (oThis.getCurrentArticleIndex() != oEntity["index"])
+				return;
 
 			//do nothing
 			if (oResult == null)
