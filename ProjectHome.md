@@ -1,0 +1,1 @@
+Directly view original comments in Google Reader.
